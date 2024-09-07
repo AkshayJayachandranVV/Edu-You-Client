@@ -1,0 +1,181 @@
+/* General Styles */
+.admin-full-background {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f4f8;
+    position: relative;
+    overflow: hidden; /* Ensure nothing overflows */
+}
+
+.admin-left-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 50vw;
+    background-color: black;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.admin-left-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 2rem;
+}
+
+.admin-left-header h1 {
+    color: white;
+    font-size: 3.5rem;
+    text-align: center;
+    margin: 0; /* Remove any margin to ensure proper alignment */
+}
+
+.admin-left-image {
+    height: 80vh;
+    width: 100%; /* Make sure it takes full width */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Prevent overflow */
+}
+
+.admin-login-img {
+    height: auto;
+    width: 90%; /* Make it responsive */
+    max-width: 40vw; /* Limit max width to ensure it doesn't exceed */
+    object-fit: cover; /* Cover to maintain aspect ratio */
+    margin-top: 2rem; /* Space from top if needed */
+}
+
+.admin-right-background {
+    height: 100vh;
+    width: 50vw;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: white;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 4rem;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.admin-input-head {
+    text-align: center;
+    margin-bottom: 2rem;
+    width: 80%;
+}
+
+.admin-input-head h1 {
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+.admin-login-icon {
+    width: 74px;
+    height: 74px;
+    margin-bottom: 1rem;
+}
+
+.admin-form-container {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Adjust input and button styles for consistency */
+.admin-form-container input,
+.admin-form-container button {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.admin-form-container button {
+    background-color: #1ecae1;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.admin-form-container button:hover {
+    background-color: #17b2cc;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 1024px) {
+    .admin-left-background, .admin-right-background {
+        width: 100vw;
+        height: auto;
+        position: relative;
+        padding: 1rem;
+    }
+
+    .admin-left-header h1 {
+        font-size: 2.5rem;
+    }
+
+    .admin-login-img {
+        width: 80%;
+        max-width: none; /* Remove max-width for better scaling */
+        margin-top: 1rem;
+    }
+
+    .admin-input-head {
+        width: 90%;
+        margin-top: 1rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .admin-left-header h1 {
+        font-size: 2rem;
+    }
+
+    .admin-login-img {
+        width: 90%;
+    }
+
+    .admin-input-head h1 {
+        font-size: 2rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .admin-left-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .admin-login-img {
+        width: 100%;
+    }
+
+    .admin-input-head {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .admin-input-head h1 {
+        font-size: 1.8rem;
+    }
+
+    .admin-form-container input, .admin-form-container button {
+        font-size: 0.9rem;
+    }
+}
