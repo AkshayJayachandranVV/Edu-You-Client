@@ -3,6 +3,7 @@ import './TutorLogin.css';
 import { useForm } from 'react-hook-form';
 import { DevTool } from '@hookform/devtools';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import axios from 'axios';
 import bgImage from '../../../../assets/images/TutorReminiLogin.jpg';
 import loginIcon from '../../../../assets/icons/loginLock.png';
@@ -38,63 +39,77 @@ function TutorLogin() {
 
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
     console.log(credentialResponse);
-
+  
     if (credentialResponse.credential) {
       // Decode the JWT token
       const decoded: DecodedToken = jwtDecode<DecodedToken>(credentialResponse.credential);
       console.log(decoded);
-
+  
       const tutorData = {
         email: decoded.email,
         fullname: decoded.name,
       };
-
+  
       console.log(tutorData, "tutorData");
-
+  
       try {
         // Send the extracted data to your backend
         const result = await axios.post(tutorEndpoints.googleLogin, tutorData);
-
+  
         if (result.data.success) {
           console.log("Successfully logged in using GOOGLE");
           localStorage.setItem('tutorAccessToken', result.data.tutorAccessToken);
+          localStorage.setItem('tutorAccessToken', result.data.tutorAccessToken);
           navigate('/tutor/dashboard');
+        } else if (result.data.message === "User is Blocked") {
+          // Handle blocked tutor
+          alert("You are blocked. Please contact support.");
+          console.log("Tutor is blocked");
         } else {
-          console.log(result);
+          console.log("Google login failed:", result.data.message);
         }
       } catch (error) {
-        console.error(error);
+        console.error("Error during Google login:", error);
       }
     } else {
       console.error('Credential response does not contain a valid JWT token');
     }
   };
+  
 
   const onSubmit = async (data: formValues) => {
     try {
       setLoading(true);
       console.log('form submitted', data);
-
+  
       const result = await axios.post(tutorEndpoints.login, data); // Use the correct endpoint
-
+  
       console.log(result);
-
+  
       if (result.data.success) {
         localStorage.setItem('tutorAccessToken', result.data.tutorAccessToken);
+        Cookies.set('tutorAccessToken', result.data.tutorAccessToken, { expires: 7 });
         setLoading(false);
         navigate('/tutor/dashboard'); // Redirect after successful login
       } else {
+        setLoading(false);
+  
+        // Handle different error messages from the backend
         if (result.data.message === 'Email incorrect') {
-          setLoading(false);
           setError('email', {
             type: 'manual',
             message: 'Incorrect Email',
           });
         } else if (result.data.message === 'Incorrect Password') {
-          setLoading(false);
           setError('password', {
             type: 'manual',
             message: 'Incorrect Password',
+          });
+        } else if (result.data.message === "User is Blocked") {
+          // Handle blocked tutor
+          setError("email", {
+            type: "manual",
+            message: "You are blocked. Please contact support.",
           });
         }
       }
@@ -108,6 +123,7 @@ function TutorLogin() {
       console.log('error while on submit', error);
     }
   };
+  
 
   return (
     <>

@@ -1,0 +1,39 @@
+.footer {
+  background-color: #000000;
+  padding: 40px 0;
+  color: #fff;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.footer-category {
+  text-align: left;
+  margin: 0 20px;
+}
+
+.category-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.subtopics {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.subtopics li {
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.subtopics li:hover {
+  color: #f0a500;
+}

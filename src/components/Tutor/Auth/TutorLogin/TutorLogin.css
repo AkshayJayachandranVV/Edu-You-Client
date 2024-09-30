@@ -38,7 +38,7 @@
 }
 
 .tutorlogin-input-part {
-    height: 80vh;
+    height: 95vh;
     width: 41vw;
     background-color: white;
     position: absolute;
@@ -87,11 +87,12 @@
 .tutorlogin-form-container input {
     width: 100%;
     padding: 0.75rem;
-    margin-bottom: 2rem;
+    margin-bottom: .5rem; /* Reduce this value to make the inputs closer */
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 1rem;
 }
+
 
 .tutorlogin-forgot-link {
     align-self: flex-end;

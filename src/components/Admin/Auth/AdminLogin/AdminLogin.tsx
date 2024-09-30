@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./AdminLogin.css";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
@@ -31,16 +31,12 @@ function AdminLogin() {
   const onSubmit = async (data: formValues) => {
     try {
       setLoading(true);
-      console.log("form submitted", data);
-
-      const result = await axios.post(adminEndpoints.login, data); // Replace with your actual admin login endpoint
-
-      console.log(result);
+      const result = await axios.post(adminEndpoints.login, data);
 
       if (result.data.success) {
         localStorage.setItem('adminAccessToken', result.data.adminAccessToken);
         setLoading(false);
-        navigate("/admin/dashboard"); // Replace with your admin dashboard route
+        navigate("/admin/dashboard");
       } else {
         setLoading(false);
         if (result.data.message === "Email incorrect") {
@@ -55,14 +51,13 @@ function AdminLogin() {
           });
         }
       }
-      console.log("got the result ", result);
     } catch (error) {
+      console.log(error)
       setLoading(false);
       setError("email", {
         type: "manual",
         message: "Network error, please try again later",
       });
-      console.log("error while on submit", error);
     }
   };
 
@@ -77,13 +72,13 @@ function AdminLogin() {
               <h1>Technology Alone <br /> Is Not Enough</h1>
             </div>
             <div className="admin-left-image">
-              <img className="admin-login-img" src={AdminImage} alt="Technology" />
+              <img className="admin-login-image" src={AdminImage} alt="Technology" />
             </div>
           </div>
           <div className="admin-right-background">
-            <div className="admin-input-head">
+            <div className="admin-input-container">
               <img className="admin-login-icon" src={adminIcon} alt="Lock Icon" />
-              <h1>Admin Login</h1>
+              <h1 className="admin-login-heading">Admin Login</h1>
               <p>Nice to see you! Please login with your account</p>
             </div>
             <form
@@ -94,7 +89,6 @@ function AdminLogin() {
               <input
                 type="email"
                 placeholder="Email"
-                className={errors.email ? "login-input-with-error" : ""}
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
@@ -108,7 +102,6 @@ function AdminLogin() {
               <input
                 type="password"
                 placeholder="Password"
-                className={errors.password ? "login-input-with-error" : ""}
                 {...register("password", {
                   required: "Password is required",
                   minLength: {

@@ -141,5 +141,20 @@
   
 
 
-
+  .otp-input-boxes {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    gap: 1rem; /* Add some space between the boxes */
+  }
+  
+  .otp-box {
+    width: 3rem;
+    height: 3rem;
+    text-align: center;
+    font-size: 1.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
 

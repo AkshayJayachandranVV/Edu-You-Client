@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 
 const drawerWidth = 250;
 
-const StyledDrawer = styled(Drawer)(({ theme }) => ({
+const StyledDrawer = styled(Drawer)(() => ({
   '& .MuiDrawer-paper': {
     width: drawerWidth,
     backgroundColor: '#1b2532',
@@ -22,7 +22,7 @@ const SidebarHeader = styled('div')({
   backgroundColor: '#2d3a4e',
 });
 
-const SidebarItemButton = styled(ListItemButton)(({ theme }) => ({
+const SidebarItemButton = styled(ListItemButton)(() => ({
   paddingLeft: '24px',
   paddingRight: '24px',
   borderRadius: '8px',

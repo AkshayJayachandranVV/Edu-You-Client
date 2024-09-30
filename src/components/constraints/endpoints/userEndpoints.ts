@@ -11,5 +11,6 @@ export const userEndpoints = {
     resetPassword: `${API_GATEWAY_BASE_URL}/resetPassword`,
     googleLogin: `${API_GATEWAY_BASE_URL}/google_login`,
     forgotOtpVerify: `${API_GATEWAY_BASE_URL}/forgotOtpVerify`,
+    profile: `${API_GATEWAY_BASE_URL}/profile`,
 }
 

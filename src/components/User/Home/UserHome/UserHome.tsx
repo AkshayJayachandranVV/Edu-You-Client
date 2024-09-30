@@ -1,25 +1,54 @@
-
 import "./UserHome.css";
+import Navbar from '../../Home/UserHome/Navbar/Navbar'; 
+import Footer from '../../Home/UserHome/Footer/Footer'; 
+import iconimage from '../../../../assets/images/User/UserHome/Account.png'
+import React, { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import { useDispatch } from 'react-redux'
+import { logout } from '../../../../redux/userSlice'
+import { useNavigate } from "react-router-dom";
+import { courseEndpoints } from '../../../constraints/endpoints/courseEndpoints'
+import axios from "axios";
+import { ContactPageSharp } from "@mui/icons-material";
 
 export default function UserHome() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [courses, setCourses] = useState([]); // state for storing courses
 
+  useEffect(() => {
+    fetchData();
+  }, []);
 
+  const fetchData = async () => {
+    try {
+      const result = await axios.get(courseEndpoints.userCourse);
+      setCourses(result.data.courses); // store fetched courses in state
+      console.log(result.data.courses)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const logOut = () => {
+    dispatch(logout());
+    navigate("/login");
+    localStorage.setItem("userAccessToken", "");
+    Cookies.remove('userAccessToken');
+  };
+
+  const handleProfileClick = () => {
+    navigate('/profile');  // Navigate to the /profile route
+  };
 
   return (
     <div className="user-home">
-      <nav className="navbar">
-        <input type="text" placeholder="Search..." className="search-bar" />
-        <div className="navbar-content">
-          <div className="nav-links">
-            <span className="nav-item home">Home</span>
-            <span className="nav-item courses">Courses</span>
-          </div>
-          <div className="nav-icons">
-            <div className="nav-icon people"></div>
-            <div className="nav-icon account"></div>
-          </div>
-        </div>
-      </nav>
+      <Navbar 
+        iconimage={iconimage} 
+        logOut={logOut} 
+        handleProfileClick={handleProfileClick} 
+      />
+
       <div className="container-16">
         <div className="container-18">
           <div className="discoverthe-professions-of-the-future">
@@ -42,35 +71,27 @@ export default function UserHome() {
         </div>
         <div className="user-home-1"></div>
       </div>
+
+      {/* Top Courses Section */}
       <div className="top-courses">
         <div className="featured-courses">Featured Courses</div>
         <div className="cards">
-          <div className="card">
-            <img src="" className="card-image" />
-            <h3 className="card-title">title</h3>
-            <p className="card-description">lorepsjhsjsjnaj hy how are you </p>
-            <p className="card-amount">Rs. 235</p>
-          </div>
-          <div className="card">
-            <img src="" className="card-image" />
-            <h3 className="card-title">title</h3>
-            <p className="card-description">lorepsjhsjsjnaj hy how are you </p>
-            <p className="card-amount">Rs. 235</p>
-          </div>
-          <div className="card">
-            <img src="" className="card-image" />
-            <h3 className="card-title">title</h3>
-            <p className="card-description">lorepsjhsjsjnaj hy how are you </p>
-            <p className="card-amount">Rs. 235</p>
-          </div>
-          <div className="card">
-            <img src="" className="card-image" />
-            <h3 className="card-title">title</h3>
-            <p className="card-description">lorepsjhsjsjnaj hy how are you </p>
-            <p className="card-amount">Rs. 235</p>
-          </div>
+          {/* Map over courses and display them in cards */}
+          {courses.length > 0 ? (
+            courses.map((course, index) => (
+              <div key={index} className="card">
+                <img src={course.thumbnail} alt={course.title} className="card-image" />
+                <h3 className="card-title">{course.title}</h3>
+                <p className="card-description">{course.description}</p>
+                <p className="card-amount">Rs. {course.price}</p>
+              </div>
+            ))
+          ) : (
+            <p>No courses available at the moment.</p>
+          )}
         </div>
       </div>
+
       <div className="container-12">
         <div className="rectangle-251"></div>
         <div className="container-22">
@@ -99,44 +120,7 @@ export default function UserHome() {
           </div>
         </div>
       </div>
-      <div className="footer">
-      <div className="footer-links">
-  <div className="footer-category">
-    <span className="category-title">COMPANY</span>
-    <ul className="subtopics">
-      <li>About</li>
-      <li>Careers</li>
-      <li>Press</li>
-    </ul>
-  </div>
-  <div className="footer-category">
-    <span className="category-title">HELP CENTER</span>
-    <ul className="subtopics">
-      <li>Support</li>
-      <li>FAQs</li>
-      <li>Contact</li>
-    </ul>
-  </div>
-  <div className="footer-category">
-    <span className="category-title">RESOURCES</span>
-    <ul className="subtopics">
-      <li>Blog</li>
-      <li>Guides</li>
-      <li>Webinars</li>
-    </ul>
-  </div>
-  <div className="footer-category">
-    <span className="category-title">PRODUCTS</span>
-    <ul className="subtopics">
-      <li>Features</li>
-      <li>Pricing</li>
-      <li>Reviews</li>
-    </ul>
-  </div>
-</div>
-
-
-      </div>
+      <Footer />
     </div>
   );
 }

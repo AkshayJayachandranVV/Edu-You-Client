@@ -13,7 +13,7 @@ const AdminDashboard = () => {
         
         if (!token) {
           // If token is not present, redirect to login page
-          navigate('/admin/login');
+          navigate('/admin');
         }
       }, [navigate]); // Dependency array includes navigate
 

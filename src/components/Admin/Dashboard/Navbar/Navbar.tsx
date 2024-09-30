@@ -17,8 +17,7 @@ import { useNavigate } from 'react-router-dom';
 export default function PrimarySearchAppBar() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-    React.useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -31,12 +30,10 @@ export default function PrimarySearchAppBar() {
     setMobileMoreAnchorEl(null);
   };
 
-
   const handleClose = () => {
-    localStorage.removeItem("adminAccessToken")
-    navigate("/admin/login")
+    localStorage.removeItem('adminAccessToken');
+    navigate('/admin/login');
   };
-
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -126,12 +123,12 @@ export default function PrimarySearchAppBar() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
         position="fixed"
-        sx={{ 
+        sx={{
           backgroundColor: '#111111', // Header background color
           top: -10,
         }}
       >
-        <Toolbar sx={{ minHeight: 80 }}>
+        <Toolbar sx={{ minHeight: 60 }}> {/* Adjust the height here */}
           <IconButton
             size="large"
             edge="start"
@@ -192,6 +189,11 @@ export default function PrimarySearchAppBar() {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+
+      {/* Target div with matching height */}
+      <Box className="MuiBox-root css-i9gxme" sx={{ height: '60px' }}>
+        {/* Your content inside this div */}
+      </Box>
     </Box>
   );
 }

@@ -3,82 +3,12 @@
     font-family: Arial, sans-serif;
 }
 
+
 .navbar {
-    display: flex;
-    flex-direction: column; /* Stack items vertically */
-    align-items: center;
-    background-color: #000000; /* Black Navbar */
-    width: 100%;
-    margin: 0 auto; /* Center align the navbar */
-    box-sizing: border-box;
-    position: fixed; /* Fixes the navbar to the top */
-    top: 0;
-    left: 0;
-    z-index: 1000; /* Ensure the navbar stays above other content */
-    padding: 2px 20px; /* Decrease padding to reduce height */
+  width: 80%; /* Adjust the percentage or use pixels */
+  margin: 0 auto; /* Center the navbar */
 }
 
-.search-bar {
-    padding: 8px; /* Reduce padding */
-    border: none;
-    border-radius: 4px;
-    width: 350px; /* Adjust width if needed */
-    font-size: 14px; /* Reduce font size to fit */
-    outline: none;
-    position: relative; /* Position relative within the navbar */
-    top: 20px; /* Adjust positioning */
-    z-index: 1; /* Ensure the search bar stays above other content */
-}
-
-.navbar-content {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end; /* Align items to the right */
-    width: 100%;
-    margin-top: 5px; /* Adjust margin-top to fit with reduced height */
-}
-
-.nav-icons {
-    display: flex;
-    align-items: center;
-    gap: 45px; /* Increase gap between icons by 5px */
-    margin-right: 15px; /* Ensure space from right edge, if needed */
-}
-
-.nav-icon {
-    width: 30px; /* Adjust icon size */
-    height: 30px; /* Adjust icon size */
-    background-size: contain;
-    background-repeat: no-repeat;
-    cursor: pointer;
-}
-
-.nav-icon.people {
-    background-image: url('../../../../assets/images/User/UserHome/people.png');
-}
-
-.nav-icon.account {
-    background-image: url('../../../../assets/images/User/UserHome/Account.png');
-}
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 75px; /* Increase gap between links by 5px */
-    margin-right: 15px; /* Add margin to space from icons */
-}
-
-.nav-item {
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    text-decoration: none;
-    font-size: 18px; /* Adjust font size */
-}
-
-.nav-item:hover {
-    text-decoration: underline;
-}
 
 .user-home .container-17 {
     display: flex;
@@ -98,7 +28,7 @@
 }
 
 .user-home .discoverthe-professions-of-the-future {
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     text-align: left; /* Aligns text to the left */
     display: inline-block;
     overflow-wrap: break-word;
@@ -137,16 +67,18 @@
 
 .user-home .get-started {
     display: inline-block;
-    font-weight: 700;
+    font-weight: 200;
     font-size: 25px;
     color: #FFFFFF;
-    background-color: #16ECCA; /* Button background color */
-    padding: 10px 20px; /* Adjust padding to your liking */
-    border-radius: 5px; /* Rounded corners */
-    text-align: center; /* Center text */
-    cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
-    border: none; /* Remove default border */
-    transition: background-color 0.3s ease; /* Smooth transition on hover */
+    background-color: #16ECCA;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+    width: 200px; /* Set a fixed width */
+    margin-left: 110px;
 }
 
 .user-home .get-started:hover {
@@ -171,9 +103,9 @@
     background: url('../../../../assets/images//User//UserHome/userHome.png') 50% / cover no-repeat;
     position: absolute;
     top: 60px;
-    right: 95px;
+    right: 25px;
     bottom: 60px;
-    width: 675px;
+    width: 575px;
     height: 572px;
 }
 
@@ -182,7 +114,7 @@
     position: relative;
     display: flex;
     padding: 5px 150px 0 0; /* Reduced top padding */
-    width: 1520px;
+    width: 1140px;
     height: auto; /* Let the height adjust automatically based on content */
     box-sizing: border-box;
 }
@@ -331,93 +263,7 @@
   /* UserHome.css */
 
 /* Container for the footer */
-.footer {
-    background-color: #000000; /* Black background */
-    color: #fff; /* White text color */
-    padding: 20px; /* Padding around content */
-    position: relative; /* Relative position for positioning children */
-    width: 100%; /* Full width */
-    display: flex; /* Flex layout */
-    justify-content: center; /* Center items horizontally */
-    align-items: center; /* Center items vertically */
-    flex-direction: column; /* Stack items vertically */
-}
-  
-  /* Footer links */
-  .footer-links {
-    display: flex; /* Flex layout for links */
-    justify-content: center; /* Center items horizontally */
-    gap: 40px; /* Space between links */
-}
-  .footer-icons {
-    display: flex;
-    gap: 10px; /* Space between icons */
-    justify-content: flex-end; /* Align to the right */
-    padding: 10px;
-    background-color: #000; /* Black background */
-  }
-  
-  .footer-icons div {
-    width: 24px; /* Adjust size as needed */
-    height: 24px; /* Adjust size as needed */
-    background-size: cover; /* Ensure the image covers the div */
-    background-repeat: no-repeat;
-  }
-  
-  .footer-icons .twitter {
-    background-image: url('../../../../assets/images/User/UserHome/twitter.png'); /* Adjust path if necessary */
-  }
-  
-  .footer-icons .facebook {
-    background-image: url('../../../../assets/images/User/UserHome/Facebook1.png'); /* Adjust path if necessary */
-  }
-  
-  .footer-icons .email {
-    background-image: url('../../../../assets/images/User/UserHome/Email.png'); /* Adjust path if necessary */
-  }
-  
-  .footer-icons .linkedin {
-    background-image: url('../../../../assets/images/User/UserHome/Linkedin.png'); /* Adjust path if necessary */
-  }
 
-
-  .footer-links {
-    display: flex;
-    justify-content: center; /* Center the footer links horizontally */
-    align-items: center; /* Align items to the top */
-    background-color: #000000; /* Background color of the footer */
-    color: white; /* Text color */
-    padding: 40px;
-    gap: 150px; /* Increase space between categories */
-  }
-  
-  .footer-category {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center-align items inside each category */
-}
-  
-  .category-title {
-    font-weight: bold;
-    margin-bottom: 15px; /* Space between title and subtopics */
-  }
-  
-  .subtopics {
-    list-style: none; /* Remove bullet points */
-    padding: 0; /* Remove padding */
-    margin: 0; /* Remove margin */
-    text-align: center; /* Center-align text inside the list */
-  }
-  
-  .subtopics li {
-    margin-bottom: 10px; /* Space between subtopics */
-    font-size: 14px; /* Font size for subtopics */
-  }
-  
-  .subtopics li:hover {
-    text-decoration: underline; /* Underline on hover */
-  }
-  
   /* Responsive Design (Optional) */
   @media (max-width: 768px) {
     .footer-links {

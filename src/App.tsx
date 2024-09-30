@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AdminRoutes from './routes/AdminRoutes'
-import UserRoutes from './routes/UserRoutes'
-import TutorRoutes from './routes/TutorRoutes'
+import AdminRoutes from './routes/admin/AdminRoutes'
+import UserRoutes from './routes/user/UserRoutes'
+import TutorRoutes from './routes/tutor/TutorRoutes'
+
 
 
 import './index.css';
@@ -20,3 +21,4 @@ function App() {
 }
 
 export default App;
+   

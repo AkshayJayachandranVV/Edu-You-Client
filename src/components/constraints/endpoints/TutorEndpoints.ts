@@ -9,6 +9,7 @@ export const tutorEndpoints = {
     forgotPasword : `${API_GATEWAY_BASE_URL}/forgotPassword`,
     resetPassword: `${API_GATEWAY_BASE_URL}/resetPassword`,
     googleLogin: `${API_GATEWAY_BASE_URL}/google_login`,
-    forgotOtpVerify: `${API_GATEWAY_BASE_URL}/forgotOtpVerify`
+    forgotOtpVerify: `${API_GATEWAY_BASE_URL}/forgotOtpVerify`,
+    getPresignedUrlForUpload: `${API_GATEWAY_BASE_URL}/getPresignedUrlForUpload`,
 }
 
