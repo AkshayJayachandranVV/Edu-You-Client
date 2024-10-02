@@ -1,22 +1,21 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSections, saveLessons } from "../../../src/redux/courseSlice";
-import Button from '@mui/joy/Button';
-import Modal from '@mui/joy/Modal';
-import Typography from '@mui/joy/Typography';
-import LinearProgress from '@mui/joy/LinearProgress';
-import { useCountUp } from 'use-count-up';
+import Button from "@mui/joy/Button";
+import Modal from "@mui/joy/Modal";
+import Typography from "@mui/joy/Typography";
+import LinearProgress from "@mui/joy/LinearProgress";
+import { useCountUp } from "use-count-up";
 import * as Yup from "yup";
 import axios from "axios";
 import { tutorEndpoints } from "../../components/constraints/endpoints/TutorEndpoints";
-import { toast } from 'sonner';
-
-
+import { toast } from "sonner";
 
 interface Lesson {
   title: string;
   video: string | null; // Adjust to match Redux type (string for URL, not File)
+  displayVideo?: string | null;
   description: string;
 }
 
@@ -24,8 +23,6 @@ interface Section {
   title: string;
   lessons: Lesson[];
 }
-
-
 
 const validationSchema = Yup.object().shape({
   sections: Yup.array()
@@ -54,8 +51,9 @@ interface AddLessonProps {
 const AddLesson: React.FC<AddLessonProps> = ({ onNext, onBack }) => {
   const dispatch = useDispatch();
   const [open, setOpen] = React.useState<boolean>(false);
-  const [count,setCount] = React.useState<boolean>(false);
-  const [duration,setDuration] = React.useState<number>(30);
+  const [count, setCount] = React.useState<boolean>(false);
+  const [duration, setDuration] = React.useState<number>(30);
+  const [previewVideos, setPreviewVideos] = useState<string | null>(null);
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [previewUrls, setPreviewUrls] = useState<{ [key: string]: string }>({});
   const [selectedFiles, setSelectedFiles] = useState<{
@@ -99,27 +97,27 @@ const AddLesson: React.FC<AddLessonProps> = ({ onNext, onBack }) => {
     sectionTitle: string,
     lessonDescription: string
   ): Promise<void> => {
-    setOpen(true)
-    setCount(true)
+    setOpen(true);
+    setCount(true);
+
+    // Validate lesson details
     if (
       !sectionTitle.trim() ||
       !lessonTitle.trim() ||
       !lessonDescription.trim()
     ) {
-      setOpen(false)
-      setCount(false)
-      toast.error('Please fill in all lesson details before uploading.');
-      // alert("Please fill in all lesson details before uploading.");
+      setOpen(false);
+      setCount(false);
+      toast.error("Please fill in all lesson details before uploading.");
       return;
     }
 
     const fileKey = `${sectionIndex}-${lessonIndex}`;
     const file = selectedFiles[fileKey];
     if (!file) {
-      setOpen(false)
-      setCount(false)
-      toast.error('No video selected to upload.');
-      // alert("No video selected to upload.");
+      setOpen(false);
+      setCount(false);
+      toast.error("No video selected to upload.");
       return;
     }
 
@@ -135,61 +133,65 @@ const AddLesson: React.FC<AddLessonProps> = ({ onNext, onBack }) => {
         }
       );
 
-      const { url, key } = response.data;
+      const { uploadUrl, viewUrl, key } = response.data;
 
-      const result = await axios.put(url, file, {
+      // Upload the video to S3 using the presigned URL
+      const result = await axios.put(uploadUrl, file, {
         headers: {
           "Content-Type": file.type,
         },
       });
 
       if (result.status === 200) {
-        const publicUrl = `https://edu-you-uploads.s3.amazonaws.com/${key}`;
-        // alert(`Upload successful! Video stored at: ${publicUrl}`);
-
+        // Dispatch Redux action to save the lesson details with the S3 key
         dispatch(
           saveLessons({
             sectionIndex,
             lessonIndex,
-            videoUrl: publicUrl, // Store the S3 URL
+            videoUrl: key, // Store the S3 key
+            displayVideo: viewUrl,
             lessonTitle,
             sectionTitle,
             lessonDescription,
           })
         );
+        toast.success("Upload successful! Video stored successfully.");
       } else {
-        setOpen(false)
-        setCount(false)
-        toast.error('Upload failed.');
-        alert("Upload failed.");
+        setOpen(false);
+        setCount(false);
+        toast.error("Upload failed.");
       }
-      
-      setDuration(5)
     } catch (error) {
       console.error("Error uploading video:", error);
-      alert("Error uploading video.");
+      toast.error("Error uploading video.");
+    } finally {
+      setOpen(false); // Ensure the loader is closed regardless of success or error
+      setCount(false);
     }
   };
-
 
   const { value } = useCountUp({
     isCounting: count,
     duration: duration,
-    easing: 'linear',
+    easing: "linear",
     start: 0,
     end: 100,
     onComplete: () => {
       setOpen(false); // Set open to false when counting completes
-      setCount(false)
+      setCount(false);
     },
   });
-  
 
   const handleSubmit = async (values: { sections: Section[] }) => {
     onNext(values.sections);
   };
 
   const courseData = useSelector(selectSections); // Stored data from Redux
+
+  console.log(courseData, "---------------------------------");
+  // console.log(courseData.sections,"---------------------------------")
+
+ 
 
   return (
     <div className="p-8 bg-gradient-to-br from-black to-gray-900 min-h-screen text-white">
@@ -285,13 +287,15 @@ const AddLesson: React.FC<AddLessonProps> = ({ onNext, onBack }) => {
                                 <div className="flex flex-col mb-4">
                                   <label
                                     className="text-gray-300 font-medium mb-2"
-                                    htmlFor={`sections.${sectionIndex}.lessons.${lessonIndex}.video`}
+                                    htmlFor={`sections.${sectionIndex}.lessons.${lessonIndex}.displayVideo`}
                                   >
                                     Video Upload
                                   </label>
+
+                                  {/* File input for video upload */}
                                   <input
                                     type="file"
-                                    name={`sections.${sectionIndex}.lessons.${lessonIndex}.video`}
+                                    name={`sections.${sectionIndex}.lessons.${lessonIndex}.displayVideo`}
                                     accept="video/*"
                                     onChange={handleFileChange(
                                       sectionIndex,
@@ -305,11 +309,15 @@ const AddLesson: React.FC<AddLessonProps> = ({ onNext, onBack }) => {
                                     }
                                     className="text-white"
                                   />
+
+                                  {/* Show error message if any */}
                                   <ErrorMessage
-                                    name={`sections.${sectionIndex}.lessons.${lessonIndex}.video`}
+                                    name={`sections.${sectionIndex}.lessons.${lessonIndex}.v`}
                                     component="div"
                                     className="text-red-500 mt-1"
                                   />
+
+                                  {/* Display the video preview if a file is selected */}
                                   {previewUrls[
                                     `${sectionIndex}-${lessonIndex}`
                                   ] ? (
@@ -322,14 +330,16 @@ const AddLesson: React.FC<AddLessonProps> = ({ onNext, onBack }) => {
                                       controls
                                       className="mt-2 w-full h-64 bg-black rounded-lg"
                                     />
-                                  ) : typeof lesson.video === "string" ? (
+                                  ) : /* Display video from Redux if the video has been uploaded previously */
+                                  lesson.displayVideo ? (
                                     <video
-                                      src={lesson.video}
+                                      src={lesson.displayVideo}
                                       controls
                                       className="mt-2 w-full h-64 bg-black rounded-lg"
                                     />
                                   ) : null}
                                 </div>
+
                                 <div className="flex justify-end space-x-4">
                                   <button
                                     type="button"
@@ -353,47 +363,61 @@ const AddLesson: React.FC<AddLessonProps> = ({ onNext, onBack }) => {
                                   >
                                     Upload Video
                                   </button> */}
-                                   <React.Fragment>
-      <Button variant="outlined" color="neutral"     onClick={() =>
-                                      handleS3Upload(
-                                        sectionIndex,
-                                        lessonIndex,
-                                        lesson.title,
-                                        section.title,
-                                        lesson.description
-                                      )
-                                    }>
-      Upload Video
-      </Button>
-      <Modal
-        aria-labelledby="modal-title"
-        aria-describedby="modal-desc"
-        open={open}
-        onClose={() => setOpen(false)}
-        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',width:'50%',marginLeft:'35%' }}
-      >
-        <LinearProgress
-      determinate
-      variant="outlined"
-      color="neutral"
-      size="sm"
-      thickness={24}
-      value={Number(value!)}
-      sx={{
-        '--LinearProgress-radius': '20px',
-        '--LinearProgress-thickness': '24px',
-      }}
-    >
-      <Typography
-        level="body-xs"
-        textColor="common.white"
-        sx={{ fontWeight: 'xl', mixBlendMode: 'difference' }}
-      >
-        LOADING… {`${Math.round(Number(value!))}%`}
-      </Typography>
-    </LinearProgress>
-      </Modal>
-    </React.Fragment>
+                                  <React.Fragment>
+                                    <Button
+                                      variant="outlined"
+                                      color="neutral"
+                                      onClick={() =>
+                                        handleS3Upload(
+                                          sectionIndex,
+                                          lessonIndex,
+                                          lesson.title,
+                                          section.title,
+                                          lesson.description
+                                        )
+                                      }
+                                    >
+                                      Upload Video
+                                    </Button>
+                                    <Modal
+                                      aria-labelledby="modal-title"
+                                      aria-describedby="modal-desc"
+                                      open={open}
+                                      onClose={() => setOpen(false)}
+                                      sx={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        width: "50%",
+                                        marginLeft: "35%",
+                                      }}
+                                    >
+                                      <LinearProgress
+                                        determinate
+                                        variant="outlined"
+                                        color="neutral"
+                                        size="sm"
+                                        thickness={24}
+                                        value={Number(value!)}
+                                        sx={{
+                                          "--LinearProgress-radius": "20px",
+                                          "--LinearProgress-thickness": "24px",
+                                        }}
+                                      >
+                                        <Typography
+                                          level="body-xs"
+                                          textColor="common.white"
+                                          sx={{
+                                            fontWeight: "xl",
+                                            mixBlendMode: "difference",
+                                          }}
+                                        >
+                                          LOADING…{" "}
+                                          {`${Math.round(Number(value!))}%`}
+                                        </Typography>
+                                      </LinearProgress>
+                                    </Modal>
+                                  </React.Fragment>
                                 </div>
                               </div>
                             ))}

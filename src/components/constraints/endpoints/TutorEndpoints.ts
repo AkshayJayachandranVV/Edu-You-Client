@@ -11,5 +11,6 @@ export const tutorEndpoints = {
     googleLogin: `${API_GATEWAY_BASE_URL}/google_login`,
     forgotOtpVerify: `${API_GATEWAY_BASE_URL}/forgotOtpVerify`,
     getPresignedUrlForUpload: `${API_GATEWAY_BASE_URL}/getPresignedUrlForUpload`,
+    getSignedUrl:  `${API_GATEWAY_BASE_URL}/getSignedUrl`,
 }
 

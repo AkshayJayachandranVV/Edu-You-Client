@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { saveAddCourse } from "../../../src/redux/courseSlice";
 import axios from "axios";
 import { tutorEndpoints } from "../../components/constraints/endpoints/TutorEndpoints";
+import { RootState } from "../../redux/store";
 
 interface CourseFormData {
   courseName: string;
@@ -22,7 +23,7 @@ interface AddCourseProps {
 
 const AddCourse: React.FC<AddCourseProps> = ({ onNext }) => {
   const dispatch = useDispatch();
-  const courseData = useSelector((state: any) => state.course.courseDetails);
+  const courseData = useSelector((state: RootState) => state.course.courseDetails);
   const { control, handleSubmit, setValue, formState: { errors } } = useForm<CourseFormData>();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -39,7 +40,8 @@ const AddCourse: React.FC<AddCourseProps> = ({ onNext }) => {
       setValue("courseCategory", courseData.courseCategory || "");
       setValue("courseLevel", courseData.courseLevel || "");
       setValue("demoURL", courseData.demoURL || "");
-      setPreviewImage(courseData.thumbnail || null);
+      setPreviewImage(courseData.thumbnailUrl || null);
+      // console.log(courseData.thumbnailUrl,"iiiiiiiiiiiiiii000000000000")
     }
   }, [courseData, setValue]);
 
@@ -66,89 +68,93 @@ const AddCourse: React.FC<AddCourseProps> = ({ onNext }) => {
     return `${Math.random().toString(36).substring(2, 15)}.${extension}`;
   };
 
-const uploadThumbnail = async (): Promise<string | null> => {
-  console.log("Entered to uploadThumbnail");
-
-  // Check if there's a previously uploaded image (previewImage)
-  if (!uploadedFile && !previewImage) {
-    alert("Please select a file first!");
-    return null;
-  }
-
-  // If the image was already uploaded (previewImage exists), skip the upload
-  if (previewImage && !uploadedFile) {
-    return previewImage; // Use the existing image URL
-  }
-
-  try {
-    const fileName = generateFileName(uploadedFile!.name); // Ensure uploadedFile is defined
-    const response = await axios.get(tutorEndpoints.getPresignedUrlForUpload, {
-      params: {
-        filename: fileName,
-        fileType: uploadedFile!.type.startsWith('image') ? 'image' : 'video',
-      },
-    });
-
-    console.log(response, "API Gateway result");
-
-    const { url, key } = response.data; // Get the presigned URL and the S3 key
-
-    console.log(url, key, "S3 presigned URL and key");
-
-    // Upload the file to S3 using the presigned URL
-    const result = await axios.put(url, uploadedFile, {
-      headers: {
-        "Content-Type": uploadedFile!.type, // Ensure correct content type
-      },
-    });
-
-    console.log("Upload result:", result);
-
-    if (result.status === 200) {
-      setUploadStatus(`Upload successful! File stored at key: ${key}`);
-
-      // Construct and return the public URL
-      const publicUrl = `https://edu-you-uploads.s3.amazonaws.com/${key}`;
-      return publicUrl;
-    } else {
-      setUploadStatus("Upload failed.");
+  const uploadThumbnail = async (): Promise<{ url: string; key: string } | null> => {
+    console.log("Entered uploadThumbnail");
+  
+    // Check if there's a previously uploaded image (previewImage)
+    if (!uploadedFile && !previewImage) {
+      alert("Please select a file first!");
       return null;
     }
-  } catch (error) {
-    console.error("Error uploading file:", error);
-    setUploadStatus("Error uploading file.");
-    return null;
-  }
-};
-
-
-  const onSubmit = async (data: CourseFormData) => {
-    const { courseName, coursePrice, discountPrice, courseDescription, courseCategory, courseLevel, demoURL } = data;
-
-    // Upload thumbnail to S3
-    const s3Key = await uploadThumbnail();
-
-    if (s3Key || previewImage) {
-      // Dispatch Redux action with the form data and the S3 thumbnail key
-      dispatch(
-        saveAddCourse({
-          courseName,
-          courseDescription,
-          coursePrice,
-          courseDiscountPrice: discountPrice,
-          courseCategory,
-          courseLevel,
-          demoURL,
-          thumbnail: s3Key || previewImage, // Save the S3 key for the uploaded thumbnail or use existing
-        })
-      );
-
-      // Move to the next step in the course creation process
-      onNext();
-    } else {
-      console.error("Failed to upload thumbnail. No S3 key returned.");
+  
+    // If the image was already uploaded (previewImage exists), skip the upload
+    if (previewImage && !uploadedFile) {
+      return { url: previewImage, key: '' }; // Return the existing image URL and empty key since it's already uploaded
+    }
+  
+    try {
+      const fileName = generateFileName(uploadedFile!.name); // Ensure uploadedFile is defined
+  
+      const response = await axios.get(tutorEndpoints.getPresignedUrlForUpload, {
+        params: {
+          filename: fileName,
+          fileType: uploadedFile!.type.startsWith('image') ? 'image' : 'video',
+        },
+      });
+  
+      console.log(response.data, "API Gateway result");
+  
+      const { uploadUrl, viewUrl, key } = response.data; // Get the presigned URL and the S3 key
+  
+      console.log(viewUrl, key, "S3 presigned URL and key");
+      setPreviewImage(viewUrl);
+  
+      // Upload the file to S3 using the presigned URL
+      const result = await axios.put(uploadUrl, uploadedFile, {
+        headers: {
+          "Content-Type": uploadedFile!.type, // Ensure correct content type
+        },
+      });
+  
+      console.log("Upload result:", result);
+  
+      if (result.status === 200) {
+        setUploadStatus(`Upload successful! File stored at key: ${key}`);
+  
+        // Return the url and key
+        return { url:viewUrl, key };
+      } else {
+        setUploadStatus("Upload failed.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      setUploadStatus("Error uploading file.");
+      return null;
     }
   };
+  
+  
+  const onSubmit = async (data: CourseFormData) => {
+    const { courseName, coursePrice, discountPrice, courseDescription, courseCategory, courseLevel, demoURL } = data;
+  
+    // Upload thumbnail to S3
+    const uploadResult = await uploadThumbnail();
+  
+    // Ensure that the thumbnail is a string (if uploadResult is null, fallback to an empty string)
+    const thumbnail = uploadResult?.key || ''; // Ensure it's always a string
+    // const thumbnailUrl = uploadResult?.url || ''; 
+  
+    // Dispatch Redux action with the form data and the S3 thumbnail key
+    dispatch(
+      saveAddCourse({
+        courseName,
+        courseDescription,
+        coursePrice,
+        courseDiscountPrice: discountPrice,
+        courseCategory,
+        courseLevel,
+        demoURL,
+        thumbnail, // This will always be a string now
+        thumbnailUrl:uploadResult?.url || null, // Ensure it's always a string
+      })
+    );
+  
+    // Move to the next step in the course creation process
+    onNext();
+  };
+  
+  
 
   return (
     

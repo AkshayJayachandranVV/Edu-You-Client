@@ -5,6 +5,7 @@ import { createSelector } from 'reselect';
 export interface Lesson {
   title: string;
   video: string | null; // Store only the file name
+  displayVideo: string | null; // New field for displayVideo
   description: string;
 }
 
@@ -25,6 +26,7 @@ interface CourseState {
     courseLevel: string;
     demoURL: string;
     thumbnail: string;
+    thumbnailUrl: string | null;
   };
   addCourse2: {
     prerequisites: string[];
@@ -40,6 +42,7 @@ interface CourseState {
     courseLevel: string;
     demoURL: string;
     thumbnail: string;
+    thumbnailUrl: string | null;
     prerequisites: string[];
     benefits: string[];
     sections: Section[];
@@ -57,6 +60,7 @@ const initialState: CourseState = {
     courseLevel: "",
     demoURL: "",
     thumbnail: "",
+    thumbnailUrl: ""
   },
   addCourse2: {
     prerequisites: [],
@@ -72,6 +76,7 @@ const initialState: CourseState = {
     courseLevel: "",
     demoURL: "",
     thumbnail: "",
+    thumbnailUrl: "",
     prerequisites: [],
     benefits: [],
     sections: [],
@@ -101,14 +106,15 @@ const courseSlice = createSlice({
       state,
       action: PayloadAction<{
         sectionIndex: number;
-        lessonIndex: number; // Explicitly specify the type as number
+        lessonIndex: number;
         videoUrl: string;
         lessonTitle: string;
         sectionTitle: string;
         lessonDescription: string;
+        displayVideo: string; // Include displayVideo
       }>
     ) {
-      const { sectionIndex, lessonIndex, videoUrl, lessonTitle, sectionTitle, lessonDescription } = action.payload;
+      const { sectionIndex, lessonIndex, videoUrl, displayVideo, lessonTitle, sectionTitle, lessonDescription } = action.payload;
 
       // Ensure the sections array exists
       if (!state.sections) {
@@ -138,14 +144,16 @@ const courseSlice = createSlice({
         state.sections[sectionIndex].lessons[lessonIndex] = {
           title: lessonTitle,
           video: null,
+          displayVideo: null,
           description: lessonDescription,
         };
       }
 
-      // Update the lesson with the new video URL, title, and description
+      // Update the lesson with the new video URL, title, description, and displayVideo
       state.sections[sectionIndex].lessons[lessonIndex] = {
         ...state.sections[sectionIndex].lessons[lessonIndex],
         video: videoUrl,
+        displayVideo: displayVideo, // Update displayVideo
         title: lessonTitle || state.sections[sectionIndex].lessons[lessonIndex].title,
         description: lessonDescription || state.sections[sectionIndex].lessons[lessonIndex].description,
       };

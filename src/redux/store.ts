@@ -15,7 +15,7 @@ const persistConfig = {
   // Combine your reducers
   const rootReducer = combineReducers({
     user: userReducer,
-    course:courseReducer,
+    course:courseReducer
     // Add other reducers here if you have more slices
   });
 

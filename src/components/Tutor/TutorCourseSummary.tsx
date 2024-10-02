@@ -8,6 +8,7 @@ import axios from "axios";
 interface Lesson {
   title: string;
   video: string | null; // URL for the video preview
+  displayVideo:string | null; 
   description: string;
 }
 
@@ -20,7 +21,7 @@ const TutorCourseSummary: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const dispatch = useDispatch(); // Use useDispatch to access dispatch
   const courseData = useSelector((state: RootState) => state.course);
 
-  console.log(courseData, "0---------------------------------------");
+  console.log(courseData, "0--=0009-------------------------------------");
 
   const {
     courseDetails: {
@@ -40,12 +41,26 @@ const TutorCourseSummary: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   const typedSections: Section[] = sections || []; // Use empty array as a fallback
 
-  // Handle form submission
-  const handleSubmit = async() => {
-    try{
+
+//   interface CourseData {
+//     courseName: string;
+//     courseDescription: string;
+//     coursePrice: number;
+//     courseDiscountPrice: number;
+//     courseCategory: string;
+//     courseLevel: string;
+//     demoURL: string;
+//     benefits: string[];
+//     prerequisites: string[];
+//     sections: Section[];
+// }
 
 
-       // Prepare the data to submit
+// Handle form submission
+// Handle form submission
+const handleSubmit = async () => {
+  try {
+    // Prepare the data to submit
     const dataToSubmit = {
       courseName,
       courseDescription,
@@ -57,25 +72,30 @@ const TutorCourseSummary: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       thumbnail,
       benefits,
       prerequisites,
-      sections,
+      sections: typedSections.map(section => ({
+        title: section.title,
+        lessons: section.lessons.map(({ title, video, description }) => ({ title, video, description })) // Include title, video, and description
+      }))
     };
 
-    console.log(dataToSubmit,"the ------------------------------- last fonal 3666666666666666667w8829999999")
+    console.log(dataToSubmit, "the ------------------------------- last fonal 3666666666666666667w8829999");
 
     const result = await axios.post(courseEndpoints.uploadCourse, dataToSubmit);
 
-
-    console.log("result got",result)
- 
+    console.log("result got", result);
 
     // Dispatch the action to submit course data
-    dispatch(clearCourseData());
+    // dispatch(clearCourseData());
 
-    }catch(error){
-      console.log(error)
-    }
-   
-  };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+
+
+
 
   return (
     <div className="p-8 bg-black min-h-screen text-white">
@@ -106,9 +126,9 @@ const TutorCourseSummary: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               <div key={lessonIndex} className="mb-4">
                 <h5 className="text-lg font-medium mb-1">{lesson.title}</h5>
                 <p className="text-gray-300 mb-2">{lesson.description}</p>
-                {lesson.video && (
+                {lesson.displayVideo && (
                   <video
-                    src={lesson.video}
+                    src={lesson.displayVideo}
                     controls
                     className="w-full h-48 object-cover rounded-lg border border-gray-600"
                   />
