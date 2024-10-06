@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import adminIcon from "../../../../assets/icons/User/administrator.png";
 import AdminImage from "../../../../assets/images/Admin/—Pngtree—information technology vector_12148048.png";
 import Spinner from '../../../Spinner/Spinner';
+import Cookies from 'js-cookie';
 import { adminEndpoints } from '../../../constraints/endpoints/adminEndpoints';
 import axios from "axios";
 
@@ -35,6 +36,7 @@ function AdminLogin() {
 
       if (result.data.success) {
         localStorage.setItem('adminAccessToken', result.data.adminAccessToken);
+        Cookies.set('tutorAccessToken', result.data.adminAccessToken, { expires: 7 });
         setLoading(false);
         navigate("/admin/dashboard");
       } else {

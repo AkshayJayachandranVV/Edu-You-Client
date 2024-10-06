@@ -84,25 +84,25 @@ const initialState: CourseState = {
 };
 
 // Create the course slice
-const courseSlice = createSlice({
-  name: "course",
+const editCourseSlice = createSlice({
+  name: "editCourse",
   initialState,
   reducers: {
-    saveAddCourse(state, action: PayloadAction<CourseState["addCourse"]>) {
+    editAddCourse(state, action: PayloadAction<CourseState["addCourse"]>) {
       state.addCourse = action.payload;
       state.courseDetails = {
         ...state.courseDetails,
         ...action.payload,
       };
     },
-    saveAddCourse2(state, action: PayloadAction<CourseState["addCourse2"]>) {
+    editAddCourse2(state, action: PayloadAction<CourseState["addCourse2"]>) {
       state.addCourse2 = action.payload;
       state.courseDetails = {
         ...state.courseDetails,
         ...action.payload,
       };
     },
-    saveLessons(
+    editLessons(
       state,
       action: PayloadAction<{
         sectionIndex: number;
@@ -177,8 +177,8 @@ const courseSlice = createSlice({
 });
 
 // Selectors
-export const selectCourseDetails = (state: { course: CourseState }) => state.course.courseDetails;
-export const selectSections = (state: { course: CourseState }) => state.course.sections;
+export const selectCourseDetails = (state: { editCourse: CourseState }) => state.editCourse.courseDetails;
+export const selectSections = (state: { editCourse: CourseState }) => state.editCourse.sections;
 
 // Memoized selector to get lessons
 export const selectLessons = createSelector(
@@ -186,8 +186,10 @@ export const selectLessons = createSelector(
   (sections) => sections.flatMap(section => section.lessons)
 );
 
+
+
 // Export actions
-export const { saveAddCourse, saveAddCourse2, saveLessons,removeSectionFromRedux, removeLessonFromRedux , clearCourseData } = courseSlice.actions;
+export const { editAddCourse, editAddCourse2, editLessons,removeSectionFromRedux, removeLessonFromRedux , clearCourseData } = editCourseSlice.actions;
 
 // Export the reducer
-export default courseSlice.reducer;
+export default editCourseSlice.reducer;

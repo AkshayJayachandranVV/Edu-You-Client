@@ -55,11 +55,12 @@ function TutorLogin() {
       try {
         // Send the extracted data to your backend
         const result = await axios.post(tutorEndpoints.googleLogin, tutorData);
+        console.log(result.data)
   
         if (result.data.success) {
           console.log("Successfully logged in using GOOGLE");
           localStorage.setItem('tutorAccessToken', result.data.tutorAccessToken);
-          localStorage.setItem('tutorAccessToken', result.data.tutorAccessToken);
+          localStorage.setItem('tutorId', result.data._id);
           navigate('/tutor/dashboard');
         } else if (result.data.message === "User is Blocked") {
           // Handle blocked tutor
@@ -88,6 +89,7 @@ function TutorLogin() {
   
       if (result.data.success) {
         localStorage.setItem('tutorAccessToken', result.data.tutorAccessToken);
+        localStorage.setItem('tutorId', result.data.tutorId);
         Cookies.set('tutorAccessToken', result.data.tutorAccessToken, { expires: 7 });
         setLoading(false);
         navigate('/tutor/dashboard'); // Redirect after successful login

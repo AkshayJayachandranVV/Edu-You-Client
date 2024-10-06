@@ -1,20 +1,33 @@
 import "./UserHome.css";
-import Navbar from '../../Home/UserHome/Navbar/Navbar'; 
-import Footer from '../../Home/UserHome/Footer/Footer'; 
-import iconimage from '../../../../assets/images/User/UserHome/Account.png'
-import React, { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
-import { useDispatch } from 'react-redux'
-import { logout } from '../../../../redux/userSlice'
+import Navbar from "../../Home/UserHome/Navbar/Navbar";
+import Footer from "../../Home/UserHome/Footer/Footer";
+import iconimage from "../../../../assets/images/User/UserHome/Account.png";
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { logout } from "../../../../redux/userSlice";
 import { useNavigate } from "react-router-dom";
-import { courseEndpoints } from '../../../constraints/endpoints/courseEndpoints'
+import { courseEndpoints } from "../../../constraints/endpoints/courseEndpoints";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { ContactPageSharp } from "@mui/icons-material";
 
 export default function UserHome() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]); // state for storing courses
+
+  const handleCardClick = (courseId:string) => {
+    // Call your function here
+    console.log(`Course ID clicked: ${courseId}`);
+
+    // Navigate to the course details page
+    navigate(`/courseDetails/${courseId}`);
+  };
+
+  const allCourse = ()=>{
+    navigate('/allCourses')
+  }
 
   useEffect(() => {
     fetchData();
@@ -23,8 +36,9 @@ export default function UserHome() {
   const fetchData = async () => {
     try {
       const result = await axios.get(courseEndpoints.userCourse);
+      console.log(result.data.courses,"--------------------------")
       setCourses(result.data.courses); // store fetched courses in state
-      console.log(result.data.courses)
+      console.log(result.data.courses);
     } catch (error) {
       console.log(error);
     }
@@ -34,19 +48,19 @@ export default function UserHome() {
     dispatch(logout());
     navigate("/login");
     localStorage.setItem("userAccessToken", "");
-    Cookies.remove('userAccessToken');
+    Cookies.remove("userAccessToken");
   };
 
   const handleProfileClick = () => {
-    navigate('/profile');  // Navigate to the /profile route
+    navigate("/profile"); // Navigate to the /profile route
   };
 
   return (
     <div className="user-home">
-      <Navbar 
-        iconimage={iconimage} 
-        logOut={logOut} 
-        handleProfileClick={handleProfileClick} 
+      <Navbar
+        iconimage={iconimage}
+        logOut={logOut}
+        handleProfileClick={handleProfileClick}
       />
 
       <div className="container-16">
@@ -67,7 +81,7 @@ export default function UserHome() {
             <br />
             Maecenas nisl est, ultrices nec congue eget, auctor vitae massa.
           </div>
-          <button className="get-started">Get Started</button>
+          <button onClick={allCourse} className="get-started">Get Started</button>
         </div>
         <div className="user-home-1"></div>
       </div>
@@ -76,20 +90,24 @@ export default function UserHome() {
       <div className="top-courses">
         <div className="featured-courses">Featured Courses</div>
         <div className="cards">
-          {/* Map over courses and display them in cards */}
-          {courses.length > 0 ? (
-            courses.map((course, index) => (
-              <div key={index} className="card">
-                <img src={course.thumbnail} alt={course.title} className="card-image" />
-                <h3 className="card-title">{course.title}</h3>
-                <p className="card-description">{course.description}</p>
-                <p className="card-amount">Rs. {course.price}</p>
-              </div>
-            ))
-          ) : (
-            <p>No courses available at the moment.</p>
-          )}
-        </div>
+      {/* Map over courses and display them in cards */}
+      {courses.length > 0 ? (
+        courses.map((course, index) => (
+          <div 
+            key={index} 
+            className="card" 
+            onClick={() => handleCardClick(course._id)} // Call the function with the course ID
+          >
+            <img src={course.thumbnail} alt={course.courseName} className="card-image" />
+            <h3 className="card-title">{course.courseName}</h3>
+            <p className="card-description">{course.courseDescription}</p>
+            <p className="card-amount">Rs. {course.coursePrice}</p>
+          </div>
+        ))
+      ) : (
+        <p>No courses available at the moment.</p>
+      )}
+    </div>
       </div>
 
       <div className="container-12">

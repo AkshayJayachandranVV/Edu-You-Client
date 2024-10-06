@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useForm, Controller, FieldError } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { saveAddCourse } from "../../../src/redux/courseSlice";
+import { editAddCourse } from "../../../redux/editCourseSlice";
 import axios from "axios";
-import { tutorEndpoints } from "../../components/constraints/endpoints/TutorEndpoints";
-import { RootState } from "../../redux/store";
+import { tutorEndpoints } from "../../constraints/endpoints/TutorEndpoints";
+import { RootState } from "../../../redux/store";
 
 interface CourseFormData {
   courseName: string;
@@ -22,9 +22,9 @@ interface AddCourseProps {
   onNext: () => void; // Add a prop for next step
 }
 
-const AddCourse: React.FC<AddCourseProps> = ({ onNext }) => {
+const EditCourse: React.FC<AddCourseProps> = ({ onNext }) => {
   const dispatch = useDispatch();
-  const courseData = useSelector((state: RootState) => state.course.courseDetails);
+  const courseData = useSelector((state: RootState) => state.editCourse.courseDetails);
   const { control, handleSubmit, setValue, formState: { errors } } = useForm<CourseFormData>();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -150,7 +150,7 @@ const AddCourse: React.FC<AddCourseProps> = ({ onNext }) => {
 
       // Dispatch with either the new or existing thumbnail values
       dispatch(
-        saveAddCourse({
+        editAddCourse({
           courseName,
           courseDescription,
           coursePrice,
@@ -372,4 +372,4 @@ const AddCourse: React.FC<AddCourseProps> = ({ onNext }) => {
   );
 };
 
-export default AddCourse;
+export default EditCourse;

@@ -12,5 +12,9 @@ export const tutorEndpoints = {
     forgotOtpVerify: `${API_GATEWAY_BASE_URL}/forgotOtpVerify`,
     getPresignedUrlForUpload: `${API_GATEWAY_BASE_URL}/getPresignedUrlForUpload`,
     getSignedUrl:  `${API_GATEWAY_BASE_URL}/getSignedUrl`,
+    myCourses: `${API_GATEWAY_BASE_URL}/myCourses/tutorId`,
+    listCourse: `${API_GATEWAY_BASE_URL}/listCourse/courseId`,
+    fetchEditCourse: `${API_GATEWAY_BASE_URL}/fetchEditCourse/courseId`,
 }
+
 

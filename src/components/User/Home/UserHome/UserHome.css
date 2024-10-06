@@ -114,7 +114,7 @@
     position: relative;
     display: flex;
     padding: 5px 150px 0 0; /* Reduced top padding */
-    width: 1140px;
+    width: 1520px;
     height: auto; /* Let the height adjust automatically based on content */
     box-sizing: border-box;
 }

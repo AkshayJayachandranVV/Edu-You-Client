@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../redux/store';
-import { clearCourseData } from '../../redux/courseSlice';
-import { courseEndpoints } from '../../../src/components/constraints/endpoints/courseEndpoints';
+import { RootState } from '../../../redux/store';
+import { clearCourseData } from '../../../redux/editCourseSlice';
+import { courseEndpoints } from '../../../../src/components/constraints/endpoints/courseEndpoints';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
@@ -19,10 +19,10 @@ interface Section {
   lessons: Lesson[];
 }
 
-const TutorCourseSummary: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+const TutorEditCourseSummary: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); 
-  const courseData = useSelector((state: RootState) => state.course);
+  const courseData = useSelector((state: RootState) => state.editCourse);
 
 
   console.log(courseData, "0--=0009-------------------------------------");
@@ -51,10 +51,12 @@ const TutorCourseSummary: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     // Initialize the useNavigate hook
 
     const tutorId = localStorage.getItem("tutorId")
+    const courseId = localStorage.getItem("editCourseId")
   
     try {
       // Prepare the data to submit
       const dataToSubmit = {
+        courseId:courseId,
         tutorId:tutorId,
         courseName,
         courseDescription,
@@ -76,13 +78,13 @@ const TutorCourseSummary: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       console.log(dataToSubmit, "the final data to submit");
   
       // Send the data to the server
-      const result = await axios.post(courseEndpoints.uploadCourse, dataToSubmit);
+      const result = await axios.post(courseEndpoints.editCourse, dataToSubmit);
   
       if (result.data.success) { 
         // If successful, show a success toast
         toast.success("Course uploaded successfully!");
         setTimeout(() => {
-          window.location.href = "/tutor/addCourse"; // Redirect to the page
+          window.location.href = "/tutor/courses"; // Redirect to the page
           window.location.reload(); // Refresh the page
         }, 1000);
   
@@ -90,7 +92,7 @@ const TutorCourseSummary: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         dispatch(clearCourseData());
   
         // Redirect to the first AddCourse page
-        navigate("/tutor/addCourse"); // Adjust the route if necessary
+        navigate("/tutor/courses"); // Adjust the route if necessary
       } else {
         // If the result does not indicate success, show an error
         toast.error("Failed to upload the course. Please try again.");
@@ -166,4 +168,4 @@ const TutorCourseSummary: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   );
 };
 
-export default TutorCourseSummary;
+export default TutorEditCourseSummary;

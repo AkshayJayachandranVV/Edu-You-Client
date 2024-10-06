@@ -8,6 +8,7 @@ import UserHome from "../../components/User/Home/UserHome/UserHome";
 import UserProfile from "../../components/User/UserProfile/UserProfile";
 import UserCourseDetails from "../../components/User/UserCourseDetails/UserCourseDetails";
 import UserAllCourses from "../../components/User/UserAllCourses/UserAllCourses";
+import UserCheckout from "../../components/User/UserCheckout/UserCheckout";
 import ErrorPage from '../../components/User/404/errorPage'; 
 import PrivateRoute from "./privateRoute"
 import PrivateRouteUser from "./privateRouteUser"
@@ -23,8 +24,9 @@ const UserRoutes = () => {
             <Route path='/forgotPassword' element={ <PrivateRoute > <UserForgotPassword />  </PrivateRoute>} />
             <Route path='/resetPassword' element={ <PrivateRoute > <ResetPassword />  </PrivateRoute>} />
             <Route path='/profile' element={ <PrivateRouteUser> <UserProfile />  </PrivateRouteUser>} />
-            <Route path='/courseDetails' element={ <PrivateRouteUser> <UserCourseDetails />  </PrivateRouteUser>} />
+            <Route path='/courseDetails/:courseId' element={ <PrivateRouteUser> <UserCourseDetails />  </PrivateRouteUser>} />
             <Route path='/allCourses' element={ <PrivateRouteUser> <UserAllCourses />  </PrivateRouteUser>} />
+            <Route path='/checkout/:courseId' element={ <PrivateRouteUser> <UserCheckout />  </PrivateRouteUser>} />
             <Route path="*" element={<ErrorPage />} />
         </Routes>
     )
