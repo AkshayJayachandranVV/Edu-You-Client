@@ -5,6 +5,7 @@ interface UserState{
     username:string;
     email:string;
     profilePicture?:string|null;
+    profilePictureUrl?:string|null;
     bio?:string;
     phone?:string;
     coursesEnrolled?:string[];
@@ -20,6 +21,7 @@ const initialState:UserState={
     completedCourses:[],
     coursesEnrolled:[],
     profilePicture:null,
+    profilePictureUrl:null,
 };
 
 

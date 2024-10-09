@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import TutorNavbar from '../../../components/Tutor/Dashboard/TutorDashboard/Navbar/Navbar';
-import TutorSidebar from '../../../components/Tutor/Dashboard/TutorDashboard/Sidebar/Sidebar';
+import TutorSidebar from '../../../components/Tutor/TutorSidebar';
 import ProgressBar from '../../../components/Tutor/TutorProgressBar';
 
 function TutorDashboard() {

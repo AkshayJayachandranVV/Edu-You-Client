@@ -7,5 +7,7 @@ export const adminEndpoints = {
     isBlocked : `${API_GATEWAY_BASE_URL}/isBlocked`,
     tutors : `${API_GATEWAY_BASE_URL}/tutors`,
     tutorIsBlocked : `${API_GATEWAY_BASE_URL}/tutorIsBlocked`,
+    courses : `${API_GATEWAY_BASE_URL}/courses`,
+    listCourse : `${API_GATEWAY_BASE_URL}/listCourse`,
 }
 

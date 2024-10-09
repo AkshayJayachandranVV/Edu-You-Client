@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 import { useDispatch, useSelector } from "react-redux";
-import { saveAddCourse2 } from "../../../src/redux/courseSlice";
+import { saveAddCourse2 } from "../../../../src/redux/courseSlice";
 
 interface Prerequisite {
   value: string;

@@ -36,7 +36,7 @@ function AdminLogin() {
 
       if (result.data.success) {
         localStorage.setItem('adminAccessToken', result.data.adminAccessToken);
-        Cookies.set('tutorAccessToken', result.data.adminAccessToken, { expires: 7 });
+        Cookies.set('adminAccessToken', result.data.adminAccessToken, { expires: 7 });
         setLoading(false);
         navigate("/admin/dashboard");
       } else {

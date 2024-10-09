@@ -37,6 +37,12 @@ export default function PrimarySearchAppBar() {
     handleMobileMenuClose();
   };
 
+
+  const handleProfile = () => {
+    navigate("/tutor/profile");
+  };
+
+
   const handleClose = () => {
     localStorage.removeItem("tutorAccessToken");
     Cookies.remove('tutorAccessToken');
@@ -64,7 +70,7 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleProfile}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
       <MenuItem onClick={handleClose}>Log out</MenuItem>
     </Menu>

@@ -12,6 +12,8 @@ import Spinner from '../../../Spinner/Spinner';
 import { tutorEndpoints } from '../../../constraints/endpoints/TutorEndpoints'; // Update with actual endpoint
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
+import {useDispatch} from 'react-redux'
+import {setTutor} from '../../../../redux/tutorSlice'
 
 type formValues = {
   email: string;
@@ -29,13 +31,9 @@ function TutorLogin() {
   const { errors } = formState;
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
+  const dispatch = useDispatch()
 
-  useEffect(() => {
-    const token = localStorage.getItem('tutorAccessToken');
-    if (token) {
-      navigate("/tutor/dashboard");
-    }
-  }, [navigate]);
+
 
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
     console.log(credentialResponse);
@@ -59,8 +57,18 @@ function TutorLogin() {
   
         if (result.data.success) {
           console.log("Successfully logged in using GOOGLE");
+
+          console.log(result.data.tutorData);
+          const { _id, tutorname, email, phone } = result.data.tutorData;
+          console.log("every data", _id, tutorname, email, phone);
+  
+          // Dispatch the user data to the Redux store
+          dispatch(setTutor({ id: _id, tutorname, email, phone }));
+          console.log("Successfully logged in using GOOGLE");
+
           localStorage.setItem('tutorAccessToken', result.data.tutorAccessToken);
           localStorage.setItem('tutorId', result.data._id);
+          Cookies.set('tutorAccessToken', result.data.tutorAccessToken, { expires: 7 });
           navigate('/tutor/dashboard');
         } else if (result.data.message === "User is Blocked") {
           // Handle blocked tutor
@@ -88,6 +96,14 @@ function TutorLogin() {
       console.log(result);
   
       if (result.data.success) {
+          
+        console.log(result.data.tutorData);
+        const { _id, tutorname, email, phone } = result.data.tutorData;
+        console.log("every data", _id, tutorname, email, phone);
+
+        // Dispatch the user data to the Redux store
+        dispatch(setTutor({ id: _id, tutorname, email, phone }));
+
         localStorage.setItem('tutorAccessToken', result.data.tutorAccessToken);
         localStorage.setItem('tutorId', result.data.tutorId);
         Cookies.set('tutorAccessToken', result.data.tutorAccessToken, { expires: 7 });

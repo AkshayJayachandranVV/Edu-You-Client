@@ -7,7 +7,9 @@ import { logout } from "../../../../src/redux/userSlice";
 import { useNavigate } from "react-router-dom";
 import { userEndpoints } from "../../../components/constraints/endpoints/userEndpoints";
 import axiosInstance from '../../../components/constraints/axios/userAxios';
+import { tutorEndpoints } from "../../../components/constraints/endpoints/TutorEndpoints";
 import {setUser} from '../../../../src/redux/userSlice'
+import axios from "axios";
 import "./UserProfile.css";
 import { toast } from 'sonner';
 
@@ -26,7 +28,7 @@ export default function ProfilePage() {
   const navigate = useNavigate();
 
   const {
-    register,
+    register,   
     handleSubmit,
     formState: { errors },
     setValue,
@@ -37,7 +39,7 @@ export default function ProfilePage() {
   const user = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    setProfileImage(user.profilePicture || iconimage);
+    setProfileImage(user.profilePictureUrl || iconimage);
     if (user) {
       setValue("name", user.username || "");
       setValue("email", user.email || "");
@@ -46,53 +48,126 @@ export default function ProfilePage() {
     }
   }, [user, setValue]);
 
+
+  const generateFileName = (originalName: string) => {
+    const extension = originalName.split(".").pop();
+    return `${Math.random().toString(36).substring(2, 15)}.${extension}`;
+  };
+
+
+  const uploadProfile = async () => {
+    console.log("Entered uploadThumbnail");
+  
+    // If no new file and no preview image, return the existing thumbnail info
+    if (!profileImageFile && !profileImage) {
+      alert("Please select a file first!");
+      return null;
+    }
+  
+    // If there's a preview image but no new file, use the existing key and URL
+   
+  
+    try {
+      const fileName = generateFileName(profileImageFile!.name);
+  
+      const response = await axios.get(tutorEndpoints.getPresignedUrlForUpload, {
+        params: {
+          filename: fileName,
+          fileType: profileImageFile!.type.startsWith('image') ? 'image' : 'video',
+        },
+      });
+  
+      const { uploadUrl, viewUrl, key } = response.data;
+  
+      console.log("S3 key:", key, "View URL:", viewUrl);
+  
+      const result = await axios.put(uploadUrl, profileImageFile, {
+        headers: {
+          "Content-Type": profileImageFile!.type,
+        },
+      });
+  
+      if (result.status === 200) {
+
+        console.log("success the generation")
+  
+        return { url: viewUrl, key };
+      } else {
+        console.log("unsuccessfull")
+        return null;
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      return null;
+    }
+  };
+
   const onSubmit: SubmitHandler<ProfileFormInputs> = async (data) => {
     const formData = new FormData();
-
+  
     // Append form fields
-    formData.append("username", data.name); // Changed "name" to "username"
-    formData.append("email", data.email);   // Added "email" field
+    formData.append("username", data.name);
+    formData.append("email", data.email);
     formData.append("phone", data.phone);
     formData.append("about", data.about);
-
-    // Log formData entries for debugging
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
-
-    // Append the image file if it exists
+  
+    // Initialize profilePicKey
+    let profilePicKey: string = user.profilePicture || ""; 
+    let profilePicUrl: string = profileImage; // Initially, the preview image (if exists)
+  
     if (profileImageFile) {
-      formData.append("profile_picture", profileImageFile);  
+      const profilePic = await uploadProfile();  // Upload new image if a file is selected
+      console.log(profilePic, "key url");
+      if (profilePic && profilePic.key) {
+        profilePicKey = profilePic.key; // Update with the new S3 key
+        profilePicUrl = profilePic.url; // Use the S3 URL after upload
+        setProfileImage(profilePicUrl); // Set the image URL from S3 for display
+      }
     }
-
-    // Log formData entries after adding image
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
+  
+    // Check and log to ensure profileImage contains the correct S3 URL
+    console.log(profileImage, "Profile Image after upload",profilePicKey);
+  
+    // Ensure profilePicKey is not empty or undefined before appending
+    if (profilePicKey) {
+      formData.append("profile_picture", profilePicKey); // Append the key
+    } else {
+      console.warn("No profile picture available to upload.");
     }
-
-    // Submit the formData to your backend
+  
     try {
       const result = await axiosInstance.put(userEndpoints.profile, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
- 
-      if(!result){
-        toast.error('Profile updated unsuccesful');
+
+      console.log(result)
+  
+      if (result.status === 200) {
+        toast.success('Profile updated successfully');
+        const { _id, username, email, phone, about } = result.data;
+        dispatch(setUser({
+          id: _id,
+          username,
+          email,
+          bio: about,
+          phone,
+          profilePicture: profilePicKey, 
+          profilePictureUrl: profilePicUrl // Make sure the URL is updated in state
+        }));
+        console.log(profileImage, "Profile Image state after form submission");
+      } else {
+        toast.error('Profile update failed');
       }
-
-      toast.success('Profile updated unsuccesful');
-
-      console.log("Form submitted successfully", result);
-      const profile_picture = result.data.profile_picture      
-      const {_id,username,email,phone,about}=result.data._doc;
-      console.log(profile_picture,"gotthe phonr value ;lllllllllllooooooooooooooook")
-      dispatch(setUser({id:_id,username,email,bio:about,phone,profilePicture:profile_picture}));
     } catch (error) {
       console.error("Error submitting form", error);
+      toast.error('Error submitting profile update');
     }
   };
+  
+  
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0]; // Already handled correctly

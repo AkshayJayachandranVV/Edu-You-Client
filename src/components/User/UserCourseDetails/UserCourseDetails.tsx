@@ -30,23 +30,31 @@ export default function UserCourseDetails() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    sessionStorage.removeItem("orderCheck");
     const fetchCourseDetails = async () => {
+      if (!courseId) {
+        console.error("Course ID is undefined");
+        return;
+      }
+  
       try {
-        if (courseId) {
-          const response = await axiosInstance.get(
-            `${userEndpoints.courseDetails.replace('courseId', courseId)}`
-          );
+        const response = await axiosInstance.get(
+          `${userEndpoints.courseDetails.replace('courseId', courseId)}`
+        );
+  
+        if (response?.data?.courses) {
           setCourseData(response.data.courses);
         } else {
-          console.error("Course ID is undefined");
+          console.error("No course data found");
         }
       } catch (error) {
         console.error("Error fetching course details:", error);
       }
     };
-
+  
     fetchCourseDetails();
-  }, [courseId]);
+  }, [courseId]); // Depend on courseId
+  
 
   const getYouTubeID = (url: string) => {
     const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -138,7 +146,7 @@ export default function UserCourseDetails() {
               alt={courseData.courseName}
             />
             <h2 className="text-2xl font-semibold text-white">Price: ₹ {courseData.coursePrice}</h2>
-            <button onClick={coursePayment(courseData._id)} className="w-full py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all">
+            <button onClick={() => coursePayment(courseData._id)} className="w-full py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all">
               Buy Now
             </button>
             <p className="text-gray-500">Created by {courseData.courseCategory}</p>

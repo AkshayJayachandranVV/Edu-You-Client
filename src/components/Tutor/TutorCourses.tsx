@@ -9,7 +9,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Typography, Button } from "@mui/material";
-import axiosInstance from "../../../src/components/constraints/axios/userAxios";
+import axiosInstance from "../../../src/components/constraints/axios/tutorAxios";
 import { tutorEndpoints } from "../../../src/components/constraints/endpoints/TutorEndpoints";
 
 // Define the Course interface

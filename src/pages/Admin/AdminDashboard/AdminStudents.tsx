@@ -7,7 +7,7 @@ import AdminStudents from '../../../components/Admin/Dashboard/Body/AdminStudent
 import { adminEndpoints } from '../../../../src/components/constraints/endpoints/adminEndpoints';
 import axiosInstance from '../../../components/constraints/axios/adminAxios';
 
-const AdminDashboard = () => {
+const AdminStudentPage = () => {
   const navigate = useNavigate();
   const [studentsData, setStudentsData] = useState<FormattedStudent[]>([]);
   const [loading, setLoading] = useState(true); // State to handle loading
@@ -104,4 +104,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default AdminStudentPage;

@@ -6,7 +6,7 @@ import AddCourse2 from '../../../components/Tutor/TutorEditCourse/TutorEditCours
 import AddCourse3 from '../../../components/Tutor/TutorEditCourse/TutorEditCourse3';
 import AddCourse4 from '../../../components/Tutor/TutorEditCourse/TutorEditCourseSummary';
 import ProgressBar from '../../../components/Tutor/TutorProgressBar'; // Import the ProgressBar
-import axiosInstance from '../../../components/constraints/axios/userAxios';
+import axiosInstance from '../../../components/constraints/axios/tutorAxios';
 import { tutorEndpoints } from "../../../components/constraints/endpoints/TutorEndpoints";
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';

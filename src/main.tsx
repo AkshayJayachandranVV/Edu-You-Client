@@ -9,14 +9,14 @@ import store,{persistor} from './redux/store.ts'
 import { Provider } from 'react-redux'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  // <StrictMode>
      <Provider store={store}>
      <PersistGate loading={null} persistor={persistor}>
-    < GoogleOAuthProvider clientId='57845276235-3f0ilap4ri48e6vj35dio86punc3sm4e.apps.googleusercontent.com' >
+    < GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID} >
     <Toaster richColors position="top-right" />
     <App />
     </GoogleOAuthProvider>
     </PersistGate>
     </Provider>
-  </StrictMode>,
+  // </StrictMode>,
 )

@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { selectSections, saveLessons, removeSectionFromRedux, removeLessonFromRedux } from "../../../src/redux/courseSlice";
+import { selectSections, saveLessons, removeSectionFromRedux, removeLessonFromRedux } from "../../../../src/redux/courseSlice";
 import Button from "@mui/joy/Button";
 import Modal from "@mui/joy/Modal";
 import Typography from "@mui/joy/Typography";
@@ -9,7 +9,7 @@ import LinearProgress from "@mui/joy/LinearProgress";
 import { useCountUp } from "use-count-up";
 import * as Yup from "yup";
 import axios from "axios";
-import { tutorEndpoints } from "../../components/constraints/endpoints/TutorEndpoints";
+import { tutorEndpoints } from "../../../components/constraints/endpoints/TutorEndpoints";
 import { toast } from "sonner";
 
 interface Lesson {

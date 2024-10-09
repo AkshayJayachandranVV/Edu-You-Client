@@ -15,6 +15,9 @@ export const tutorEndpoints = {
     myCourses: `${API_GATEWAY_BASE_URL}/myCourses/tutorId`,
     listCourse: `${API_GATEWAY_BASE_URL}/listCourse/courseId`,
     fetchEditCourse: `${API_GATEWAY_BASE_URL}/fetchEditCourse/courseId`,
+    editProfile: `${API_GATEWAY_BASE_URL}/editProfile`,
+    getTutorDetails: `${API_GATEWAY_BASE_URL}/getTutorDetails/tutorId`,
 }
 
 
+  

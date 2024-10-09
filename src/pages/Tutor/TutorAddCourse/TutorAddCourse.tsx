@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import TutorNavbar from '../../../components/Tutor/TutorNavbar';
 import TutorSidebar from '../../../components/Tutor/TutorSidebar';
-import AddCourse from '../../../components/Tutor/TutorAddCourse';
-import AddCourse2 from '../../../components/Tutor/TutorAddCourse2';
-import AddCourse3 from '../../../components/Tutor/TutorAddCourse3';
-import AddCourse4 from '../../../components/Tutor/TutorCourseSummary';
+import AddCourse from '../../../components/Tutor/TutorAddCourse/TutorAddCourse';
+import AddCourse2 from '../../../components/Tutor/TutorAddCourse/TutorAddCourse2';
+import AddCourse3 from '../../../components/Tutor/TutorAddCourse/TutorAddCourse3';
+import AddCourse4 from '../../../components/Tutor/TutorAddCourse/TutorCourseSummary';
 import ProgressBar from '../../../components/Tutor/TutorProgressBar'; // Import the ProgressBar
 
 

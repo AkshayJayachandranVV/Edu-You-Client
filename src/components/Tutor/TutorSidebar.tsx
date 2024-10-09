@@ -4,7 +4,7 @@ import { Menu as MenuIcon, Dashboard, Book, People, AttachMoney, AccountCircle, 
 import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const drawerWidth = 250;
 
@@ -22,24 +22,25 @@ const PersistentDrawer = styled(Drawer)(() => ({
 const Sidebar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [open, setOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState('Dashboard'); // State to track active item
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [open, setOpen] = useState(!isMobile); // Set initial state based on screen size
+  const [activeItem, setActiveItem] = useState('Dashboard');
+  const navigate = useNavigate();
 
   const handleDrawerToggle = () => {
-    setOpen(!open);
+    setOpen(!open); // Toggle open/close state
   };
 
-  // Handle sidebar item click
   const handleItemClick = (text: string, route: string) => {
-    setActiveItem(text); // Update active item
-    navigate(route); // Navigate to the route
+    setActiveItem(text);
+    console.log("Navigating to:", route); // To check if the click works
+    navigate(route); // Navigate to the specified route
+    if (isMobile) setOpen(false); // Close drawer on mobile after clicking
   };
 
   const drawerContent = (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div style={{ padding: '16px', display: 'flex', alignItems: 'center', borderBottom: '1px solid #2d3a4e' }}>
-        <IconButton edge="start">
+        <IconButton edge="start" onClick={handleDrawerToggle}>
           <MenuIcon style={{ color: '#5f71ea', fontSize: '2rem' }} />
         </IconButton>
         <Typography variant="h6" style={{ color: 'white', marginLeft: '16px', fontSize: '1.5rem' }}>
@@ -76,20 +77,26 @@ const Sidebar = () => {
   );
 
   return (
-    <PersistentDrawer
-      variant="persistent"
-      anchor="left"
-      open={!isMobile || open}
-      onClose={handleDrawerToggle}
-      ModalProps={{
-        keepMounted: true, // Better open performance on mobile.
-      }}
-      sx={{
-        display: { xs: 'none', sm: 'block' },
-      }}
-    >
-      {drawerContent}
-    </PersistentDrawer>
+    <>
+      <IconButton onClick={handleDrawerToggle} style={{ color: 'white', position: 'absolute', top: 10, left: 10 }}>
+        <MenuIcon style={{ fontSize: '2rem' }} />
+      </IconButton>
+
+      <PersistentDrawer
+        variant={isMobile ? 'temporary' : 'persistent'} // Use 'temporary' drawer on mobile, 'persistent' on desktop
+        anchor="left"
+        open={open}
+        onClose={handleDrawerToggle} // Close the drawer on mobile
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
+        sx={{
+          display: { xs: 'block', sm: 'block' }, // Ensure drawer is always visible on small and large screens
+        }}
+      >
+        {drawerContent}
+      </PersistentDrawer>
+    </>
   );
 };
 

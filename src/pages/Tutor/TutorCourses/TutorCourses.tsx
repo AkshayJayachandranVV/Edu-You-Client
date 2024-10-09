@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import TutorNavbar from "../../../components/Tutor/TutorNavbar";
 import TutorSidebar from "../../../components/Tutor/TutorSidebar";
 import TutorCourses from "../../../components/Tutor/TutorCourses";
-import axiosInstance from "../../../components/constraints/axios/userAxios";
+import axiosInstance from "../../../components/constraints/axios/tutorAxios";
 import { tutorEndpoints } from "../../../components/constraints/endpoints/TutorEndpoints";
 
 

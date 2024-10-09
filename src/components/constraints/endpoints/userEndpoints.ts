@@ -14,5 +14,8 @@ export const userEndpoints = {
     profile: `${API_GATEWAY_BASE_URL}/profile`,
     courseDetails: `${API_GATEWAY_BASE_URL}/courseDetails/courseId`,
     allCourses: `${API_GATEWAY_BASE_URL}/allCourses`,
+    payment: `${API_GATEWAY_BASE_URL}/payment`,
+    orderSuccess: `${API_GATEWAY_BASE_URL}/orderSuccess`,
+    getTutorDetails: `${API_GATEWAY_BASE_URL}/getTutorDetails/tutorId`,
 }
 

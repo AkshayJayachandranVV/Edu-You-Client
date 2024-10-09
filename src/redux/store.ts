@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import userReducer from './userSlice';
 import courseReducer from './courseSlice';
 import editCourseReducer from './editCourseSlice';
+import tutorReducer from './tutorSlice';
 
 
 // Configuration for redux-persist
@@ -18,6 +19,7 @@ const persistConfig = {
     user: userReducer,
     course:courseReducer,
     editCourse:editCourseReducer,
+    tutor:tutorReducer,
     // Add other reducers here if you have more slices
   });
 
@@ -39,3 +41,6 @@ export default store;
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+
+

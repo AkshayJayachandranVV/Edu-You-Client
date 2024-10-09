@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../redux/store';
-import { clearCourseData } from '../../redux/courseSlice';
-import { courseEndpoints } from '../../../src/components/constraints/endpoints/courseEndpoints';
+import { RootState } from '../../../redux/store';
+import { clearCourseData } from '../../../redux/courseSlice';
+import { courseEndpoints } from '../../../../src/components/constraints/endpoints/courseEndpoints';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";

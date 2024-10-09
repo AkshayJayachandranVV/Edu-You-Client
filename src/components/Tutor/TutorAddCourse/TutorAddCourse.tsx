@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useForm, Controller, FieldError } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { saveAddCourse } from "../../../src/redux/courseSlice";
+import { saveAddCourse } from "../../../../src/redux/courseSlice";
 import axios from "axios";
-import { tutorEndpoints } from "../../components/constraints/endpoints/TutorEndpoints";
-import { RootState } from "../../redux/store";
+import { tutorEndpoints } from "../../../components/constraints/endpoints/TutorEndpoints";
+import { RootState } from "../../../redux/store";
 
 interface CourseFormData {
   courseName: string;
