@@ -17,5 +17,8 @@ export const userEndpoints = {
     payment: `${API_GATEWAY_BASE_URL}/payment`,
     orderSuccess: `${API_GATEWAY_BASE_URL}/orderSuccess`,
     getTutorDetails: `${API_GATEWAY_BASE_URL}/getTutorDetails/tutorId`,
+    getUserCourses :  `${API_GATEWAY_BASE_URL}/getCourses/userId`,
+    fetchChat: `${API_GATEWAY_BASE_URL}/fetchChat`,
+    sendFile: `${API_GATEWAY_BASE_URL}/sendFile`,
 }
 

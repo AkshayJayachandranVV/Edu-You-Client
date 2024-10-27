@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import AdminNavbar from '../../../components/Admin/Dashboard/Navbar/Navbar';
 import AdminSidebar from '../../../components/Admin/Dashboard/Sidebar/Sidebar';
 import AdminStudents from '../../../components/Admin/Dashboard/Body/AdminStudents';
@@ -13,12 +12,11 @@ const AdminStudentPage = () => {
   const [loading, setLoading] = useState(true); // State to handle loading
   const [error, setError] = useState<string | null>(null); // State to handle errors
 
-
   interface Student {
     username: string;
     email: string;
-    phone?: string; // Assuming phone may or may not be available
-    isBlocked:boolean;
+    phone?: string;
+    isBlocked: boolean;
   }
 
   interface FormattedStudent {
@@ -27,7 +25,7 @@ const AdminStudentPage = () => {
     name: string;
     email: string;
     phone: string;
-    isBlocked:boolean;
+    isBlocked: boolean;
   }
 
   useEffect(() => {
@@ -36,31 +34,23 @@ const AdminStudentPage = () => {
       navigate('/admin');
     } else {
       fetchStudentsData();
-      console.log("entered to useeffect else")
     }
   }, [navigate]);
 
   const fetchStudentsData = async () => {
     try {
       setLoading(true);
-  
-      // Fetch data from the API
-      console.log(":eneterd to the function")
-      const result = await axiosInstance.get<Student[]>(adminEndpoints.students); // Expecting an array of Student objects
-
-      console.log(result,"----------------------------------------------------------------")
-  
-      // Map and format the data
-      const formattedData: FormattedStudent[] = result.data.map((student: Student, index: number) => ({
-        sino: index + 1,
-        image: 'default.png', // Replace with actual image if needed
-        name: student.username,
-        email: student.email,
-        phone: student.phone || 'Not Available', // Use 'Not Available' if phone is undefined
-        isBlocked:student.isBlocked
-      }));
-  
-      // Set the formatted data and stop loading
+      const result = await axiosInstance.get<Student[]>(adminEndpoints.students);
+      const formattedData: FormattedStudent[] = result.data.map(
+        (student: Student, index: number) => ({
+          sino: index + 1,
+          image: 'default.png', 
+          name: student.username,
+          email: student.email,
+          phone: student.phone || 'Not Available',
+          isBlocked: student.isBlocked,
+        })
+      );
       setStudentsData(formattedData);
       setLoading(false);
     } catch (err) {
@@ -71,30 +61,26 @@ const AdminStudentPage = () => {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div style={{ display: 'flex', height: '100vh', backgroundColor: '#000000' }}>
       <AdminSidebar />
       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <AdminNavbar />
-        <div
-          className="flex-1 flex flex-col p-6"
-          style={{ backgroundColor: '#000000' }}
-        >
+        <div className="flex-1 flex flex-col p-6" style={{ backgroundColor: '#000000', flexGrow: 1 }}>
           <div
             className="flex-grow flex flex-col justify-start"
             style={{
               marginBottom: '19px',
               width: '75%',
               marginLeft: 'auto',
-              paddingRight: '-5px',
               alignSelf: 'flex-end',
+              paddingRight: '135px',
             }}
           >
             {loading ? (
-              <p>Loading...</p>
+              <p style={{ color: '#FFFFFF' }}>Loading...</p>
             ) : error ? (
-              <p>{error}</p>
+              <p style={{ color: '#FFFFFF' }}>{error}</p>
             ) : (
-              // Pass the fetched and formatted data to AdminStudents
               <AdminStudents studentsData={studentsData} />
             )}
           </div>

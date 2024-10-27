@@ -7,15 +7,7 @@ const AdminDashboard = () => {
     const navigate = useNavigate()
 
 
-    useEffect(() => {
-        // Check if userAccessToken is present in localStorage
-        const token = localStorage.getItem('adminAccessToken');
-        
-        if (!token) {
-          // If token is not present, redirect to login page
-          navigate('/admin');
-        }
-      }, [navigate]); // Dependency array includes navigate
+
 
 
     return (

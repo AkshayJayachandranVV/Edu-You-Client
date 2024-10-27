@@ -17,7 +17,10 @@ export const tutorEndpoints = {
     fetchEditCourse: `${API_GATEWAY_BASE_URL}/fetchEditCourse/courseId`,
     editProfile: `${API_GATEWAY_BASE_URL}/editProfile`,
     getTutorDetails: `${API_GATEWAY_BASE_URL}/getTutorDetails/tutorId`,
+    getSignedUrlId:  `${API_GATEWAY_BASE_URL}/getSignedUrlId`,
+    payouts: `${API_GATEWAY_BASE_URL}/payouts/tutorId`,  
+    courseStudents : `${API_GATEWAY_BASE_URL}/courseStudents/courseId`,
 }
-
+    
 
   

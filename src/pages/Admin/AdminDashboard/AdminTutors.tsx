@@ -6,19 +6,17 @@ import AdminTutors from '../../../components/Admin/Dashboard/Body/AdminTutors';
 import { adminEndpoints } from '../../../../src/components/constraints/endpoints/adminEndpoints';
 import axiosInstance from '../../../components/constraints/axios/adminAxios';
 
-
 const AdminTutorsPage = () => {
   const navigate = useNavigate();
   const [tutorsData, setTutorsData] = useState<FormattedTutor[]>([]);
   const [loading, setLoading] = useState(true); // State to handle loading
   const [error, setError] = useState<string | null>(null); // State to handle errors
 
-
   interface Tutor {
     tutorname: string;
     email: string;
     phone?: string; // Assuming phone may or may not be available
-    isBlocked:boolean;
+    isBlocked: boolean;
   }
 
   interface FormattedTutor {
@@ -27,7 +25,7 @@ const AdminTutorsPage = () => {
     name: string;
     email: string;
     phone: string;
-    isBlocked:boolean;
+    isBlocked: boolean;
   }
 
   useEffect(() => {
@@ -36,7 +34,6 @@ const AdminTutorsPage = () => {
       navigate('/admin/login');
     } else {
       fetchTutorsData();
-      console.log("entered to useeffect else")
     }
   }, [navigate]);
 
@@ -45,10 +42,7 @@ const AdminTutorsPage = () => {
       setLoading(true);
   
       // Fetch data from the API
-      console.log(":eneterd to the function")
-      const result = await axiosInstance.get<Tutor[]>(adminEndpoints.tutors); // Expecting an array of Student objects
-
-      console.log(result,"----------------------------------------------------------------")
+      const result = await axiosInstance.get<Tutor[]>(adminEndpoints.tutors); // Expecting an array of Tutor objects
   
       // Map and format the data
       const formattedData: FormattedTutor[] = result.data.map((tutor: Tutor, index: number) => ({
@@ -57,7 +51,7 @@ const AdminTutorsPage = () => {
         name: tutor.tutorname,
         email: tutor.email,
         phone: tutor.phone || 'Not Available', // Use 'Not Available' if phone is undefined
-        isBlocked:tutor.isBlocked
+        isBlocked: tutor.isBlocked,
       }));
   
       // Set the formatted data and stop loading
@@ -71,30 +65,25 @@ const AdminTutorsPage = () => {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div style={{ display: 'flex', height: '100vh', backgroundColor: '#000000' }}>
       <AdminSidebar />
       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <AdminNavbar />
-        <div
-          className="flex-1 flex flex-col p-6"
-          style={{ backgroundColor: '#000000' }}
-        >
+        <div className="flex-1 flex flex-col p-6" style={{ backgroundColor: '#000000', flexGrow: 1 }}>
           <div
             className="flex-grow flex flex-col justify-start"
             style={{
               marginBottom: '19px',
               width: '75%',
               marginLeft: 'auto',
-              paddingRight: '-15px',
               alignSelf: 'flex-end',
             }}
           >
             {loading ? (
-              <p>Loading...</p>
+              <p style={{ color: '#FFFFFF' }}>Loading...</p>
             ) : error ? (
-              <p>{error}</p>
+              <p style={{ color: '#FFFFFF' }}>{error}</p>
             ) : (
-              // Pass the fetched and formatted data to AdminStudents
               <AdminTutors tutorsData={tutorsData} />
             )}
           </div>

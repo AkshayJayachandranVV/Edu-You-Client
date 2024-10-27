@@ -22,12 +22,7 @@ function AdminLogin() {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem('adminAccessToken');
-    if (token) {
-      navigate("/admin/dashboard");
-    }
-  }, [navigate]);
+
 
   const onSubmit = async (data: formValues) => {
     try {

@@ -64,14 +64,15 @@ function UserLogin() {
   
         if (result.data.success) {
           console.log(result.data.user_data);
-          const { _id, username, email, phone } = result.data.user_data;
-          console.log("every data", _id, username, email, phone);
+          const { id, username, email, phone } = result.data.user_data;
+          console.log("every data", id, username, email, phone);
   
           // Dispatch the user data to the Redux store
-          dispatch(setUser({ id: _id, username, email, phone }));
+          dispatch(setUser({ id: id, username, email, phone }));
           console.log("Successfully logged in using GOOGLE");
   
           // Store the access token in local storage
+          localStorage.setItem('userId',id);
           localStorage.setItem('userAccessToken', result.data.userAccessToken);
           Cookies.set('userAccessToken', result.data.userAccessToken, { expires: 7 });
   
@@ -104,15 +105,18 @@ const onSubmit = async (data: formValues) => {
 
     const result = await axios.post(userEndpoints.login, data);
 
-    console.log(result);
+    console.log(result,"----------------------------------------------------------------");
+
+    console.log(result,"----------------------------------------------------------------");
 
     if (result.data.success) {
       console.log(result.data.userData);
-      const { _id, username, email, phone } = result.data.userData;
-      console.log("every data", _id, username, email, phone);
+      const { id, username, email, phone } = result.data.userData;
+      console.log("every data", id, username, email, phone);
       
       // Dispatching the user data and storing the access token
-      dispatch(setUser({ id: _id, username, email, phone }));
+      dispatch(setUser({ id: id, username, email, phone }));
+      localStorage.setItem('userId',id);
       localStorage.setItem('userAccessToken', result.data.userAccessToken);
       Cookies.set('userAccessToken', result.data.userAccessToken, { expires: 7 });
       setLoading(false);

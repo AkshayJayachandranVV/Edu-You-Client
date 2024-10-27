@@ -54,7 +54,7 @@
   align-items: center; /* Aligns the icons vertically */
   gap: 20px;
   height: 100%;
-  margin-top: -8px; /* Further move the icons upwards */
+  margin-top: -5px; /* Further move the icons upwards */
 }
 
 .nav-icon {
@@ -63,7 +63,7 @@
   background-color: #000;
   border-radius: 50%;
   cursor: pointer;
-  margin-top: -4px; /* Fine-tune the vertical positioning */
+  margin-top: 14px; /* Fine-tune the vertical positioning */
 }
 
 .nav-icon.people {
@@ -80,7 +80,7 @@
   width: 30px;
   height: 30px;
   cursor: pointer;
-  margin-top: -4px; /* Ensure dropdown icon aligns correctly */
+  margin-top: 4px; /* Ensure dropdown icon aligns correctly */
 }
 
 .dropdown-content {

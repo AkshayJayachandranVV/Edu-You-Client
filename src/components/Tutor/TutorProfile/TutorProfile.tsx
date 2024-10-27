@@ -27,6 +27,10 @@ export default function TutorProfile() {
     navigate("/tutor/editProfile")
   }
 
+  const GoDashboard = () =>{
+    navigate("/tutor/dashboard")
+  }
+
   return (
     <>
       {/* Custom Navbar */}
@@ -61,7 +65,7 @@ export default function TutorProfile() {
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-lg shadow-lg">
                 <ul className="py-2">
-                  <li className="px-4 py-2 hover:bg-gray-600 cursor-pointer">
+                  <li onClick={GoDashboard} className="px-4 py-2 hover:bg-gray-600 cursor-pointer">
                     Dashboard
                   </li>
                   <li className="px-4 py-2 hover:bg-gray-600 cursor-pointer">

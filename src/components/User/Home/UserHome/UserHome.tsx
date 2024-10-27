@@ -8,14 +8,28 @@ import { useDispatch } from "react-redux";
 import { logout } from "../../../../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 import { courseEndpoints } from "../../../constraints/endpoints/courseEndpoints";
+import { tutorEndpoints } from "../../../constraints/endpoints/TutorEndpoints";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { ContactPageSharp } from "@mui/icons-material";
+import {fetchNewSignedUrl} from '../../../../S3signedUrl/fetchNewSignedUrl';
+
+
+interface Course {
+  _id: string; // or number, depending on your implementation
+  thumbnail: string; // the original thumbnail key
+  thumbnailUrl?: string; // the new signed URL (optional)
+  courseName: string;
+  courseDescription:string;
+  coursePrice:string;
+}
 
 export default function UserHome() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [courses, setCourses] = useState([]); // state for storing courses
+  const [courses, setCourses] = useState<Course[]>([]); // Explicitly typing the courses state
+  const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
+  
 
   const handleCardClick = (courseId:string) => {
     // Call your function here
@@ -33,16 +47,48 @@ export default function UserHome() {
     fetchData();
   }, []);
 
+  // const fetchData = async () => {
+  //   try {
+  //     const result = await axios.get(courseEndpoints.userCourse);
+  //     console.log(result.data.courses,"--------------------------")
+  //     setCourses(result.data.courses); // store fetched courses in state
+  //     console.log(result.data.courses);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+
   const fetchData = async () => {
     try {
       const result = await axios.get(courseEndpoints.userCourse);
-      console.log(result.data.courses,"--------------------------")
-      setCourses(result.data.courses); // store fetched courses in state
+      setCourses(result.data.courses); // Store fetched courses in state
+  
       console.log(result.data.courses);
+  
+      // Generate signed URLs for each course's thumbnail
+      const initialUrls = await result.data.courses.reduce(async (accPromise, course) => {
+        const acc = await accPromise; // Await the previous accumulator promise
+        const data = {
+          imageKey: course.thumbnail // Use the original thumbnail key
+        };
+  
+        console.log(data);
+        const response = await axios.post('http://localhost:4000/tutor/getSignedUrlId', data); // Await the axios post
+        console.log(response.data, "--------------------url");
+        
+        // Assign the signed URL to the course object
+        acc.push({ ...course, thumbnailUrl: response.data }); // Store the signed URL in thumbnailUrl
+        return acc;
+      }, Promise.resolve([])); // Start with an empty array
+  
+      setCourses(initialUrls); // Set updated courses with thumbnailUrl
     } catch (error) {
       console.log(error);
     }
   };
+  
+  
 
   const logOut = () => {
     dispatch(logout());
@@ -54,6 +100,23 @@ export default function UserHome() {
   const handleProfileClick = () => {
     navigate("/profile"); // Navigate to the /profile route
   };
+
+
+  // const handleImageError = async (imageFilename: string) => {
+  //   try {
+  //     const response = await axios.post('http://localhost:4000/tutor/getSignedUrlId', { imageKey: imageFilename });
+  //     console.log(response.data, "--------------------url");
+
+  //     setCourses((prevCourses) =>
+  //       prevCourses.map((course) =>
+  //         course.thumbnail === imageFilename ? { ...course, thumbnailUrl: response.data } : course // Replace the old URL
+  //       )
+  //     );
+  //   } catch (error) {
+  //     console.error("Error fetching new signed URL:", error);
+  //   }
+  // };
+  
 
   return (
     <div className="user-home">
@@ -98,7 +161,7 @@ export default function UserHome() {
             className="card" 
             onClick={() => handleCardClick(course._id)} // Call the function with the course ID
           >
-            <img src={course.thumbnail} alt={course.courseName} className="card-image" />
+            <img  src={course.thumbnailUrl} alt={course.courseName} className="card-image" />
             <h3 className="card-title">{course.courseName}</h3>
             <p className="card-description">{course.courseDescription}</p>
             <p className="card-amount">Rs. {course.coursePrice}</p>

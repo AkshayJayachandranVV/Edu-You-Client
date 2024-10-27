@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import Navbar from "../../User/Home/UserHome/Navbar/Navbar";
 import Footer from "../../User/Home/UserHome/Footer/Footer";
 import iconimage from "../../../assets/images/User/UserHome/Account.png";
-import bannerImage from "../../../assets/images/User/checkout.png"; 
-import axiosInstance from '../../../components/constraints/axios/userAxios';
+import bannerImage from "../../../assets/images/User/checkout.png";
+import axiosInstance from "../../../components/constraints/axios/userAxios";
 import { userEndpoints } from "../../../components/constraints/endpoints/userEndpoints";
 import { RootState } from "../../../redux/store";
-import { toast } from 'sonner';
-import { useDispatch,useSelector } from 'react-redux';
-import { loadStripe } from '@stripe/stripe-js'
-import { useParams } from 'react-router-dom';
-import { tutorEndpoints } from '../../constraints/endpoints/TutorEndpoints';
+import { toast } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
+import { loadStripe } from "@stripe/stripe-js";
+import { useParams } from "react-router-dom";
+import { tutorEndpoints } from "../../constraints/endpoints/TutorEndpoints";
 
 interface Course {
   _id: string;
@@ -18,38 +18,39 @@ interface Course {
   courseDescription: string;
   coursePrice: number;
   courseDiscountPrice?: number;
-  courseCategory: string; 
+  courseCategory: string;
   courseLevel: string;
   demoURL: string;
   thumbnail: string;
-  tutorId:string
+  thumbnailKey:string;
+  tutorId: string;
 }
 
 interface Tutor {
   tutorname: string;
   email: string;
   phone: string;
-  description: string;
 }
 
 export default function Checkout() {
   const { courseId } = useParams();
   const [courseData, setCourseData] = useState<Course | null>(null);
   const [tutorDetails, setTutorDetails] = useState<Tutor | null>(null);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  
   useEffect(() => {
     sessionStorage.removeItem("orderCheck");
-  
+
     const fetchCourseDetails = async () => {
       try {
         if (courseId) {
           const response = await axiosInstance.get(
-            `${userEndpoints.courseDetails.replace('courseId', courseId)}`
+            `${userEndpoints.courseDetails.replace("courseId", courseId)}`
           );
           setCourseData(response.data.courses);
-  
+
+          console.log(response.data,"hey got the thumbnailkey");
+
           // After fetching course data, fetch tutor details
           if (response.data.courses.tutorId) {
             fetchTutorDetails(response.data.courses.tutorId); // Pass tutorId here
@@ -61,26 +62,25 @@ export default function Checkout() {
         console.error("Error fetching course details:", error);
       }
     };
-  
+
     const fetchTutorDetails = async (tutorId: string) => {
       try {
+        console.log("reached here ", tutorId);
         const response = await axiosInstance.get(
-          `${userEndpoints.getTutorDetails.replace("tutorId", tutorId)}`
+          `${tutorEndpoints.getTutorDetails.replace("tutorId", tutorId)}`
         );
-  
+
         console.log(response);
         setTutorDetails(response.data);
       } catch (error) {
         console.error("Error fetching tutor details:", error);
       }
     };
-  
+
     fetchCourseDetails();
   }, [courseId]);
-  
 
-  const userId = useSelector((state: RootState) => state.user.id);
-
+  const userId = useSelector((state: RootState) => state.user.id);     
 
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -103,20 +103,23 @@ export default function Checkout() {
         courseCategory: courseData?.courseCategory, // Course category
         courseLevel: courseData?.courseLevel, // Course level
         demoURL: courseData?.demoURL, // Demo video URL
-        thumbnail: courseData?.thumbnail, // Course thumbnail
+        thumbnail: courseData?.thumbnailKey, // Course thumbnail
         tutorId: courseData?.tutorId, // Tutor details
       };
 
       console.log(paymentData, "------------------------------");
 
       // Call the backend to create a Stripe session
-      const result = await axiosInstance.post(userEndpoints.payment, paymentData);
+      const result = await axiosInstance.post(
+        userEndpoints.payment,
+        paymentData
+      );
 
       console.log(result, "payment response");
 
       if (result.data.success && result.data.sessionId) {
         // Redirect the user to the Stripe checkout page
-        
+
         const { sessionId } = result.data;
         const { error } = await stripe.redirectToCheckout({
           sessionId: sessionId,
@@ -134,7 +137,6 @@ export default function Checkout() {
       toast.error("Couldn't load payment processing. Please try again.");
     }
   };
-  
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
@@ -173,9 +175,9 @@ export default function Checkout() {
                 <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
 
                 <div className="mb-4">
-                  <img 
-                    src={courseData.thumbnail} 
-                    alt={`${courseData.courseName} Thumbnail`} 
+                  <img
+                    src={courseData.thumbnail}
+                    alt={`${courseData.courseName} Thumbnail`}
                     className="w-full h-auto object-cover rounded-md"
                   />
                 </div>
@@ -199,48 +201,31 @@ export default function Checkout() {
               </div>
 
               {/* Tutor Details */}
-              <div className="bg-gray-800 rounded-lg shadow-lg p-6">
-  <h3 className="text-2xl font-bold text-yellow-400 mb-4">Tutor Details</h3>
-  {tutorDetails ? (
-    <div className="space-y-4">
-      <div className="flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5.121 17.804A6.027 6.027 0 0112 15a6.027 6.027 0 016.879 2.804M15 10a3 3 0 11-6 0 3 3 0 016 0zM12 12v6m0 0h2m-2 0h-2" />
-        </svg>
-        <p className="text-lg text-white">
-          <strong className="text-yellow-400">Name:</strong> {tutorDetails.tutorname}
-        </p>
-      </div>
-      <div className="flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M16 12h4v10H4V12h4M2 7h20M12 12v6m0 0h2m-2 0h-2" />
-        </svg>
-        <p className="text-lg text-white">
-          <strong className="text-yellow-400">Email:</strong> {tutorDetails.email}
-        </p>
-      </div>
-      <div className="flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3 5h18M9 3h6M9 21h6m0-2v-2m0 0V7m0 10v-2m-6 2V7m0 10v-2" />
-        </svg>
-        <p className="text-lg text-white">
-          <strong className="text-yellow-400">Phone:</strong> {tutorDetails.phone}
-        </p>
-      </div>
-      <div className="flex items-start">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 8l7-3 7 3v10a2 2 0 01-2 2H7a2 2 0 01-2-2V8z" />
-        </svg>
-        <p className="text-lg text-white">
-          <strong className="text-yellow-400">Description:</strong> {tutorDetails.description || 'No description available.'}
-        </p>
-      </div>
-    </div>
-  ) : (
-    <p className="text-gray-400">Loading tutor details...</p>
-  )}
-</div>
-
+              <div className="bg-gray-900 rounded-lg shadow-xl p-6">
+                <h3 className="text-2xl font-extrabold text-center text-yellow-400 mb-4">Tutor Details</h3>
+                {tutorDetails ? (
+                  <div className="grid grid-cols-1 gap-3">
+                    <div className="bg-gray-800 rounded-lg p-3">
+                      <p className="text-lg">
+                        <span className="font-bold text-yellow-300">Name:</span> {tutorDetails.tutorname}
+                      </p>
+                    </div>
+                    <div className="bg-gray-800 rounded-lg p-3">
+                      <p className="text-lg">
+                        <span className="font-bold text-yellow-300">Email:</span> {tutorDetails.email}
+                      </p>
+                    </div>
+                    <div className="bg-gray-800 rounded-lg p-3">
+                      <p className="text-lg">
+                        <span className="font-bold text-yellow-300">Phone:</span> {tutorDetails.phone}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-lg text-gray-400 text-center">Loading tutor details...</p>
+                )}
+              </div>
+            </div>
             </div>
 
             <button
@@ -250,7 +235,6 @@ export default function Checkout() {
               Place Order
             </button>
           </div>
-        </div>
       )}
 
       <Footer />

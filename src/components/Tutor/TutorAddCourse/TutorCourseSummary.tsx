@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../redux/store';
 import { clearCourseData } from '../../../redux/courseSlice';
+import { editClearCourseData } from '../../../redux/editCourseSlice';
 import { courseEndpoints } from '../../../../src/components/constraints/endpoints/courseEndpoints';
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
@@ -87,8 +88,8 @@ const TutorCourseSummary: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         }, 1000);
   
         // Clear the Redux state only on success
-        dispatch(clearCourseData());
-  
+        dispatch(clearCourseData());    
+        dispatch(editClearCourseData()); 
         // Redirect to the first AddCourse page
         navigate("/tutor/addCourse"); // Adjust the route if necessary
       } else {

@@ -11,14 +11,15 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import CustomIcon from "../../../src/assets/Icons/Tutor/video.png"; // Update this with the correct path to your icon
 import { useNavigate } from "react-router-dom";
-import CustomIcon from "../../assets/Icons/Tutor/video.png";
-import Cookies from "js-cookie";
+import Cookies from 'js-cookie';
 
 export default function PrimarySearchAppBar() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
+    React.useState<null | HTMLElement>(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -41,9 +42,10 @@ export default function PrimarySearchAppBar() {
     navigate("/tutor/profile");
   };
 
-  const handleLogout = () => {
+
+  const handleClose = () => {
     localStorage.removeItem("tutorAccessToken");
-    Cookies.remove("tutorAccessToken");
+    Cookies.remove('tutorAccessToken');
     navigate("/tutor/login");
   };
 
@@ -70,7 +72,7 @@ export default function PrimarySearchAppBar() {
     >
       <MenuItem onClick={handleProfile}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <MenuItem onClick={handleLogout}>Log out</MenuItem>
+      <MenuItem onClick={handleClose}>Log out</MenuItem>
     </Menu>
   );
 
@@ -100,7 +102,11 @@ export default function PrimarySearchAppBar() {
         <p>Messages</p>
       </MenuItem>
       <MenuItem>
-        <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
+        <IconButton
+          size="large"
+          aria-label="show 17 new notifications"
+          color="inherit"
+        >
           <Badge badgeContent={17} color="error">
             <NotificationsIcon />
           </Badge>
@@ -128,41 +134,51 @@ export default function PrimarySearchAppBar() {
         position="fixed"
         sx={{
           backgroundColor: "black",
-          left: "auto",
-          right: 0,
-          width: { xs: "100%" }, // Responsive width adjustment
+          left: "200px", // Adjust this value to reduce the navbar's starting position from the left, which will reduce its width
+          width: `calc(100% - 200px)`, // Adjust this value to reduce the overall width of the navbar
         }}
       >
-        <Toolbar sx={{ minHeight: 64, padding: "0 16px" }}> {/* Adjusted minHeight to match other navbar */}
+        <Toolbar sx={{ minHeight: 48, padding: "0 16px" }}>
+          {" "}
+          {/* Reduce minHeight and add padding */}
           <IconButton
             size="large"
             edge="start"
             color="inherit"
             aria-label="custom icon"
-            sx={{ mr: 2, padding: 0 }}
+            sx={{ mr: 2, padding: 0 }} // Remove padding from IconButton
           >
             <img
               src={CustomIcon}
               alt="custom icon"
               style={{ width: "36px", height: "40px" }}
-            />
+            />{" "}
+            {/* Reduce icon size */}
           </IconButton>
           <Typography
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: "none", sm: "block" }, fontSize: "1.25rem" }}
+            sx={{ display: { xs: "none", sm: "block" }, fontSize: "1.25rem" }} // Reduce font size
           >
             Tutor
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+            <IconButton
+              size="large"
+              aria-label="show 4 new mails"
+              color="inherit"
+            >
               <Badge badgeContent={4} color="error">
                 <MailIcon />
               </Badge>
             </IconButton>
-            <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
+            <IconButton
+              size="large"
+              aria-label="show 17 new notifications"
+              color="inherit"
+            >
               <Badge badgeContent={17} color="error">
                 <NotificationsIcon />
               </Badge>

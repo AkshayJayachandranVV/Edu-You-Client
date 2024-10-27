@@ -58,16 +58,16 @@ function TutorLogin() {
         if (result.data.success) {
           console.log("Successfully logged in using GOOGLE");
 
-          console.log(result.data.tutorData);
-          const { _id, tutorname, email, phone } = result.data.tutorData;
-          console.log("every data", _id, tutorname, email, phone);
+          console.log(result.data.tutor_data);
+          const { id, tutorname, email, phone } = result.data.tutor_data;
+          console.log("every data", id, tutorname, email, phone);
   
           // Dispatch the user data to the Redux store
-          dispatch(setTutor({ id: _id, tutorname, email, phone }));
+          dispatch(setTutor({ id: id, tutorname, email, phone }));
           console.log("Successfully logged in using GOOGLE");
 
           localStorage.setItem('tutorAccessToken', result.data.tutorAccessToken);
-          localStorage.setItem('tutorId', result.data._id);
+          localStorage.setItem('tutorId',id);
           Cookies.set('tutorAccessToken', result.data.tutorAccessToken, { expires: 7 });
           navigate('/tutor/dashboard');
         } else if (result.data.message === "User is Blocked") {
@@ -98,14 +98,14 @@ function TutorLogin() {
       if (result.data.success) {
           
         console.log(result.data.tutorData);
-        const { _id, tutorname, email, phone } = result.data.tutorData;
-        console.log("every data", _id, tutorname, email, phone);
+        const { id, tutorname, email, phone } = result.data.tutorData;
+        console.log("every data", id, tutorname, email, phone);
 
         // Dispatch the user data to the Redux store
-        dispatch(setTutor({ id: _id, tutorname, email, phone }));
+        dispatch(setTutor({ id: id, tutorname, email, phone }));
 
         localStorage.setItem('tutorAccessToken', result.data.tutorAccessToken);
-        localStorage.setItem('tutorId', result.data.tutorId);
+        localStorage.setItem('tutorId',id);
         Cookies.set('tutorAccessToken', result.data.tutorAccessToken, { expires: 7 });
         setLoading(false);
         navigate('/tutor/dashboard'); // Redirect after successful login

@@ -167,7 +167,7 @@ const editCourseSlice = createSlice({
       const { sectionIndex, lessonIndex } = action.payload;
       state.sections[sectionIndex].lessons.splice(lessonIndex, 1);
     },
-    clearCourseData(state) {
+    editClearCourseData(state) {
       state.addCourse = initialState.addCourse;
       state.addCourse2 = initialState.addCourse2;
       state.sections = initialState.sections;
@@ -189,7 +189,7 @@ export const selectLessons = createSelector(
 
 
 // Export actions
-export const { editAddCourse, editAddCourse2, editLessons,removeSectionFromRedux, removeLessonFromRedux , clearCourseData } = editCourseSlice.actions;
+export const { editAddCourse, editAddCourse2, editLessons,removeSectionFromRedux, removeLessonFromRedux , editClearCourseData } = editCourseSlice.actions;
 
 // Export the reducer
 export default editCourseSlice.reducer;

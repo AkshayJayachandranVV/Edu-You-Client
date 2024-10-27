@@ -20,13 +20,19 @@ interface Course {
 }
 
 const AdminCourses = () => {
+  const navigate = useNavigate();
   const [coursesData, setCoursesData] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchCoursesData();
-  }, []);
+    const token = localStorage.getItem('adminAccessToken');
+    if (!token) {
+      navigate('/admin/login');
+    } else {
+      fetchCoursesData();
+    }
+  }, [navigate]);
 
   const fetchCoursesData = async () => {
     try {
@@ -34,9 +40,6 @@ const AdminCourses = () => {
 
       // Fetch data from the API
       const result = await axiosInstance.get<Course[]>(adminEndpoints.courses); 
-
-
-      console.log(result.data)
 
       // Set the fetched data
       setCoursesData(result.data);
@@ -49,14 +52,11 @@ const AdminCourses = () => {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div style={{ display: 'flex', height: '100vh', backgroundColor: '#000000' }}>
       <AdminSidebar />
       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <AdminNavbar />
-        <div
-          className="flex-1 flex flex-col p-6"
-          style={{ backgroundColor: '#000000' }}
-        >
+        <div className="flex-1 flex flex-col p-6" style={{ backgroundColor: '#000000' }}>
           <div
             className="flex-grow flex flex-col justify-start"
             style={{
@@ -68,9 +68,9 @@ const AdminCourses = () => {
             }}
           >
             {loading ? (
-              <p>Loading...</p>
+              <p style={{ color: '#FFFFFF' }}>Loading...</p>
             ) : error ? (
-              <p>{error}</p>
+              <p style={{ color: '#FFFFFF' }}>{error}</p>
             ) : (
               // Pass the fetched courses data to the AdminCoursesTable component
               <AdminCoursesTable courseData={coursesData} />

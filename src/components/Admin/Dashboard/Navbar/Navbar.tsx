@@ -13,6 +13,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import CustomIcon from '../../../../assets/Icons/Tutor/video.png'; // Update this with the correct path to your icon
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 export default function PrimarySearchAppBar() {
   const navigate = useNavigate();
@@ -32,7 +33,8 @@ export default function PrimarySearchAppBar() {
 
   const handleClose = () => {
     localStorage.removeItem('adminAccessToken');
-    navigate('/admin/login');
+    Cookies.remove('adminAccessToken');
+    navigate('/admin');
   };
 
   const handleMenuClose = () => {

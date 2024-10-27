@@ -15,6 +15,7 @@ interface ProfileFormInputs {
   phone: string;
   profilePic: string;
   about: string;
+  _id:string
 }
 
 interface PasswordFormInputs {
@@ -118,6 +119,8 @@ export default function EditProfile() {
             setProfileImage(profilePicUrl);
           }
         }
+
+        console.log("-------------")
       
         if (profilePicKey) {
           formData.append("profile_picture", profilePicKey); // Append the uploaded image key, not profilePic
@@ -134,10 +137,12 @@ export default function EditProfile() {
               'Content-Type': 'multipart/form-data',
             },
           });
+
+          console.log(result.data)
       
           if (result.status === 200) {
             toast.success('Profile updated successfully');
-            const { _id, tutorname, email, phone, about } = result.data._doc;
+            const { _id, tutorname, email, phone, about } = result.data;
             dispatch(setTutor({
               id: _id,
               tutorname,

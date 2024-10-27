@@ -267,50 +267,60 @@ const AddCourse: React.FC<AddCourseProps> = ({ onNext }) => {
 
           {/* Course Category and Level */}
           <div className="flex flex-col md:flex-row gap-8">
-            {/* Course Category */}
-            <div className="flex-1 flex flex-col gap-4">
-              <label className="text-lg font-medium text-gray-300">Course Category</label>
-              <Controller
-                name="courseCategory"
-                control={control}
-                defaultValue=""
-                rules={{ required: "Course category is required" }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="text"
-                    className={`w-full h-12 rounded-md bg-gray-700 px-4 py-2 text-gray-200 border ${
-                      errors.courseCategory ? "border-red-500" : "border-gray-600"
-                    } focus:ring-2 focus:ring-blue-500`}
-                    placeholder="Enter Course Category"
-                  />
-                )}
-              />
-              {errors.courseCategory && <span className="text-red-500">{errors.courseCategory.message}</span>}
-            </div>
+  {/* Course Category */}
+  <div className="flex-1 flex flex-col gap-4">
+    <label className="text-lg font-medium text-gray-300">Course Category</label>
+    <Controller
+      name="courseCategory"
+      control={control}
+      defaultValue=""
+      rules={{ required: "Course category is required" }}
+      render={({ field }) => (
+        <select
+          {...field}
+          className={`w-full h-12 rounded-md bg-gray-700 px-4 py-2 text-gray-200 border ${
+            errors.courseCategory ? "border-red-500" : "border-gray-600"
+          } focus:ring-2 focus:ring-blue-500`}
+        >
+          <option value="" disabled>Select Course Category</option>
+          <option value="Programming">Programming</option>
+          <option value="Design">Design</option>
+          <option value="Marketing">Marketing</option>
+          <option value="Business">Business</option>
+          <option value="Music">Music</option>
+          {/* Add more categories as needed */}
+        </select>
+      )}
+    />
+    {errors.courseCategory && <span className="text-red-500">{errors.courseCategory.message}</span>}
+  </div>
 
-            {/* Course Level */}
-            <div className="flex-1 flex flex-col gap-4">
-              <label className="text-lg font-medium text-gray-300">Course Level</label>
-              <Controller
-                name="courseLevel"
-                control={control}
-                defaultValue=""
-                rules={{ required: "Course level is required" }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="text"
-                    className={`w-full h-12 rounded-md bg-gray-700 px-4 py-2 text-gray-200 border ${
-                      errors.courseLevel ? "border-red-500" : "border-gray-600"
-                    } focus:ring-2 focus:ring-blue-500`}
-                    placeholder="Enter Course Level"
-                  />
-                )}
-              />
-              {errors.courseLevel && <span className="text-red-500">{errors.courseLevel.message}</span>}
-            </div>
-          </div>
+  {/* Course Level */}
+  <div className="flex-1 flex flex-col gap-4">
+    <label className="text-lg font-medium text-gray-300">Course Level</label>
+    <Controller
+      name="courseLevel"
+      control={control}
+      defaultValue=""
+      rules={{ required: "Course level is required" }}
+      render={({ field }) => (
+        <select
+          {...field}
+          className={`w-full h-12 rounded-md bg-gray-700 px-4 py-2 text-gray-200 border ${
+            errors.courseLevel ? "border-red-500" : "border-gray-600"
+          } focus:ring-2 focus:ring-blue-500`}
+        >
+          <option value="" disabled>Select Course Level</option>
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+        </select>
+      )}
+    />
+    {errors.courseLevel && <span className="text-red-500">{errors.courseLevel.message}</span>}
+  </div>
+</div>
+
 
           {/* Demo URL */}
           <div className="flex flex-col gap-4">
