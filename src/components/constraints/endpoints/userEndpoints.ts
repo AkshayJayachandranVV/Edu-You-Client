@@ -20,5 +20,7 @@ export const userEndpoints = {
     getUserCourses :  `${API_GATEWAY_BASE_URL}/getCourses/userId`,
     fetchChat: `${API_GATEWAY_BASE_URL}/fetchChat`,
     sendFile: `${API_GATEWAY_BASE_URL}/sendFile`,
+    myCourse: `${API_GATEWAY_BASE_URL}/myCourse/userId`,
+    courseView: `${API_GATEWAY_BASE_URL}/courseView/courseId`,
 }
 

@@ -11,6 +11,7 @@ import UserAllCourses from "../../components/User/UserAllCourses/UserAllCourses"
 import UserCheckout from "../../components/User/UserCheckout/UserCheckout";
 import PaymentSuccess from "../../components/User/PaymentSuccess/PaymentSuccess";
 import MyCourse from "../../components/User/MyCourse/MyCourse";
+import CourseView from "../../pages/User/CoursePurchased/CoursePurchased";
 import ErrorPage from '../../components/User/404/errorPage'; 
 import Chat from "../../pages/User/UserChat/UserChat";
 import PrivateRoute from "./privateRoute"
@@ -32,6 +33,7 @@ const UserRoutes = () => {
             <Route path='/checkout/:courseId' element={ <PrivateRouteUser> <UserCheckout />  </PrivateRouteUser>} />
             <Route path='/success' element={ <PrivateRouteUser> <PaymentSuccess />  </PrivateRouteUser>} />
             <Route path='/myCourses' element={ <PrivateRouteUser> <MyCourse />  </PrivateRouteUser>} />
+            <Route path='/courseView/:courseId' element={ <PrivateRouteUser> < CourseView />  </PrivateRouteUser>} />
             <Route path='/chat' element={ <PrivateRouteUser> <Chat />  </PrivateRouteUser>} />
             <Route path="*" element={<ErrorPage />} />
         </Routes>
