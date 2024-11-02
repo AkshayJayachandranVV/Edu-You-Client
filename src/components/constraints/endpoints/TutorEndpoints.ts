@@ -20,6 +20,9 @@ export const tutorEndpoints = {
     getSignedUrlId:  `${API_GATEWAY_BASE_URL}/getSignedUrlId`,
     payouts: `${API_GATEWAY_BASE_URL}/payouts/tutorId`,  
     courseStudents : `${API_GATEWAY_BASE_URL}/courseStudents/courseId`,
+    getPresignedUrl: `${API_GATEWAY_BASE_URL}/getPresignedUrl`,
+    cardsData: `${API_GATEWAY_BASE_URL}/cardsData/tutorId`,
+    graphData: `${API_GATEWAY_BASE_URL}/graphData/tutorId`,
 }
     
 

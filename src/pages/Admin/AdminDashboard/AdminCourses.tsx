@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import AdminNavbar from '../../../components/Admin/Dashboard/Navbar/Navbar';
 import AdminSidebar from '../../../components/Admin/Dashboard/Sidebar/Sidebar';
 import AdminCoursesTable from '../../../components/Admin/Dashboard/Body/AdminCourses'; // Assuming this is the table component
@@ -20,24 +19,18 @@ interface Course {
 }
 
 const AdminCourses = () => {
-  const navigate = useNavigate();
   const [coursesData, setCoursesData] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('adminAccessToken');
-    if (!token) {
-      navigate('/admin/login');
-    } else {
+
       fetchCoursesData();
-    }
-  }, [navigate]);
+  }, []);
 
   const fetchCoursesData = async () => {
     try {
       setLoading(true);
-
       // Fetch data from the API
       const result = await axiosInstance.get<Course[]>(adminEndpoints.courses); 
 

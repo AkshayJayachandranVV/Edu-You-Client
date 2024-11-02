@@ -29,13 +29,10 @@ const AdminStudentPage = () => {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem('adminAccessToken');
-    if (!token) {
-      navigate('/admin');
-    } else {
+  
       fetchStudentsData();
-    }
-  }, [navigate]);
+    
+  }, []);
 
   const fetchStudentsData = async () => {
     try {

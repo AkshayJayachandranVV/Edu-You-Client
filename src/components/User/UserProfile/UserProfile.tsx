@@ -39,14 +39,29 @@ export default function ProfilePage() {
   const user = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    setProfileImage(user.profilePictureUrl || iconimage);
     if (user) {
       setValue("name", user.username || "");
       setValue("email", user.email || "");
       setValue("phone", user.phone || "");
       setValue("about", user.bio || ".");
+      fetchProfilSignedUrl();  // Fetch the S3 URL for profile picture
     }
   }, [user, setValue]);
+
+  const fetchProfilSignedUrl = async () => {
+    try {
+      const response = await axios.get(tutorEndpoints.getPresignedUrl, {
+        params: {
+          s3Key: user.profilePicture, // Assuming profilePicture contains the S3 key
+        },
+      });
+      const s3Url = response.data.url;
+      if (s3Url) setProfileImage(s3Url);  // Set the profileImage to S3 URL
+    } catch (error) {
+      console.error("Error fetching S3 URL:", error);
+    }
+  };
+
 
 
   const generateFileName = (originalName: string) => {

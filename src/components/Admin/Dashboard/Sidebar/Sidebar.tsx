@@ -40,7 +40,7 @@ const AdminSidebar = () => {
         {[
           { text: 'Dashboard', icon: <Dashboard style={{ color: '#43b27f' }} />, path: '/admin/dashboard' },
           { text: 'Courses', icon: <LibraryBooks style={{ color: '#43b27f' }} />, path: '/admin/courses' },
-          { text: 'Reported Courses', icon: <ReportProblem style={{ color: '#43b27f' }} />, path: '/admin/reported-courses' },
+          { text: 'Reported Courses', icon: <ReportProblem style={{ color: '#43b27f' }} />, path: '/admin/reports' },
           { text: 'Payouts', icon: <AttachMoney style={{ color: '#43b27f' }} />, path: '/admin/payouts' },
           { text: 'Students', icon: <People style={{ color: '#43b27f' }} />, path: '/admin/students' },
           { text: 'Tutors', icon: <Person style={{ color: '#43b27f' }} />, path: '/admin/tutors' },

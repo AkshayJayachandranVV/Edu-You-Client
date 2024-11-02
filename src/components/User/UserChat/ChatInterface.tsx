@@ -52,7 +52,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
       if (!selectedChat || !userId) return;
       const roomId = selectedChat.courseId;
       const response = await axiosInstance.get(`${userEndpoints.fetchChat}`, { params: { roomId, userId } });
-      const fetchedMessages = response.data.messages;
+      console.log(response.data,"deyyyyyyyyyyyyyy messqge")
+      const fetchedMessages = response.data;
       const formattedMessages = fetchedMessages.map((message: any, index: number) => ({
         id: index + 1,
         text: message.content || "",
@@ -107,34 +108,36 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
     if (selectedChat) {
       fetchChat();
       SocketService.joinRoom(selectedChat.courseId);
-
+  
       const messageHandler = (message: any) => {
         const newMsg = {
           id: messages.length + 1,
-          text: typeof message === 'string' ? message : message.content,
+          text: message.content, // or message.text if it's a string message
           mediaUrl: message.mediaUrl,
           mediaType: message.mediaType,
-          sender: message.userId === userId ? "You" : message.username,
+          sender: message.userId === userId ? "You" : message.userData?.username || message.username,
           time: new Date().toLocaleTimeString(),
           isSender: message.userId === userId,
-          username: message.username,
-          profile_picture: message.profile_picture,
+          username: message.userData?.username || message.username,
+          profile_picture: message.userData?.profile_picture || message.profile_picture,
         };
+  
         setMessages((prev) => [...prev, newMsg]);
         setDisplayedMessages((prev) => [...prev.slice(-5), newMsg]);
       };
-
+  
       const typingHandler = (typingStatus) => setIsTyping(typingStatus);
-
+  
       SocketService.onReceiveMessage(messageHandler);
       SocketService.onTypingStatus(typingHandler);
-
+  
       return () => {
         SocketService.getSocket().off("receiveMessage", messageHandler);
         SocketService.getSocket().off("typingStatus", typingHandler);
       };
     }
   }, [selectedChat]);
+  
 
 
   const loadMoreMessages = () => {
@@ -336,7 +339,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   </div>
 
   {/* Chat Messages */}
-  <div className="flex-1 overflow-y-auto p-4 space-y-2">
+  {/* Chat Messages */}
+<div className="flex-1 overflow-y-auto p-4 space-y-2">
   {messages.map((message) => (
     <div
       key={message.id}
@@ -346,14 +350,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
         <img
           className="h-8 w-8 rounded-full object-cover mr-2"
           src={message.profile_picture}
-          alt="Profile Pic"
+          alt={`${message.username}'s Profile Pic`}
         />
       )}
       <div
-        className={`flex items-end space-x-2 ${
-          message.isSender ? "flex-row-reverse" : ""
+        className={`flex flex-col space-y-1 ${
+          message.isSender ? "items-end" : "items-start"
         }`}
       >
+        {/* Display the username */}
+        {!message.isSender && (
+          <span className="text-sm font-semibold text-gray-300">
+            {message.username}
+          </span>
+        )}
         <div
           className={`rounded-lg p-3 max-w-xs break-words ${
             message.isSender
@@ -386,6 +396,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   ))}
   <div ref={messagesEndRef} />
 </div>
+
 
 
   {/* Message Input */}

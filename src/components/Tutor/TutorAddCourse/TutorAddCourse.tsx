@@ -25,7 +25,7 @@ interface AddCourseProps {
 const AddCourse: React.FC<AddCourseProps> = ({ onNext }) => {
   const dispatch = useDispatch();
   const courseData = useSelector((state: RootState) => state.course.courseDetails);
-  const { control, handleSubmit, setValue, formState: { errors } } = useForm<CourseFormData>();
+  const { control, handleSubmit,  getValues, setValue, formState: { errors } } = useForm<CourseFormData>();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -199,50 +199,58 @@ const AddCourse: React.FC<AddCourseProps> = ({ onNext }) => {
 
           {/* Course Price and Discount Price */}
           <div className="flex flex-col md:flex-row gap-8">
-            {/* Course Price */}
-            <div className="flex-1 flex flex-col gap-4">
-              <label className="text-lg font-medium text-gray-300">Course Price</label>
-              <Controller
-                name="coursePrice"
-                control={control}
-                defaultValue={0}
-                rules={{ required: "Course price is required", min: { value: 0, message: "Price must be a positive number" } }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="number"
-                    className={`w-full h-12 rounded-md bg-gray-700 px-4 py-2 text-gray-200 border ${
-                      errors.coursePrice ? "border-red-500" : "border-gray-600"
-                    } focus:ring-2 focus:ring-blue-500`}
-                    placeholder="Enter Course Price"
-                  />
-                )}
-              />
-              {errors.coursePrice && <span className="text-red-500">{errors.coursePrice.message}</span>}
-            </div>
+  {/* Course Price */}
+  <div className="flex-1 flex flex-col gap-4">
+    <label className="text-lg font-medium text-gray-300">Course Price</label>
+    <Controller
+      name="coursePrice"
+      control={control}
+      defaultValue={0}
+      rules={{
+        required: "Course price is required",
+        min: { value: 0, message: "Price must be a positive number" }
+      }}
+      render={({ field }) => (
+        <input
+          {...field}
+          type="number"
+          className={`w-full h-12 rounded-md bg-gray-700 px-4 py-2 text-gray-200 border ${
+            errors.coursePrice ? "border-red-500" : "border-gray-600"
+          } focus:ring-2 focus:ring-blue-500`}
+          placeholder="Enter Course Price"
+        />
+      )}
+    />
+    {errors.coursePrice && <span className="text-red-500">{errors.coursePrice.message}</span>}
+  </div>
 
-            {/* Discount Price */}
-            <div className="flex-1 flex flex-col gap-4">
-              <label className="text-lg font-medium text-gray-300">Discount Price</label>
-              <Controller
-                name="discountPrice"
-                control={control}
-                defaultValue={0}
-                rules={{ required: "Discount price is required", min: { value: 0, message: "Price must be a positive number" } }}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="number"
-                    className={`w-full h-12 rounded-md bg-gray-700 px-4 py-2 text-gray-200 border ${
-                      errors.discountPrice ? "border-red-500" : "border-gray-600"
-                    } focus:ring-2 focus:ring-blue-500`}
-                    placeholder="Enter Discount Price"
-                  />
-                )}
-              />
-              {errors.discountPrice && <span className="text-red-500">{errors.discountPrice.message}</span>}
-            </div>
-          </div>
+  {/* Discount Price */}
+  <div className="flex-1 flex flex-col gap-4">
+    <label className="text-lg font-medium text-gray-300">Discount Price</label>
+    <Controller
+      name="discountPrice"
+      control={control}
+      defaultValue={0}
+      rules={{
+        required: "Discount price is required",
+        min: { value: 0, message: "Price must be a positive number" },
+        validate: (value) => value < getValues('coursePrice') || "Discount price must be less than course price"
+      }}
+      render={({ field }) => (
+        <input
+          {...field}
+          type="number"
+          className={`w-full h-12 rounded-md bg-gray-700 px-4 py-2 text-gray-200 border ${
+            errors.discountPrice ? "border-red-500" : "border-gray-600"
+          } focus:ring-2 focus:ring-blue-500`}
+          placeholder="Enter Discount Price"
+        />
+      )}
+    />
+    {errors.discountPrice && <span className="text-red-500">{errors.discountPrice.message}</span>}
+  </div>
+</div>
+
 
           {/* Course Description */}
           <div className="flex flex-col gap-4">

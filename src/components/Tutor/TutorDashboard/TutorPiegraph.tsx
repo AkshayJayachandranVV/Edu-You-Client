@@ -2,34 +2,37 @@ import * as React from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { useTheme } from '@mui/material/styles';
 
-const data = [
-  { id: 0, value: 10, label: 'series A' },
-  { id: 1, value: 15, label: 'series B' },
-  { id: 2, value: 20, label: 'series C' },
-];
-
-export default function TutorPieGraph() {
+export default function TutorPieGraph({ data }) { // Destructure 'data' from props
   const theme = useTheme();
+
+
+  console.log(data,"dataa reaching in pie graph -----------")
+
+
+  // Map through the data to create the structure needed for PieChart
+  const pieData = data.map((item, index) => ({
+    id: index, // Unique ID for each slice
+    value: item.totalStudents, // Total students for the pie slice
+    label: item.courseName, // Course ID or title as label
+  }));
 
   return (
     <PieChart
-      series={[
-        {
-          data,
-          highlightScope: { faded: 'global', highlighted: 'item' },
-          faded: {
-            innerRadius: 30,
-            additionalRadius: -30,
-            color: 'gray',
-          },
-          // Customize the slice colors for dark theme
-          color: [
-            theme.palette.primary.main, // Series A color
-            theme.palette.secondary.main, // Series B color
-            theme.palette.success.main, // Series C color
-          ],
+      series={[{
+        data: pieData, // Use the processed pie data
+        highlightScope: { faded: 'global', highlighted: 'item' },
+        faded: {
+          innerRadius: 30,
+          additionalRadius: -30,
+          color: 'gray',
         },
-      ]}
+        // Customize the slice colors
+        color: [
+          theme.palette.primary.main,
+          theme.palette.secondary.main,
+          theme.palette.success.main,
+        ],
+      }]}
       height={200}
       theme={{
         background: {

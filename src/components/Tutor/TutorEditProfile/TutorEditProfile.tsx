@@ -44,7 +44,7 @@ export default function EditProfile() {
     const tutor = useSelector((state: RootState) => state.tutor);
   
     useEffect(() => {
-      setProfileImage(tutor.profilePictureUrl || "");
+      fetchProfilSignedUrl();
       if (tutor) {
         setValue('name', tutor.tutorname || '');
         setValue('email', tutor.email || '');
@@ -52,6 +52,21 @@ export default function EditProfile() {
         setValue('about', tutor.bio || '');
       }
     }, [tutor, setValue]);
+
+
+    const fetchProfilSignedUrl = async () => {
+      try {
+        const response = await axios.get(tutorEndpoints.getPresignedUrl, {
+          params: {
+            s3Key: tutor.profilePicture, // Assuming profilePicture contains the S3 key
+          },
+        });
+        const s3Url = response.data.url;
+        if (s3Url) setProfileImage(s3Url);  // Set the profileImage to S3 URL
+      } catch (error) {
+        console.error("Error fetching S3 URL:", error);
+      }
+    };
   
     const fileInputRef = useRef<HTMLInputElement | null>(null);
   

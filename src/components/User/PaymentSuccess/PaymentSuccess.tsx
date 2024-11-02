@@ -72,7 +72,7 @@ useEffect(() => {
 
       {/* Animated Button */}
       <div className="mt-8">
-        <a href="/" className="px-6 py-3 bg-yellow-500 text-black font-semibold rounded-full shadow-md hover:bg-yellow-600 transition duration-300 transform hover:scale-105">
+        <a href="/myCourses" className="px-6 py-3 bg-yellow-500 text-black font-semibold rounded-full shadow-md hover:bg-yellow-600 transition duration-300 transform hover:scale-105">
           Go to My Courses
         </a>
       </div>

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { BellIcon, ChatIcon, UserCircleIcon } from '@heroicons/react/outline'; // Updated for v2 Heroicons
 import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
+import axios from 'axios';
+import { tutorEndpoints } from '../../constraints/endpoints/TutorEndpoints';
 
 export default function TutorProfile() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -14,8 +16,26 @@ export default function TutorProfile() {
 
   // Set profile image and form fields when the tutor data is available
   useEffect(() => {
-    setProfileImage(tutor.profilePictureUrl || "");
+    console.log(tutor," i got the tutor redux value")
+    fetchProfilSignedUrl();
   }, [tutor]);
+
+
+  const fetchProfilSignedUrl = async () => {
+    try {
+      const response = await axios.get(tutorEndpoints.getPresignedUrl, {
+        params: {
+          s3Key: tutor.profilePicture, // Assuming profilePicture contains the S3 key
+        },
+      });
+      const s3Url = response.data.url;
+      if (s3Url) setProfileImage(s3Url);  // Set the profileImage to S3 URL
+    } catch (error) {
+      console.error("Error fetching S3 URL:", error);
+    }
+  };
+
+
 
   // Toggle dropdown for profile menu
   const toggleDropdown = () => {

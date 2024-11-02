@@ -22,5 +22,6 @@ export const userEndpoints = {
     sendFile: `${API_GATEWAY_BASE_URL}/sendFile`,
     myCourse: `${API_GATEWAY_BASE_URL}/myCourse/userId`,
     courseView: `${API_GATEWAY_BASE_URL}/courseView/courseId`,
+    report: `${API_GATEWAY_BASE_URL}/report`,
 }
 
