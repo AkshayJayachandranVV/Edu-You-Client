@@ -6,7 +6,6 @@ import iconimage from '../../../assets/images/User/UserHome/Account.png';
 import axiosInstance from '../../../components/constraints/axios/userAxios';
 import { userEndpoints } from "../../../components/constraints/endpoints/userEndpoints";
 
-// Define the Chat type
 interface Chat {
   _id: string;
   courseName: string;
@@ -23,14 +22,13 @@ interface CourseResponse {
 
 
 const App: React.FC = () => {
-  // Use the Chat[] type for chats and Chat | null for selectedChat
   const [chats, setChats] = useState<Chat[]>([]); // Chat list state
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null); // Selected chat state
 
   useEffect(() => {
     fetchChatList();
   }, []);
-  
+
   const fetchChatList = async () => {
     try {
       const userId = localStorage.getItem("userId");
@@ -39,21 +37,20 @@ const App: React.FC = () => {
           userEndpoints.getUserCourses.replace("userId", userId)
         );
 
-        console.log(response,"--------------------------------------------------------------")
-        
+        console.log(response, "Fetched chat list");
+
         const chatList: Chat[] = response.data.courses.map((course: CourseResponse) => ({
-          courseId: course._doc._id,  // Get courseId from _doc
-          courseName: course._doc.courseName, // Get courseName from _doc
-          thumbnail: course.thumbnail  // Use the signed thumbnail URL
+          courseId: course._doc._id,
+          courseName: course._doc.courseName,
+          thumbnail: course.thumbnail
         }));
-  
+
         setChats(chatList); // Update state with chat data
       }
     } catch (error) {
       console.error("Error fetching chat list:", error);
     }
   };
-  
 
   // Handler to select a chat from the list
   const handleChatSelect = (chat: Chat) => {
@@ -61,18 +58,12 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      {/* Navbar */}
-      <div>
-        <Navbar iconimage={iconimage} />
-      </div>
+    <div className="flex h-screen bg-gray-900 text-white">
+      {/* Chat List on the left */}
+      <ChatList chats={chats} onSelectChat={handleChatSelect} />
 
-      {/* Main Chat Area */}
-      <div className="flex flex-grow" style={{ marginTop: '60px' }}>
-        {/* Pass chats and the handler to ChatList */}
-        <ChatList chats={chats} onSelectChat={handleChatSelect} />
-
-        {/* Pass the selected chat to ChatInterface */}
+      {/* Chat Interface on the right */}
+      <div className="flex-1" >
         <ChatInterface selectedChat={selectedChat} />
       </div>
     </div>

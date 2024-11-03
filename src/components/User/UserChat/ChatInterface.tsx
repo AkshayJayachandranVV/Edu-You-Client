@@ -50,10 +50,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   const fetchChat = async () => {
     try {
       if (!selectedChat || !userId) return;
+  
+      // Clear previous messages
+      setMessages([]);
+      setDisplayedMessages([]);
+  
       const roomId = selectedChat.courseId;
       const response = await axiosInstance.get(`${userEndpoints.fetchChat}`, { params: { roomId, userId } });
-      console.log(response.data,"deyyyyyyyyyyyyyy messqge")
       const fetchedMessages = response.data;
+      
       const formattedMessages = fetchedMessages.map((message: any, index: number) => ({
         id: index + 1,
         text: message.content || "",
@@ -65,13 +70,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
         username: message.username,
         profile_picture: message.profile_picture,
       }));
-
+  
       setMessages(formattedMessages);
       setDisplayedMessages(formattedMessages.slice(-6));
     } catch (error) {
       console.error("Error fetching chat data:", error);
     }
   };
+  
+  
   
   
 
@@ -106,13 +113,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
 
   useEffect(() => {
     if (selectedChat) {
-      fetchChat();
-      SocketService.joinRoom(selectedChat.courseId);
+      fetchChat(); // Fetch messages for the newly selected chat
+      SocketService.joinRoom(selectedChat.courseId); // Join the room for the selected course
   
       const messageHandler = (message: any) => {
         const newMsg = {
           id: messages.length + 1,
-          text: message.content, // or message.text if it's a string message
+          text: message.content,
           mediaUrl: message.mediaUrl,
           mediaType: message.mediaType,
           sender: message.userId === userId ? "You" : message.userData?.username || message.username,
@@ -123,20 +130,27 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
         };
   
         setMessages((prev) => [...prev, newMsg]);
-        setDisplayedMessages((prev) => [...prev.slice(-5), newMsg]);
+        setDisplayedMessages((prev) => [...prev.slice(-5), newMsg]); // Update displayed messages
       };
   
       const typingHandler = (typingStatus) => setIsTyping(typingStatus);
   
+      // Listen for incoming messages and typing status
       SocketService.onReceiveMessage(messageHandler);
       SocketService.onTypingStatus(typingHandler);
   
       return () => {
+        // Clean up the event listeners on component unmount or when selectedChat changes
         SocketService.getSocket().off("receiveMessage", messageHandler);
         SocketService.getSocket().off("typingStatus", typingHandler);
       };
+    } else {
+      // Clear messages when there's no selected chat
+      setMessages([]);
+      setDisplayedMessages([]);
     }
   }, [selectedChat]);
+  
   
 
 
@@ -229,8 +243,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   };
   
   
-  
-  
+
 
   const handleEmojiClick = (emojiObject: any) => {
     setNewMessage((prevMessage) => prevMessage + emojiObject.emoji);
@@ -320,7 +333,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
 
   
   return (
-<div className="flex flex-col bg-gray-900 text-white w-full lg:w-3/4 h-full p-4">
+<div className="flex flex-col bg-gray-900 text-white w-full lg:w-/4 h-full p-4">
   {/* Chat Header */}
   <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg shadow-lg">
     <div className="flex items-center space-x-3">

@@ -14,6 +14,7 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import {useDispatch} from 'react-redux'
 import {setUser} from '../../../../redux/userSlice'
+import socketService from "../../../../socket/socketService";
 
 type formValues = {
   email: string;
@@ -78,6 +79,7 @@ function UserLogin() {
   
           // Navigate to the home page
           navigate('/');
+          socketService.connect();
         } else if (result.data.message === "User is Blocked") {
           // Display the blocked message when the user is blocked
           alert("You are blocked. Please contact support.");
@@ -121,6 +123,8 @@ const onSubmit = async (data: formValues) => {
       Cookies.set('userAccessToken', result.data.userAccessToken, { expires: 7 });
       setLoading(false);
       navigate("/");
+
+      socketService.connect();
     } else {
       // Handle different error messages from the backend
       setLoading(false);

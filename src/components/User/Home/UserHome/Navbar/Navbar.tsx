@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../../../../redux/userSlice';
 import Cookies from 'js-cookie';
+import socketService from '../../../../../socket/socketService';
 
 interface NavbarProps {
   iconimage: string;
@@ -27,6 +28,7 @@ const Navbar: React.FC<NavbarProps> = ({ iconimage, onSearch ,showSearchBar}) =>
     navigate("/login");
     localStorage.setItem("userAccessToken", "");
     Cookies.remove('userAccessToken');
+    socketService.disconnect();
   };
 
   const handleProfileClick = () => {
