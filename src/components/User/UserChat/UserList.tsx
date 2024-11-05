@@ -1,13 +1,16 @@
 import React from 'react';
+import moment from 'moment';
 
-// Define the props interface
 interface ChatListProps {
   chats: Array<{
     courseId: string;
     courseName: string;
     thumbnail: string;
+    lastMessage: string;
+    lastMessageTime: string;
+    isRead?: boolean; // Optional property to indicate if the message is read
   }>;
-  onSelectChat: (chat:unknown) => void; // Function to handle chat selection
+  onSelectChat: (chat: unknown) => void;
 }
 
 const ChatList: React.FC<ChatListProps> = ({ chats, onSelectChat }) => {
@@ -19,7 +22,7 @@ const ChatList: React.FC<ChatListProps> = ({ chats, onSelectChat }) => {
           <div
             key={chat.courseId}
             className="flex items-center justify-between p-3 bg-gray-700 rounded-lg hover:bg-gray-600 mb-3 cursor-pointer transition-colors duration-300"
-            onClick={() => onSelectChat(chat)} // Call onSelectChat when clicked
+            onClick={() => onSelectChat(chat)}
           >
             <div className="flex items-center space-x-3">
               <img
@@ -27,9 +30,19 @@ const ChatList: React.FC<ChatListProps> = ({ chats, onSelectChat }) => {
                 src={chat.thumbnail}
                 alt={`${chat.courseName} Thumbnail`}
               />
-              <div className="flex flex-col">
+              <div className="flex flex-col flex-1">
                 <span className="text-sm font-bold">{chat.courseName}</span>
-                <span className="text-xs text-gray-300">Last Message</span>
+                <span className="text-xs font-semibold text-gray-300 truncate">
+                  {chat.lastMessage ? chat.lastMessage : "No messages yet"}
+                </span>
+              </div>
+              <div className="text-right text-xs flex flex-col items-end">
+                <span className="text-gray-400">
+                  {chat.lastMessageTime ? moment(chat.lastMessageTime).format("hh:mm A") : ""}
+                </span>
+                {!chat.isRead && (
+                  <span className="text-xs text-blue-500 font-semibold mt-1">Unread</span>
+                )}
               </div>
             </div>
           </div>

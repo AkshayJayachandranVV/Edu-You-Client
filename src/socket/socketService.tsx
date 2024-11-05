@@ -28,6 +28,29 @@ class SocketService {
   }
 
 
+
+  messageReadUpdate({ roomId, messageIds, userId }: { roomId: string, messageIds: string[], userId: string }) {
+    console.log(`Attempting to send message to room: ${roomId}, messageIds: ${messageIds}, userId: ${userId}`);
+    if (this.socket.connected) {
+      this.socket.emit('readMessages', { roomId, messageIds, userId });
+    } else {
+      console.error('Socket is not connected');
+    }
+  }
+  
+
+
+  onMessagesRead(callback: (data: { messageIds: string[] }) => void) {
+    this.socket.on('messagesRead', (data: { messageIds: string[] }) => {
+      console.log('Messages marked as read:', data.messageIds);
+      callback(data);
+    });
+  }
+
+
+  
+
+
   public getSocket(): Socket {
     return this.socket;
   }
@@ -103,6 +126,14 @@ offTypingStatus(callback: (typingStatus: boolean) => void) {
     this.socket.on('receiveMedia', (data: { mediaUrl: string; s3Key: string; mediaType: string }) => {
       console.log('Received media:', data);
       callback(data);
+    });
+  }
+
+
+  onReceiveNotification(callback: (notification: { roomId: string; senderId: string; notification: string }) => void) {
+    this.socket.on('receiveNotification', (notification) => {
+      console.log('Received notification:', notification);
+      callback(notification);
     });
   }
   

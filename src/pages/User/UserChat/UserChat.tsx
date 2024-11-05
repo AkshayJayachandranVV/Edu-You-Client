@@ -18,6 +18,8 @@ interface CourseResponse {
     courseName: string;
   };
   thumbnail: string;
+  lastMessage : string;
+  lastMessageTime:string;
 }
 
 
@@ -39,10 +41,13 @@ const App: React.FC = () => {
 
         console.log(response, "Fetched chat list");
 
-        const chatList: Chat[] = response.data.courses.map((course: CourseResponse) => ({
+        const chatList: Chat[] = response.data.map((course: CourseResponse) => ({
           courseId: course._doc._id,
           courseName: course._doc.courseName,
-          thumbnail: course.thumbnail
+          thumbnail: course.thumbnail,
+          lastMessage: course.lastMessage,
+          lastMessageTime: course.lastMessageTime
+          ,
         }));
 
         setChats(chatList); // Update state with chat data

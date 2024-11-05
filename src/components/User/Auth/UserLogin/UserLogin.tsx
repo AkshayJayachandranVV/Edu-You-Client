@@ -13,7 +13,7 @@ import { GoogleLogin, CredentialResponse  } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode"; 
 import axios from "axios";
 import {useDispatch} from 'react-redux'
-import {setUser} from '../../../../redux/userSlice'
+import {setUser,setCoursesEnrolled} from '../../../../redux/userSlice'
 import socketService from "../../../../socket/socketService";
 
 type formValues = {
@@ -64,12 +64,14 @@ function UserLogin() {
         const result = await axios.post(userEndpoints.googleLogin, userData);
   
         if (result.data.success) {
-          console.log(result.data.user_data);
-          const { id, username, email, phone } = result.data.user_data;
+          console.log(result.data.user_data,"-------------------------------------------data");
+          const { id, username, email, phone,myCourse} = result.data.user_data;
           console.log("every data", id, username, email, phone);
-  
+          
+          const courseIds = myCourse.map((course: { courseId: string }) => course.courseId);
           // Dispatch the user data to the Redux store
           dispatch(setUser({ id: id, username, email, phone }));
+          dispatch(setCoursesEnrolled(courseIds));
           console.log("Successfully logged in using GOOGLE");
   
           // Store the access token in local storage
@@ -100,64 +102,66 @@ function UserLogin() {
 
 
 
-const onSubmit = async (data: formValues) => {
-  try {
-    setLoading(true);
-    console.log("form submitted", data);
-
-    const result = await axios.post(userEndpoints.login, data);
-
-    console.log(result,"----------------------------------------------------------------");
-
-    console.log(result,"----------------------------------------------------------------");
-
-    if (result.data.success) {
-      console.log(result.data.userData);
-      const { id, username, email, phone } = result.data.userData;
-      console.log("every data", id, username, email, phone);
-      
-      // Dispatching the user data and storing the access token
-      dispatch(setUser({ id: id, username, email, phone }));
-      localStorage.setItem('userId',id);
-      localStorage.setItem('userAccessToken', result.data.userAccessToken);
-      Cookies.set('userAccessToken', result.data.userAccessToken, { expires: 7 });
-      setLoading(false);
-      navigate("/");
-
-      socketService.connect();
-    } else {
-      // Handle different error messages from the backend
-      setLoading(false);
-
-      if (result.data.message === "Email incorrect") {
-        setError("email", {
-          type: "manual",
-          message: "Incorrect Email",
-        });
-      } else if (result.data.message === "Incorrect Password") {
-        setError("password", {
-          type: "manual",
-          message: "Incorrect Password",
-        });
-      } else if (result.data.message === "User is Blocked") {
-        // If the user is blocked, display the "You are blocked" message
-        setError("email", {
-          type: "manual",
-          message: "You are blocked. Please contact support.",
-        });
+  const onSubmit = async (data: formValues) => {
+    try {
+      setLoading(true);
+      console.log("form submitted", data);
+  
+      const result = await axios.post(userEndpoints.login, data);
+  
+      if (result.data.success) {
+        const { id, username, email, phone, myCourse } = result.data.userData;
+        console.log("user data", result.data.userData);
+  
+        // Extract course IDs from myCourse
+        const courseIds = myCourse.map((course: { courseId: string }) => course.courseId);
+  
+        // Dispatch user data and coursesEnrolled
+        dispatch(setUser({ id, username, email, phone }));
+        dispatch(setCoursesEnrolled(courseIds));
+  
+        // Store token and user ID locally
+        localStorage.setItem('userId', id);
+        localStorage.setItem('userAccessToken', result.data.userAccessToken);
+        Cookies.set('userAccessToken', result.data.userAccessToken, { expires: 7 });
+  
+        setLoading(false);
+        navigate("/");
+  
+        socketService.connect();
+      } else {
+        // Handle different error messages from the backend
+        setLoading(false);
+  
+        if (result.data.message === "Email incorrect") {
+          setError("email", {
+            type: "manual",
+            message: "Incorrect Email",
+          });
+        } else if (result.data.message === "Incorrect Password") {
+          setError("password", {
+            type: "manual",
+            message: "Incorrect Password",
+          });
+        } else if (result.data.message === "User is Blocked") {
+          setError("email", {
+            type: "manual",
+            message: "You are blocked. Please contact support.",
+          });
+        }
       }
+  
+      console.log("got the result ", result);
+    } catch (error) {
+      setLoading(false);
+      setError("email", {
+        type: "manual",
+        message: "Network error, please try again later",
+      });
+      console.log("error while on submit", error);
     }
-
-    console.log("got the result ", result);
-  } catch (error) {
-    setLoading(false);
-    setError("email", {
-      type: "manual",
-      message: "Network error, please try again later",
-    });
-    console.log("error while on submit", error);
-  }
-};
+  };
+  
 
 
   return (

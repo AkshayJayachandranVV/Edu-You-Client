@@ -4,7 +4,9 @@ import SocketService from "../../../socket/socketService";
 import axiosInstance from "../../constraints/axios/userAxios";
 import { userEndpoints } from "../../constraints/endpoints/userEndpoints";
 import { tutorEndpoints } from "../../constraints/endpoints/TutorEndpoints";
+import { CheckIcon } from "@heroicons/react/solid";
 import axios from "axios";
+import socketService from "../../../socket/socketService";
 
 interface Message {
   id: number;
@@ -26,10 +28,10 @@ interface ChatInterfaceProps {
   } | null;
 }
 
-
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [displayedMessages, setDisplayedMessages] = useState<Message[]>([]);
+  const [unreadMessageIds, setUnreadMessageIds] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
@@ -38,7 +40,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const userId = localStorage.getItem("userId");
-
 
   useEffect(() => {
     SocketService.connect();
@@ -50,40 +51,105 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   const fetchChat = async () => {
     try {
       if (!selectedChat || !userId) return;
-  
+
       // Clear previous messages
       setMessages([]);
       setDisplayedMessages([]);
-  
+      setUnreadMessageIds([]); // Clear previous unread messages
+
       const roomId = selectedChat.courseId;
-      const response = await axiosInstance.get(`${userEndpoints.fetchChat}`, { params: { roomId, userId } });
+      const response = await axiosInstance.get(`${userEndpoints.fetchChat}`, {
+        params: { roomId, userId },
+      });
       const fetchedMessages = response.data;
-      
-      const formattedMessages = fetchedMessages.map((message: any, index: number) => ({
-        id: index + 1,
-        text: message.content || "",
-        mediaUrl: message.image || message.video || "",
-        mediaType: message.image ? "image" : message.video ? "video" : "",
-        sender: message.userId === userId ? "You" : message.username,
-        time: new Date(message.createdAt).toLocaleTimeString(),
-        isSender: message.userId === userId,
-        username: message.username,
-        profile_picture: message.profile_picture,
-      }));
-  
+
+      console.log("Fetched messages:", fetchedMessages);
+
+      const formattedMessages = fetchedMessages.map(
+        (message: any, index: number) => ({
+          id: index + 1,
+          messageId: message._id, // Store the _id as messageId
+          text: message.content || "",
+          mediaUrl: message.image || message.video || "",
+          mediaType: message.image ? "image" : message.video ? "video" : "",
+          sender: message.userId === userId ? "You" : message.username,
+          time: new Date(message.createdAt).toLocaleTimeString(),
+          isSender: message.userId === userId,
+          isRead: message.isRead, // Include the isRead status
+          username: message.username,
+          profile_picture: message.profile_picture,
+        })
+      );
+
+      // Filter unread messages and extract their messageId
+      const unreadIds = formattedMessages
+        .filter((message) => message.isRead === false)
+        .map((message) => message.messageId);
+
+      console.log(unreadIds, "this is the unRead ids");
+
       setMessages(formattedMessages);
       setDisplayedMessages(formattedMessages.slice(-6));
+      setUnreadMessageIds(unreadIds); // Store only the messageId of unread messages
     } catch (error) {
       console.error("Error fetching chat data:", error);
     }
   };
-  
-  
-  
-  
 
-  
+  useEffect(() => {
+    if (unreadMessageIds.length > 0) {
+      console.log("Unread message IDs:", unreadMessageIds);
 
+      const roomId = selectedChat.courseId;
+
+      // Emit the readMessage event to the server with the entire array
+      socketService.messageReadUpdate({
+        messageIds: unreadMessageIds,
+        roomId,
+        userId: userId || "",
+      }); // Ensure userId is a string
+    }
+  }, [unreadMessageIds, selectedChat, userId]); // Add userId to dependencies if it's changing
+
+  useEffect(() => {
+    // Define the callback for messagesRead
+    const handleMessagesRead = (data) => {
+      console.log("Received read message IDs:", data.messageIds);
+
+      setMessages((prevMessages) => {
+        const updatedMessages = prevMessages.map((message) => ({
+          ...message,
+          isRead: data.messageIds.includes(message.messageId)
+            ? true
+            : message.isRead,
+        }));
+        console.log("Updated messages:", updatedMessages); // Log to verify the changes
+        return updatedMessages;
+      });
+    };
+
+    // Call the onMessagesRead method to set up the listener
+    socketService.onMessagesRead(handleMessagesRead);
+
+    // Clean up the listener on component unmount
+    return () => {
+      socketService.getSocket().off("messagesRead", handleMessagesRead);
+    };
+  }, [selectedChat]);
+
+  // const updateReadStaus = async () => {
+  //   try {
+  //     console.log("entered to the read status",unreadMessageIds)
+
+  //     const updateRead = await axiosInstance.get(userEndpoints.updateReadStatus, {
+  //       params: { unreadMessageIds,userId }, // Sending as query params
+  //     });
+
+  //     console.log(updateRead)
+  //   } catch (error) {
+  //     console.error("Error fetching chat data:", error);
+  //   }
+  // };
 
   useEffect(() => {
     const handleMediaReceive = (data) => {
@@ -107,38 +173,39 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
       SocketService.offReceiveMedia(handleMediaReceive);
     };
   }, [selectedChat]);
-  
-
-  
 
   useEffect(() => {
     if (selectedChat) {
       fetchChat(); // Fetch messages for the newly selected chat
       SocketService.joinRoom(selectedChat.courseId); // Join the room for the selected course
-  
+
       const messageHandler = (message: any) => {
         const newMsg = {
           id: messages.length + 1,
           text: message.content,
           mediaUrl: message.mediaUrl,
           mediaType: message.mediaType,
-          sender: message.userId === userId ? "You" : message.userData?.username || message.username,
+          sender:
+            message.userId === userId
+              ? "You"
+              : message.userData?.username || message.username,
           time: new Date().toLocaleTimeString(),
           isSender: message.userId === userId,
           username: message.userData?.username || message.username,
-          profile_picture: message.userData?.profile_picture || message.profile_picture,
+          profile_picture:
+            message.userData?.profile_picture || message.profile_picture,
         };
-  
+
         setMessages((prev) => [...prev, newMsg]);
         setDisplayedMessages((prev) => [...prev.slice(-5), newMsg]); // Update displayed messages
       };
-  
+
       const typingHandler = (typingStatus) => setIsTyping(typingStatus);
-  
+
       // Listen for incoming messages and typing status
       SocketService.onReceiveMessage(messageHandler);
       SocketService.onTypingStatus(typingHandler);
-  
+
       return () => {
         // Clean up the event listeners on component unmount or when selectedChat changes
         SocketService.getSocket().off("receiveMessage", messageHandler);
@@ -150,12 +217,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
       setDisplayedMessages([]);
     }
   }, [selectedChat]);
-  
-  
-
 
   const loadMoreMessages = () => {
-    setDisplayedMessages(messages.slice(-displayedMessages.length - 6, -displayedMessages.length));
+    setDisplayedMessages(
+      messages.slice(-displayedMessages.length - 6, -displayedMessages.length)
+    );
   };
 
   const handleSendMessage = async () => {
@@ -168,14 +234,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
           senderId: userId,
           content: key,
           mediaUrl: url,
-          mediaType: selectedFile.type.startsWith('image/') ? 'image' : 'video',
+          mediaType: selectedFile.type.startsWith("image/") ? "image" : "video",
         });
         setMessages((prevMessages) => [
           ...prevMessages,
           {
             id: prevMessages.length + 1,
             mediaUrl: url,
-            mediaType: selectedFile.type.startsWith('image/') ? 'image' : 'video',
+            mediaType: selectedFile.type.startsWith("image/")
+              ? "image"
+              : "video",
             sender: "You",
             time: new Date().toLocaleTimeString(),
             isSender: true,
@@ -212,7 +280,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
         const uploadResponse = await uploadFile();
         if (uploadResponse) {
           const { key, url } = uploadResponse;
-          const mediaType = selectedFile.type.startsWith("image/") ? "image" : "video";
+          const mediaType = selectedFile.type.startsWith("image/")
+            ? "image"
+            : "video";
           SocketService.sendMedia({
             roomId: selectedChat?.courseId || "",
             senderId: userId || "",
@@ -241,9 +311,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
       console.error("No file selected to send.");
     }
   };
-  
-  
-
 
   const handleEmojiClick = (emojiObject: any) => {
     setNewMessage((prevMessage) => prevMessage + emojiObject.emoji);
@@ -274,12 +341,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
     try {
       const fileName = generateFileName(selectedFile.name);
 
-      const response = await axiosInstance.get(tutorEndpoints.getPresignedUrlForUpload, {
-        params: {
-          filename: fileName,
-          fileType: selectedFile.type,
-        },
-      });
+      const response = await axiosInstance.get(
+        tutorEndpoints.getPresignedUrlForUpload,
+        {
+          params: {
+            filename: fileName,
+            fileType: selectedFile.type,
+          },
+        }
+      );
 
       const { uploadUrl, viewUrl, key } = response.data;
 
@@ -306,12 +376,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
     return `${Math.random().toString(36).substring(2, 15)}.${extension}`;
   };
 
+  // const onTyping = async()=>{
+  //     try {
+  //       console.log("enetered on Typing")
+  //     } catch (error) {
+  //       console.log(error)
+  //     }
+  // }
 
   useEffect(() => {
     const chatBox = messagesEndRef.current?.parentElement;
     if (chatBox) {
       const handleScroll = () => {
-        if (chatBox.scrollTop === 0 && displayedMessages.length < messages.length) {
+        if (
+          chatBox.scrollTop === 0 &&
+          displayedMessages.length < messages.length
+        ) {
           loadMoreMessages();
         }
       };
@@ -319,7 +399,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
       return () => chatBox.removeEventListener("scroll", handleScroll);
     }
   }, [displayedMessages]);
-
 
   useEffect(() => {
     const scrollToBottom = () => {
@@ -330,139 +409,190 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
     scrollToBottom();
   }, [displayedMessages, messages]);
 
-
-  
   return (
-<div className="flex flex-col bg-gray-900 text-white w-full lg:w-/4 h-full p-4">
-  {/* Chat Header */}
-  <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg shadow-lg">
-    <div className="flex items-center space-x-3">
-      {selectedChat && (
-        <>
-          <img
-            className="h-10 w-10 rounded-full object-cover"
-            src={selectedChat.thumbnail}
-            alt="Group Profile Pic"
-          />
-          <span className="text-lg font-bold">{selectedChat.courseName}</span>
-        </>
-      )}
-    </div>
-    <span className="text-sm text-gray-400">Online</span>
-  </div>
-
-  {/* Chat Messages */}
-  {/* Chat Messages */}
-<div className="flex-1 overflow-y-auto p-4 space-y-2">
-  {messages.map((message) => (
-    <div
-      key={message.id}
-      className={`flex ${message.isSender ? "justify-end" : "justify-start"}`}
-    >
-      {!message.isSender && (
-        <img
-          className="h-8 w-8 rounded-full object-cover mr-2"
-          src={message.profile_picture}
-          alt={`${message.username}'s Profile Pic`}
-        />
-      )}
-      <div
-        className={`flex flex-col space-y-1 ${
-          message.isSender ? "items-end" : "items-start"
-        }`}
-      >
-        {/* Display the username */}
-        {!message.isSender && (
-          <span className="text-sm font-semibold text-gray-300">
-            {message.username}
-          </span>
-        )}
-        <div
-          className={`rounded-lg p-3 max-w-xs break-words ${
-            message.isSender
-              ? "bg-blue-500 text-white"
-              : "bg-gray-800 text-white"
-          }`}
-        >
-          {/* Logic for displaying content */}
-          {message.mediaUrl ? (
-            message.mediaType === "image" ? (
+    <div className="flex flex-col bg-gray-900 text-white w-full lg:w-/4 h-full p-4">
+      {/* Chat Header */}
+      <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg shadow-lg">
+        <div className="flex items-center space-x-3">
+          {selectedChat && (
+            <>
               <img
-                src={message.mediaUrl}
-                alt="Sent media"
-                className="rounded-lg max-h-40 object-cover"
+                className="h-10 w-10 rounded-full object-cover"
+                src={selectedChat.thumbnail}
+                alt="Group Profile Pic"
               />
-            ) : message.mediaType === "video" ? (
-              <video
-                controls
-                src={message.mediaUrl}
-                className="rounded-lg max-h-40"
-              />
-            ) : null
-          ) : (
-            <p>{message.text}</p>
+              <span className="text-lg font-bold">
+                {selectedChat.courseName}
+              </span>
+            </>
           )}
-          <span className="text-xs text-gray-400 block">{message.time}</span>
         </div>
+        <span className="text-sm text-gray-400">Online</span>
       </div>
-    </div>
-  ))}
-  <div ref={messagesEndRef} />
-</div>
 
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-2">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${
+              message.isSender ? "justify-end" : "justify-start"
+            }`}
+          >
+            {!message.isSender && (
+              <img
+                className="h-8 w-8 rounded-full object-cover mr-2"
+                src={message.profile_picture}
+                alt={`${message.username}'s Profile Pic`}
+              />
+            )}
+            <div
+              className={`flex flex-col space-y-1 ${
+                message.isSender ? "items-end" : "items-start"
+              }`}
+            >
+              {!message.isSender && (
+                <span className="text-sm font-semibold text-gray-300">
+                  {message.username}
+                </span>
+              )}
+              <div
+                className={`rounded-lg p-3 max-w-xs break-words ${
+                  message.isSender
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-800 text-white"
+                }`}
+              >
+                {message.mediaUrl ? (
+                  message.mediaType === "image" ? (
+                    <img
+                      src={message.mediaUrl}
+                      alt="Sent media"
+                      className="rounded-lg max-h-40 object-cover"
+                    />
+                  ) : message.mediaType === "video" ? (
+                    <video
+                      controls
+                      src={message.mediaUrl}
+                      className="rounded-lg max-h-40"
+                    />
+                  ) : null
+                ) : (
+                  <p>{message.text}</p>
+                )}
+                <span className="text-xs text-gray-400 block">
+                  {message.time}
+                </span>
+              </div>
 
+              {/* Read/Unread Indicator */}
+              {message.isSender && (
+                <div className="flex items-center text-xs text-gray-400 mt-1">
+                  <span className="mr-1">{message.time}</span>
+                  {message.isRead ? (
+                    <>
+                      <CheckIcon
+                        className="h-4 w-4 text-blue-500"
+                        aria-label="Message read"
+                      />
+                      <CheckIcon
+                        className="h-4 w-4 text-blue-500"
+                        aria-label="Message read"
+                      />
+                    </>
+                  ) : (
+                    <CheckIcon
+                      className="h-4 w-4 text-gray-400"
+                      aria-label="Message sent"
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+        <div ref={messagesEndRef} />
+      </div>
 
-  {/* Message Input */}
-  <div className="flex items-center p-2 bg-gray-800 rounded-lg">
-    <input
-      type="text"
-      className="flex-1 bg-gray-900 border-none p-2 text-white placeholder-gray-500 outline-none"
-      placeholder="Type your message..."
-      value={newMessage}
-      onChange={(e) => setNewMessage(e.target.value)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") handleSendMessage();
-      }}
-    />
-    <button className="text-gray-400 hover:text-gray-100" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
-      😀
-    </button>
-    <input type="file" accept="image/*,video/*" onChange={handleFileChange} className="hidden" id="mediaInput" />
-    <label htmlFor="mediaInput" className="cursor-pointer text-gray-400 hover:text-gray-100">
-      📎
-    </label>
-    <button className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg ml-2" onClick={handleSendMessage}>
-      Send
-    </button>
-  </div>
+      {/* Message Input */}
+      <div className="flex items-center p-2 bg-gray-800 rounded-lg">
+        <input
+          type="text"
+          className="flex-1 bg-gray-900 border-none p-2 text-white placeholder-gray-500 outline-none"
+          placeholder="Type your message..."
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSendMessage();
+          }}
+        />
+        <button
+          className="text-gray-400 hover:text-gray-100"
+          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+        >
+          😀
+        </button>
+        <input
+          type="file"
+          accept="image/*,video/*"
+          onChange={handleFileChange}
+          className="hidden"
+          id="mediaInput"
+        />
+        <label
+          htmlFor="mediaInput"
+          className="cursor-pointer text-gray-400 hover:text-gray-100"
+        >
+          📎
+        </label>
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg ml-2"
+          onClick={handleSendMessage}
+        >
+          Send
+        </button>
+      </div>
 
-  {/* Emoji Picker */}
-  {showEmojiPicker && <EmojiPicker onEmojiClick={handleEmojiClick} />}
+      {/* Emoji Picker */}
+      {showEmojiPicker && <EmojiPicker onEmojiClick={handleEmojiClick} />}
 
-  {/* Media Modal */}
-  {showMediaModal && (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-gray-800 p-6 rounded-lg">
-        {filePreviewUrl && selectedFile && (
-          selectedFile.type.startsWith('image/') ? (
-            <img src={filePreviewUrl} alt="Preview" className="max-h-64 object-cover mb-4" />
-          ) : (
-            <video controls src={filePreviewUrl} className="max-h-64 mb-4" />
-          )
-        )}
-        <div className="flex justify-end space-x-4">
-          <button className="bg-gray-600 text-white px-4 py-2 rounded" onClick={clearFileSelection}>
-            Cancel
-          </button>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleSendMedia}>
-            Send
-          </button>
+      {/* Media Modal */}
+      {showMediaModal && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 rounded-lg">
+            {filePreviewUrl &&
+              selectedFile &&
+              (selectedFile.type.startsWith("image/") ? (
+                <img
+                  src={filePreviewUrl}
+                  alt="Preview"
+                  className="max-h-64 object-cover mb-4"
+                />
+              ) : (
+                <video
+                  controls
+                  src={filePreviewUrl}
+                  className="max-h-64 mb-4"
+                />
+              ))}
+            <div className="flex justify-end space-x-4">
+              <button
+                className="bg-gray-600 text-white px-4 py-2 rounded"
+                onClick={clearFileSelection}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={handleSendMedia}
+              >
+                Send
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
-  )}
-</div>
-
   );
 };
 

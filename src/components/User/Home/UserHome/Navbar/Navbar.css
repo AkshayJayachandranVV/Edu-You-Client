@@ -1,9 +1,11 @@
+/* CSS for Navbar component */
+
 .navbar {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* This aligns items vertically in the center */
+  align-items: center;
   background-color: #1e1f22;
-  padding: 2px 10px; /* Reduce padding to move items up */
+  padding: 2px 10px;
   height: 60px;
   color: #ffffff;
   position: relative;
@@ -18,17 +20,13 @@
   color: #ffffff;
   font-size: 14px;
   outline: none;
-  height: 30px; /* Adjust the height for better vertical alignment */
-}
-
-.search-bar::placeholder {
-  color: #b0b0b0;
+  height: 30px;
 }
 
 .navbar-content {
   display: flex;
   justify-content: space-between;
-  align-items: center; 
+  align-items: center;
   width: 100%;
   padding-left: 20px;
 }
@@ -36,67 +34,103 @@
 .nav-links {
   display: flex;
   gap: 20px;
-  align-items: center; /* Ensure vertical alignment within the navbar */
-}
-
-.nav-item {
-  font-size: 16px;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-
-.nav-item:hover {
-  color: #f0a500;
+  align-items: center;
 }
 
 .nav-icons {
   display: flex;
-  align-items: center; /* Aligns the icons vertically */
+  align-items: center;
   gap: 20px;
-  height: 100%;
-  margin-top: -5px; /* Further move the icons upwards */
 }
 
-.nav-icon {
-  width: 20px;
-  height: 20px;
-  background-color: #000;
-  border-radius: 50%;
-  cursor: pointer;
-  margin-top: 14px; /* Fine-tune the vertical positioning */
-}
-
-.nav-icon.people {
-  background-image: url('../../../../../assets/images/User/UserHome/people.png'); /* Replace with your icon image */
-  background-size: cover;
-  background-position: center;
-}
-
-.dropdown {
+.notification-icon,
+.profile-icon {
   position: relative;
+}
+
+
+.notification-dropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: #1A1A1A     ;
+  color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  padding: 10px; /* Padding inside the dropdown */
+  min-width: 250px; /* Set the minimum width */
+  width: 400px; /* Set a specific width for the dropdown */
+  z-index: 2;
+}
+
+.notification-count {
+  position: absolute;
+  top: -5px; /* Adjust as needed */
+  right: -10px; /* Adjust as needed */
+  background-color: #FF0000; /* Red background for visibility */
+  color: #ffffff; /* White text color */
+  border-radius: 50%; /* Circular shape */
+  padding: 2px 6px; /* Padding for the badge */
+  font-size: 12px; /* Font size for the number */
+  font-weight: bold; /* Make the number stand out */
+  min-width: 20px; /* Minimum width to ensure it stays circular */
+  height: 20px; /* Fixed height for a perfect circle */
+  display: flex;
+  align-items: center; /* Center the text vertically */
+  justify-content: center; /* Center the text horizontally */
+}
+
+
+ .profile-dropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: #2c2d31;
+  color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  min-width: 250px; /* Increased dropdown width */
+  max-width: 300px; /* Added a max width for better control */
+  z-index: 2;
+}
+
+.notification-dropdown h4 {
+  margin: 0;
+  padding: 10px 15px; /* More padding for better spacing */
+  font-size: 16px;
+  border-bottom: 1px solid #444;
+}
+
+.notification-dropdown ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notification-dropdown li {
+  padding: 8px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; /* Added flex display for better alignment */
+  align-items: center; /* Center the image and text vertically */
+}
+
+.notification-dropdown li:hover {
+  background-color: #444;
+}
+
+.notification-image {
+  width: 30px; /* Reduced size for the image */
+  height: 30px; /* Reduced size for the image */
+  border-radius: 50%; /* Made the image circular */
+  margin-right: 10px; /* Spacing between image and text */
 }
 
 .dropdown-icon {
   width: 30px;
   height: 30px;
   cursor: pointer;
-  margin-top: 4px; /* Ensure dropdown icon aligns correctly */
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  top: 40px;
-  right: 0;
-  background-color: #1e1f22;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  padding: 10px;
-  border-radius: 4px;
-  z-index: 2;
-}
-
-.dropdown-content.show {
-  display: block;
 }
 
 .dropdown-link {
@@ -113,3 +147,4 @@
 .dropdown-link:hover {
   color: #f0a500;
 }
+

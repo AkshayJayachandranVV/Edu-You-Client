@@ -23,5 +23,7 @@ export const userEndpoints = {
     myCourse: `${API_GATEWAY_BASE_URL}/myCourse/userId`,
     courseView: `${API_GATEWAY_BASE_URL}/courseView/courseId`,
     report: `${API_GATEWAY_BASE_URL}/report`,
+    fetchNotify: `${API_GATEWAY_BASE_URL}/fetchNotify`,
+    updateReadStatus: `${API_GATEWAY_BASE_URL}/updateReadStatus`,
 }
 

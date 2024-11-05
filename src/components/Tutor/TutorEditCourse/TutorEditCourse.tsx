@@ -25,12 +25,13 @@ interface AddCourseProps {
 const EditCourse: React.FC<AddCourseProps> = ({ onNext }) => {
   const dispatch = useDispatch();
   const courseData = useSelector((state: RootState) => state.editCourse.courseDetails);
-  const { control, handleSubmit, setValue, formState: { errors } } = useForm<CourseFormData>();
+  const { control, handleSubmit, setValue,getValues, formState: { errors } } = useForm<CourseFormData>();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState('');
 
+  
   useEffect(() => {
     // Populate the form fields with data from Redux if it exists
     if (courseData) {
@@ -182,7 +183,14 @@ const EditCourse: React.FC<AddCourseProps> = ({ onNext }) => {
               name="courseName"
               control={control}
               defaultValue=""
-              rules={{ required: "Course name is required" }}
+              rules={{ required: "Course name is required",
+                  minLength: {
+                    value: 6,
+                    message: 'Course Name must be at least 6 characters',
+                  },maxLength:{
+                    value: 10,
+                    message: 'Course Name must be at least 10 characters',
+                  } }}
               render={({ field }) => (
                 <input
                   {...field}
@@ -206,7 +214,10 @@ const EditCourse: React.FC<AddCourseProps> = ({ onNext }) => {
                 name="coursePrice"
                 control={control}
                 defaultValue={0}
-                rules={{ required: "Course price is required", min: { value: 0, message: "Price must be a positive number" } }}
+                rules={{
+                  required: "Course price is required",
+                  min: { value: 0, message: "Price must be a positive number" }
+                }}
                 render={({ field }) => (
                   <input
                     {...field}
@@ -228,7 +239,11 @@ const EditCourse: React.FC<AddCourseProps> = ({ onNext }) => {
                 name="discountPrice"
                 control={control}
                 defaultValue={0}
-                rules={{ required: "Discount price is required", min: { value: 0, message: "Price must be a positive number" } }}
+                rules={{
+                  required: "Discount price is required",
+                  min: { value: 0, message: "Price must be a positive number" },
+                  validate: (value) => value < getValues('coursePrice') || "Discount price must be less than course price"
+                }}
                 render={({ field }) => (
                   <input
                     {...field}

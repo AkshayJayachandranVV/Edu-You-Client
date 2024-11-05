@@ -4,7 +4,7 @@ import UserRoutes from './routes/user/UserRoutes'
 import TutorRoutes from './routes/tutor/TutorRoutes'
 import {useEffect} from 'react'
 import socketService from "./socket/socketService";
-
+import { toast } from 'sonner';
 
 
 import './index.css';
@@ -19,6 +19,12 @@ function App() {
     if (userId) {
       // Connect to socket if user is logged in
       socketService.connect();
+      
+      socketService.onReceiveNotification((notification) => {
+        console.log("New notification received:", notification);
+        toast.success(notification.notification)
+      });
+
     }
 
     // Cleanup function to disconnect socket on app unmount
