@@ -7,7 +7,8 @@ class SocketService {
   private retryDelay: number = 2000;
 
   constructor() {
-    this.socket = io('http://localhost:4000', {
+    const userId = localStorage.getItem("userId")
+    this.socket = io(`http://localhost:4000?userId=${userId}`, {
       transports: ['websocket'],
       upgrade: false,
     });
@@ -29,23 +30,27 @@ class SocketService {
 
 
 
-  messageReadUpdate({ roomId, messageIds, userId }: { roomId: string, messageIds: string[], userId: string }) {
-    console.log(`Attempting to send message to room: ${roomId}, messageIds: ${messageIds}, userId: ${userId}`);
-    if (this.socket.connected) {
-      this.socket.emit('readMessages', { roomId, messageIds, userId });
-    } else {
-      console.error('Socket is not connected');
-    }
-  }
-  
 
 
-  onMessagesRead(callback: (data: { messageIds: string[] }) => void) {
-    this.socket.on('messagesRead', (data: { messageIds: string[] }) => {
-      console.log('Messages marked as read:', data.messageIds);
-      callback(data);
-    });
+
+// Emit readMessages event with roomId
+messageReadUpdate(roomId:string) {
+  console.log(`Attempting to send readMessages for roomId: ${roomId}`);
+  if (this.socket.connected) {
+    this.socket.emit('readMessages', roomId); // Emit the event with roomId
+  } else {
+    console.error('Socket is not connected');
   }
+}
+
+// Listen for messagesRead event
+onMessagesRead(callback:any) {
+  this.socket.on('messagesRead', () => {
+    console.log('Messages marked as read');
+    callback();
+  });
+}
+
 
 
   
@@ -55,15 +60,15 @@ class SocketService {
     return this.socket;
   }
 
-  emitTyping(isTyping: boolean) {
-    this.socket?.emit('typingStatus', isTyping);
+  emitTyping(isTyping: boolean,roomId:string,username:string) {
+    this.socket?.emit('typingStatus', {isTyping,roomId,username});
 }
 
-onTypingStatus(callback: (typingStatus: boolean) => void) {
-    this.socket?.on('typingStatus', callback);
+onTypingStatus(callback: (data: { isTyping: boolean; username: string }) => void) {
+  this.socket?.on('typingStatus', callback);
 }
 
-offTypingStatus(callback: (typingStatus: boolean) => void) {
+offTypingStatus(callback: (data: { isTyping: boolean; username: string }) => void) {
     this.socket?.off('typingStatus', callback);
 }
 
@@ -75,7 +80,10 @@ offTypingStatus(callback: (typingStatus: boolean) => void) {
   }
 
   disconnect() {
+
     if (this.socket.connected) {
+     
+      // this.socket.emit("readDisconnect")
       this.socket.disconnect();
     }
   }
@@ -119,8 +127,8 @@ offTypingStatus(callback: (typingStatus: boolean) => void) {
     this.socket.on('receiveMessage', (message: string) => {
       console.log('Received message:', message);
       callback(message);
-    });
-  }
+    });   
+  }   
 
   onReceiveMedia(callback: (data: { mediaUrl: string; s3Key: string; mediaType: string }) => void) {
     this.socket.on('receiveMedia', (data: { mediaUrl: string; s3Key: string; mediaType: string }) => {
@@ -136,6 +144,14 @@ offTypingStatus(callback: (typingStatus: boolean) => void) {
       callback(notification);
     });
   }
+
+
+  onMessageRead(callback: (data: { isRead: boolean; messageId: string }) => void) {
+    this.socket.on('messageRead', (data: { isRead: boolean; messageId: string }) => {
+        console.log('Message read status received:', data);
+        callback(data);
+    });
+}
   
 
   private handleReconnect() {

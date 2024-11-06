@@ -18,7 +18,12 @@ import PrivateRoute from "./privateRoute"
 import PrivateRouteUser from "./privateRouteUser"
 
 
+
 const UserRoutes = () => {
+
+   
+
+
     return(
         <Routes>
             <Route path='/' element={ <PrivateRouteUser><UserHome /> </PrivateRouteUser> } />

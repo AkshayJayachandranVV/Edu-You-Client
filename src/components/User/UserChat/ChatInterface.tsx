@@ -7,10 +7,13 @@ import { tutorEndpoints } from "../../constraints/endpoints/TutorEndpoints";
 import { CheckIcon } from "@heroicons/react/solid";
 import axios from "axios";
 import socketService from "../../../socket/socketService";
+import { RootState } from '../../../redux/store';
+import { useSelector } from 'react-redux';
 
 interface Message {
   id: number;
   text?: string;
+  messageId?: string;
   mediaUrl?: string;
   mediaType?: string;
   sender: string;
@@ -39,14 +42,106 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   const [showMediaModal, setShowMediaModal] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesRef = useRef(messages);
   const userId = localStorage.getItem("userId");
+  const [groupMembers, setGroupMembers] = useState([5]);
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [typingUser, setTypingUser] = useState<string | null>(null);
+
+
+  const {username } = useSelector((state: RootState) => state.user);
+  
 
   useEffect(() => {
     SocketService.connect();
     return () => {
       SocketService.disconnect();
+      // updateLeaveChat()
     };
   }, []);
+
+  // const updateLeaveChat  = async () => {
+  //   try {
+  //     if (userId) {
+  //       console.log("i")
+  //       const response = await axiosInstance.post(userEndpoints.updateReadUsers, {
+  //         params: { userId } // Use roomId passed as a parameter
+  //       });
+
+  //       console.log(response);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+
+  const emitTyping = (isTyping: boolean, roomId: string, username: string) => {
+    SocketService.emitTyping(isTyping, roomId, username); // Emit typing status with roomId and username
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(e.target.value);
+    
+    // Emit typing status
+    emitTyping(true, selectedChat?.courseId, username);
+  
+    // Clear the previous timeout
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+  
+    // Set timeout to stop typing notification after a delay (e.g., 1 second)
+    setTypingTimeout(
+      setTimeout(() => {
+        emitTyping(false, selectedChat.courseId, username); // Emit stop typing after delay
+      }, 1000)
+    );
+  };
+  
+
+  useEffect(() => {
+    // Listen for typing status from other users
+    const typingHandler = (data: { isTyping: boolean; username: string }) => {
+      if (data.isTyping) {
+        setIsTyping(true);
+        setTypingUser(data.username);
+      } else {
+        setIsTyping(false);
+        setTypingUser(null);
+      }
+    };
+
+    SocketService.onTypingStatus(typingHandler);
+
+    return () => {
+      SocketService.offTypingStatus(typingHandler);
+    };
+  }, []);
+  
+
+
+  const fetChGroupMember = async () => {
+    try {
+      console.log("enetered to fetchy members");
+      if (!selectedChat) return;
+
+      const roomId = selectedChat?.courseId;
+      const response = await axiosInstance.get(
+        `${userEndpoints.fetchGroupMembers}`,
+        {
+          params: { roomId },
+        }
+      );
+      const fetchedUser = response.data.userData;
+
+      setGroupMembers(fetchedUser);
+
+      console.log("fetcehd user", fetchedUser);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const fetchChat = async () => {
     try {
@@ -90,66 +185,79 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
 
       setMessages(formattedMessages);
       setDisplayedMessages(formattedMessages.slice(-6));
-      setUnreadMessageIds(unreadIds); // Store only the messageId of unread messages
+      setUnreadMessageIds(unreadIds);
     } catch (error) {
       console.error("Error fetching chat data:", error);
     }
   };
 
   useEffect(() => {
-    if (unreadMessageIds.length > 0) {
-      console.log("Unread message IDs:", unreadMessageIds);
+    if (selectedChat?.courseId) {
+      // Ensure courseId is defined
+      console.log("Unread message IDs:");
 
       const roomId = selectedChat.courseId;
 
-      // Emit the readMessage event to the server with the entire array
-      socketService.messageReadUpdate({
-        messageIds: unreadMessageIds,
-        roomId,
-        userId: userId || "",
-      }); // Ensure userId is a string
+      // Emit the readMessage event to the server with the roomId
+      socketService.messageReadUpdate(roomId);
     }
-  }, [unreadMessageIds, selectedChat, userId]); // Add userId to dependencies if it's changing
+  }, [selectedChat]); // Also add unreadMessageIds as a dependency if it's needed
 
   useEffect(() => {
-    // Define the callback for messagesRead
-    const handleMessagesRead = (data) => {
-      console.log("Received read message IDs:", data.messageIds);
+    messagesRef.current = messages;
+  }, [messages]);
 
+  useEffect(() => {
+    if (selectedChat?.courseId) {
+      // Emit read messages event to the server when a chat is selected
+      SocketService.messageReadUpdate(selectedChat.courseId);
+    }
+
+    // Define the function that will mark messages as read
+    const handleMessagesRead = () => {
+      console.log("Received read message IDs:");
+
+      // Update all messages to isRead: true
       setMessages((prevMessages) => {
         const updatedMessages = prevMessages.map((message) => ({
           ...message,
-          isRead: data.messageIds.includes(message.messageId)
-            ? true
-            : message.isRead,
+          isRead: true, // Set each message's isRead to true
         }));
-        console.log("Updated messages:", updatedMessages); // Log to verify the changes
+
+        // Update the ref to reflect the latest message state
+        messagesRef.current = updatedMessages;
+        console.log("Updated messages:", messagesRef.current); // Log updated messages
+
         return updatedMessages;
       });
     };
 
-    // Call the onMessagesRead method to set up the listener
-    socketService.onMessagesRead(handleMessagesRead);
+    // Register the event listener for messagesRead
+    SocketService.onMessagesRead(handleMessagesRead);
 
-    // Clean up the listener on component unmount
+    // Cleanup listener on component unmount or dependency change
     return () => {
-      socketService.getSocket().off("messagesRead", handleMessagesRead);
+      SocketService.getSocket().off("messagesRead", handleMessagesRead);
     };
   }, [selectedChat]);
 
-  // const updateReadStaus = async () => {
-  //   try {
-  //     console.log("entered to the read status",unreadMessageIds)
+  useEffect(() => {
+    SocketService.onMessageRead((data) => {
+      if (data.isRead) {
+        // Update all messages to isRead: true
+        setMessages((prev) =>
+          prev.map((msg) => ({
+            ...msg,
+            isRead: true, // Set isRead to true for all messages
+          }))
+        );
+      }
+    });
 
-  //     const updateRead = await axiosInstance.get(userEndpoints.updateReadStatus, {
-  //       params: { unreadMessageIds,userId }, // Sending as query params
-  //     });
-
-  //     console.log(updateRead)
-  //   } catch (error) {
-  //     console.error("Error fetching chat data:", error);
-  //   }
-  // };
+    return () => {
+      SocketService.getSocket().off("messageRead");
+    };
+  }, []);
 
   useEffect(() => {
     const handleMediaReceive = (data) => {
@@ -176,12 +284,28 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
 
   useEffect(() => {
     if (selectedChat) {
-      fetchChat(); // Fetch messages for the newly selected chat
-      SocketService.joinRoom(selectedChat.courseId); // Join the room for the selected course
+      const fetchData = async () => {
+        try {
+          // Fetch chat messages
+          await fetchChat();
 
-      const messageHandler = (message: any) => {
+          await fetChGroupMember();
+
+          SocketService.joinRoom(selectedChat.courseId);
+        } catch (error) {
+          console.error("Error during fetchData:", error);
+        }
+      };
+
+      fetchData();
+      SocketService.joinRoom(selectedChat.courseId);
+
+      const messageHandler = (message) => {
+        console.log("New incoming message----- isRead:", message.isRead);
+
         const newMsg = {
-          id: messages.length + 1,
+          id: messagesRef.current.length + 1,
+          messageId: message.messageId,
           text: message.content,
           mediaUrl: message.mediaUrl,
           mediaType: message.mediaType,
@@ -196,7 +320,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
             message.userData?.profile_picture || message.profile_picture,
         };
 
-        setMessages((prev) => [...prev, newMsg]);
+        // Update the state and ref
+        setMessages((prev) => {
+          const updatedMessages = [...prev, newMsg];
+          messagesRef.current = updatedMessages; // Keep the ref in sync with the latest state
+          return updatedMessages;
+        });
+
         setDisplayedMessages((prev) => [...prev.slice(-5), newMsg]); // Update displayed messages
       };
 
@@ -229,13 +359,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
       const uploadResponse = await uploadFile();
       if (uploadResponse) {
         const { key, url } = uploadResponse;
-        SocketService.sendMessage({
+        // Send the message through the socket
+        const response = await SocketService.sendMessage({
           roomId: selectedChat?.courseId,
           senderId: userId,
           content: key,
           mediaUrl: url,
           mediaType: selectedFile.type.startsWith("image/") ? "image" : "video",
         });
+        // Store the sent message in the state
         setMessages((prevMessages) => [
           ...prevMessages,
           {
@@ -248,16 +380,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
             time: new Date().toLocaleTimeString(),
             isSender: true,
             username: "You",
+            messageId: key, // Ensure you're using the same ID sent to the server
+            isRead: false, // Initially set as unread
           },
         ]);
       }
       clearFileSelection();
     } else if (newMessage.trim()) {
-      SocketService.sendMessage({
+      // Send the text message
+      const response = await SocketService.sendMessage({
         roomId: selectedChat?.courseId,
         senderId: userId,
         content: newMessage,
       });
+
       setMessages((prevMessages) => [
         ...prevMessages,
         {
@@ -267,12 +403,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
           time: new Date().toLocaleTimeString(),
           isSender: true,
           username: "You",
+          isRead: false, // Initially set as unread
         },
       ]);
       setNewMessage("");
       SocketService.emitTyping(false);
+      emitTyping(false);
     }
   };
+
+
+
 
   const handleSendMedia = async () => {
     if (selectedFile) {
@@ -412,23 +553,43 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   return (
     <div className="flex flex-col bg-gray-900 text-white w-full lg:w-/4 h-full p-4">
       {/* Chat Header */}
-      <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg shadow-lg">
-        <div className="flex items-center space-x-3">
-          {selectedChat && (
-            <>
-              <img
-                className="h-10 w-10 rounded-full object-cover"
-                src={selectedChat.thumbnail}
-                alt="Group Profile Pic"
-              />
+      <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg shadow-lg w-full">
+      <div className="flex items-center space-x-3 w-full">
+        {selectedChat && (
+          <>
+            <img
+              className="h-10 w-10 rounded-full object-cover"
+              src={selectedChat.thumbnail}
+              alt="Group Profile Pic"
+            />
+            <div className="flex flex-col">
               <span className="text-lg font-bold">
                 {selectedChat.courseName}
               </span>
-            </>
-          )}
-        </div>
-        <span className="text-sm text-gray-400">Online</span>
+
+              {/* Conditionally render typing status or group members */}
+              <div className="text-sm text-gray-300 mt-1">
+                {isTyping && typingUser ? (
+                  // Display typing status
+                  <span className="font-semibold">{typingUser} is typing...</span>
+                ) : (
+                  // Display group members
+                  groupMembers && groupMembers.length > 0 && (
+                    groupMembers.slice(0, 5).map((user, index) => (
+                      <span key={user._id} className="font-semibold">
+                        {user.username}
+                        {index < groupMembers.length - 1 ? ", " : ""}
+                      </span>
+                    ))
+                  )
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
+      <span className="text-sm text-gray-400">Online</span>
+    </div>
 
       {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
@@ -516,12 +677,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
 
       {/* Message Input */}
       <div className="flex items-center p-2 bg-gray-800 rounded-lg">
-        <input
+      <input
           type="text"
           className="flex-1 bg-gray-900 border-none p-2 text-white placeholder-gray-500 outline-none"
           placeholder="Type your message..."
           value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
+          onChange={handleInputChange}
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSendMessage();
           }}
@@ -532,13 +693,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
         >
           😀
         </button>
-        <input
-          type="file"
-          accept="image/*,video/*"
-          onChange={handleFileChange}
-          className="hidden"
-          id="mediaInput"
-        />
         <label
           htmlFor="mediaInput"
           className="cursor-pointer text-gray-400 hover:text-gray-100"

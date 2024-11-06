@@ -25,5 +25,9 @@ export const userEndpoints = {
     report: `${API_GATEWAY_BASE_URL}/report`,
     fetchNotify: `${API_GATEWAY_BASE_URL}/fetchNotify`,
     updateReadStatus: `${API_GATEWAY_BASE_URL}/updateReadStatus`,
+    updateReadUsers: `${API_GATEWAY_BASE_URL}/updateReadUsers`,
+    fetchGroupMembers: `${API_GATEWAY_BASE_URL}/fetchGroupMembers`,
 }
+
+
 

@@ -26,6 +26,7 @@ interface CourseResponse {
 const App: React.FC = () => {
   const [chats, setChats] = useState<Chat[]>([]); // Chat list state
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null); // Selected chat state
+  
 
   useEffect(() => {
     fetchChatList();
