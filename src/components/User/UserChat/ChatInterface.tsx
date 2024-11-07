@@ -191,6 +191,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
     }
   };
 
+
   useEffect(() => {
     if (selectedChat?.courseId) {
       // Ensure courseId is defined
@@ -258,6 +259,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
       SocketService.getSocket().off("messageRead");
     };
   }, []);
+
+  
 
   useEffect(() => {
     const handleMediaReceive = (data) => {
