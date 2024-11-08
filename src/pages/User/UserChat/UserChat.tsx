@@ -40,7 +40,7 @@ const App: React.FC = () => {
           userEndpoints.getUserCourses.replace("userId", userId)
         );
 
-        console.log(response, "Fetched chat list");
+        console.log(response.data[0].thumbnail, "Fetched chat list");
 
         const chatList: Chat[] = response.data.map((course: CourseResponse) => ({
           courseId: course._doc._id,

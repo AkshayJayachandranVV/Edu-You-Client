@@ -7,8 +7,8 @@ import { tutorEndpoints } from "../../constraints/endpoints/TutorEndpoints";
 import { CheckIcon } from "@heroicons/react/solid";
 import axios from "axios";
 import socketService from "../../../socket/socketService";
-import { RootState } from '../../../redux/store';
-import { useSelector } from 'react-redux';
+import { RootState } from "../../../redux/store";
+import { useSelector } from "react-redux";
 
 interface Message {
   id: number;
@@ -45,12 +45,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   const messagesRef = useRef(messages);
   const userId = localStorage.getItem("userId");
   const [groupMembers, setGroupMembers] = useState([5]);
-  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(
+    null
+  );
   const [typingUser, setTypingUser] = useState<string | null>(null);
 
+  const { username } = useSelector((state: RootState) => state.user);
 
-  const {username } = useSelector((state: RootState) => state.user);
-  
+  //  console.log(selectedChat)
 
   useEffect(() => {
     SocketService.connect();
@@ -60,37 +62,21 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
     };
   }, []);
 
-  // const updateLeaveChat  = async () => {
-  //   try {
-  //     if (userId) {
-  //       console.log("i")
-  //       const response = await axiosInstance.post(userEndpoints.updateReadUsers, {
-  //         params: { userId } // Use roomId passed as a parameter
-  //       });
-
-  //       console.log(response);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-
   const emitTyping = (isTyping: boolean, roomId: string, username: string) => {
     SocketService.emitTyping(isTyping, roomId, username); // Emit typing status with roomId and username
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
-    
+
     // Emit typing status
     emitTyping(true, selectedChat?.courseId, username);
-  
+
     // Clear the previous timeout
     if (typingTimeout) {
       clearTimeout(typingTimeout);
     }
-  
+
     // Set timeout to stop typing notification after a delay (e.g., 1 second)
     setTypingTimeout(
       setTimeout(() => {
@@ -98,7 +84,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
       }, 1000)
     );
   };
-  
 
   useEffect(() => {
     // Listen for typing status from other users
@@ -118,8 +103,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
       SocketService.offTypingStatus(typingHandler);
     };
   }, []);
-  
-
 
   const fetChGroupMember = async () => {
     try {
@@ -191,7 +174,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
     }
   };
 
-
   useEffect(() => {
     if (selectedChat?.courseId) {
       // Ensure courseId is defined
@@ -260,23 +242,35 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
     };
   }, []);
 
-  
-
   useEffect(() => {
-    const handleMediaReceive = (data) => {
-      const { mediaUrl, s3Key, mediaType } = data;
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          id: prevMessages.length + 1,
-          mediaUrl,
-          mediaType,
-          sender: "Other User",
-          time: new Date().toLocaleTimeString(),
-          isSender: false,
-          username: "Other User",
-        },
-      ]);
+    const handleMediaReceive = (mediaData) => {
+      console.log("New incoming media----- isRead:", mediaData.isRead);
+
+      const newMediaMsg = {
+        id: messagesRef.current.length + 1,
+        messageId: mediaData.messageId,
+        text: "", // No text for media messages
+        mediaUrl: mediaData.mediaUrl,
+        mediaType: mediaData.mediaType,
+        sender:
+          mediaData.userId === userId
+            ? "You"
+            : mediaData.userData?.username || mediaData.username,
+        time: new Date().toLocaleTimeString(),
+        isSender: mediaData.userId === userId,
+        username: mediaData.userData?.username || mediaData.username,
+        profile_picture:
+          mediaData.userData?.profile_picture || mediaData.profile_picture,
+      };
+
+      // Update the state and ref
+      setMessages((prev) => {
+        const updatedMessages = [...prev, newMediaMsg];
+        messagesRef.current = updatedMessages; // Keep the ref in sync with the latest state
+        return updatedMessages;
+      });
+
+      setDisplayedMessages((prev) => [...prev.slice(-5), newMediaMsg]); // Update displayed messages
     };
 
     SocketService.onReceiveMedia(handleMediaReceive);
@@ -414,9 +408,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
       emitTyping(false);
     }
   };
-
-
-
 
   const handleSendMedia = async () => {
     if (selectedFile) {
@@ -557,42 +548,44 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
     <div className="flex flex-col bg-gray-900 text-white w-full lg:w-/4 h-full p-4">
       {/* Chat Header */}
       <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg shadow-lg w-full">
-      <div className="flex items-center space-x-3 w-full">
-        {selectedChat && (
-          <>
-            <img
-              className="h-10 w-10 rounded-full object-cover"
-              src={selectedChat.thumbnail}
-              alt="Group Profile Pic"
-            />
-            <div className="flex flex-col">
-              <span className="text-lg font-bold">
-                {selectedChat.courseName}
-              </span>
+        <div className="flex items-center space-x-3 w-full">
+          {selectedChat && (
+            <>
+              <img
+                className="h-10 w-10 rounded-full object-cover"
+                src={selectedChat.thumbnail}
+                alt="Group Profile Pic"
+              />
+              <div className="flex flex-col">
+                <span className="text-lg font-bold">
+                  {selectedChat.courseName}
+                </span>
 
-              {/* Conditionally render typing status or group members */}
-              <div className="text-sm text-gray-300 mt-1">
-                {isTyping && typingUser ? (
-                  // Display typing status
-                  <span className="font-semibold">{typingUser} is typing...</span>
-                ) : (
-                  // Display group members
-                  groupMembers && groupMembers.length > 0 && (
+                {/* Conditionally render typing status or group members */}
+                <div className="text-sm text-gray-300 mt-1">
+                  {isTyping && typingUser ? (
+                    // Display typing status
+                    <span className="font-semibold">
+                      {typingUser} is typing...
+                    </span>
+                  ) : (
+                    // Display group members
+                    groupMembers &&
+                    groupMembers.length > 0 &&
                     groupMembers.slice(0, 5).map((user, index) => (
                       <span key={user._id} className="font-semibold">
                         {user.username}
                         {index < groupMembers.length - 1 ? ", " : ""}
                       </span>
                     ))
-                  )
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
+        <span className="text-sm text-gray-400">Online</span>
       </div>
-      <span className="text-sm text-gray-400">Online</span>
-    </div>
 
       {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
@@ -680,7 +673,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
 
       {/* Message Input */}
       <div className="flex items-center p-2 bg-gray-800 rounded-lg">
-      <input
+        <input
           type="text"
           className="flex-1 bg-gray-900 border-none p-2 text-white placeholder-gray-500 outline-none"
           placeholder="Type your message..."
@@ -702,6 +695,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
         >
           📎
         </label>
+        <input
+          type="file"
+          id="mediaInput"
+          className="hidden"
+          onChange={handleFileChange}
+        />
         <button
           className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg ml-2"
           onClick={handleSendMessage}
@@ -714,11 +713,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
       {showEmojiPicker && <EmojiPicker onEmojiClick={handleEmojiClick} />}
 
       {/* Media Modal */}
-      {showMediaModal && (
+      {showMediaModal && filePreviewUrl && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-gray-800 p-6 rounded-lg">
-            {filePreviewUrl &&
-              selectedFile &&
+            {selectedFile &&
               (selectedFile.type.startsWith("image/") ? (
                 <img
                   src={filePreviewUrl}

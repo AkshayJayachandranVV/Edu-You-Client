@@ -14,6 +14,8 @@ interface ChatListProps {
 }
 
 const ChatList: React.FC<ChatListProps> = ({ chats, onSelectChat }) => {
+
+  console.log(chats,"alll chatssss")
   return (
     <div className="flex flex-col bg-gray-800 text-white w-full lg:w-1/4 h-full p-4 border-r border-gray-700">
       <div className="text-lg font-semibold mb-4">Chats</div>
