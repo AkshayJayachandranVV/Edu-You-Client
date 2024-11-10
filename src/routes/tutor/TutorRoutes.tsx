@@ -6,10 +6,13 @@ import TutorResetPassword from "../../components/Tutor/Auth/TutorResetPassword/T
 import TutorForgotPassword from "../../components/Tutor/Auth/TutorForgotPass/TutorForgotPass";
 import TutorDashboard from "../../pages/Tutor/TutorDashboard/TutorDashboard";
 import TutorAddCourse from "../../pages/Tutor/TutorAddCourse/TutorAddCourse";
+import TutorChat from "../../pages/Tutor/TutorChat/TutorChat";
 import TutorEditCourse from "../../pages/Tutor/TutorEditCourse/TutorEditCourse";
 import TutorCourses from "../../pages/Tutor/TutorCourses/TutorCourses";
 import TutorPayouts from "../../pages/Tutor/TutorPayouts/TutorPayouts";
+import TutorCourseView from "../../pages/Tutor/TutorCourseView/TutorCourseView";
 import TutorStudents from "../../pages/Tutor/TutorStudents/TutorStudents";
+import TutorLiveStream from "../../pages/Tutor/TutorLiveStream/TutorLiveStream";
 import TutorProfile from "../../components/Tutor/TutorProfile/TutorProfile";
 import TutorEditProfile from "../../components/Tutor/TutorEditProfile/TutorEditProfile";
 import ErrorPage from '../../components/Tutor/404/errorPage'
@@ -33,9 +36,14 @@ const TutorRoutes = () => {
             <Route path='/signup' element={ <PrivateRoute > <TutorSignup />  </PrivateRoute>} />
             <Route path='/forgotPassword' element={ <PrivateRoute > <TutorForgotPassword />  </PrivateRoute>} />
             <Route path='/resetPassword' element={ <PrivateRoute ><TutorResetPassword />  </PrivateRoute>} />
+            <Route path='/courseView/:courseId' element={ <PrivateRouteTutor> < TutorCourseView />  </PrivateRouteTutor>} />
+            <Route path='/chat' element={ <PrivateRouteTutor> <TutorChat />  </PrivateRouteTutor>} />
+            <Route path='/GoLive/:courseId' element={ <PrivateRouteTutor> <TutorLiveStream />  </PrivateRouteTutor>} />
             <Route path="*" element={<ErrorPage />} />
         </Routes>
     )
 }
 
 export default TutorRoutes
+
+

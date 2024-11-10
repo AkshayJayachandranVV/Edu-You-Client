@@ -94,6 +94,17 @@ offTypingStatus(callback: (data: { isTyping: boolean; username: string }) => voi
   }
 
 
+  liveStream({courseId, roomId, tutorId }: {courseId:string, roomId: string, tutorId: string}) {
+    console.log(`Attempting to send message to room: ${roomId}, senderId: ${tutorId}, sjsjsj${courseId}`);
+    if (this.socket.connected) {
+      this.socket.emit('goLive', { roomId, tutorId,courseId });
+    } else {
+      console.error('Socket is not connected');
+    }
+  }
+
+
+
   sendMessage({ roomId, senderId, content }: { roomId: string, senderId: string, content: string }) {
     console.log(`Attempting to send message to room: ${roomId}, message: ${content}, senderId: ${senderId}`);
     if (this.socket.connected) {
@@ -121,6 +132,14 @@ offTypingStatus(callback: (data: { isTyping: boolean; username: string }) => voi
     this.socket.off('receiveMedia', callback);
   }
   
+  
+
+  RecieveLiveStreamLink(callback: (data: { roomId: string; tutorId: string; sharedLink: string }) => void) {
+    this.socket.on('liveStreamLink', (data: { roomId: string; tutorId: string; sharedLink: string }) => {
+      console.log('Received live stream link:', data);
+      callback(data);
+    });
+  }
   
 
   onReceiveMessage(callback: (message: string) => void) {

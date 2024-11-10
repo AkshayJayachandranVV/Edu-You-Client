@@ -23,6 +23,8 @@ export const tutorEndpoints = {
     getPresignedUrl: `${API_GATEWAY_BASE_URL}/getPresignedUrl`,
     cardsData: `${API_GATEWAY_BASE_URL}/cardsData/tutorId`,
     graphData: `${API_GATEWAY_BASE_URL}/graphData/tutorId`,
+    courseView: `${API_GATEWAY_BASE_URL}/courseView/courseId`,
+    getUserCourses :  `${API_GATEWAY_BASE_URL}/getCourses/userId`,
 }
     
 

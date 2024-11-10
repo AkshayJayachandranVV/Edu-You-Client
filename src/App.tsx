@@ -7,10 +7,13 @@ import SocketService from "./socket/socketService";
 import { toast } from 'sonner';
 
 
+
 import './index.css';
 
 
 function App() {
+  const [showLiveStreamModal, setShowLiveStreamModal] = useState(false);
+  const [liveStreamLink, setLiveStreamLink] = useState('');
 
 
 
@@ -27,7 +30,7 @@ function App() {
 
     if (userId) {
         SocketService.connect();
-        SocketService.joinRoom("notifications");  // Join general room
+        SocketService.joinRoom(userId);  // Join general room
 
         SocketService.onReceiveNotification((notification) => {
             toast.success(notification.notification);

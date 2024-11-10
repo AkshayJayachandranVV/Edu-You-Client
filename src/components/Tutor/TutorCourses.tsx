@@ -91,11 +91,14 @@ export default function DarkThemeTable({ courseData }: DarkThemeTableProps) {
     }
   };
 
+  const viewCourse = async(courseId:string) =>{
+    navigate(`/tutor/courseView/${courseId}`);
+}
 
   const editCourse = async(courseId:string) =>{
       navigate(`/tutor/editCourse/${courseId}`);
   }
-
+  
   return (
     <div className="bg-gray-900 min-h-screen p-8 text-white">
       <Typography variant="h4" align="center" gutterBottom sx={{ color: "#FFC107" }}>
@@ -121,6 +124,7 @@ export default function DarkThemeTable({ courseData }: DarkThemeTableProps) {
               <StyledTableCell align="right">Price</StyledTableCell>
               <StyledTableCell align="right">Discount Price</StyledTableCell>
               <StyledTableCell align="right">Date</StyledTableCell>
+              <StyledTableCell align="right">View</StyledTableCell>
               <StyledTableCell align="right">Edit</StyledTableCell>
               <StyledTableCell align="right">List/Unlist</StyledTableCell>
             </TableRow>
@@ -146,6 +150,11 @@ export default function DarkThemeTable({ courseData }: DarkThemeTableProps) {
                   <StyledTableCell align="right">{course.courseDiscountPrice}</StyledTableCell>
                   <StyledTableCell align="right">
                     {new Date(course.createdAt).toLocaleString()}
+                  </StyledTableCell>
+                  <StyledTableCell align="right">
+                    <Button onClick={()=>viewCourse(course._id)} variant="contained" color="primary" size="small">
+                      View
+                    </Button>
                   </StyledTableCell>
                   <StyledTableCell align="right">
                     <Button onClick={()=>editCourse(course._id)} variant="contained" color="primary" size="small">

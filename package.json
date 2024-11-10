@@ -23,6 +23,7 @@
     "@react-oauth/google": "^0.12.1",
     "@reduxjs/toolkit": "^2.2.7",
     "@stripe/stripe-js": "^4.7.0",
+    "@zegocloud/zego-uikit-prebuilt": "^2.12.0",
     "apexcharts": "^3.53.0",
     "aws-amplify": "^6.6.2",
     "aws-sdk": "^2.1691.0",

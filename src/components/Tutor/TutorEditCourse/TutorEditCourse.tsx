@@ -173,7 +173,7 @@ const EditCourse: React.FC<AddCourseProps> = ({ onNext }) => {
   return (
     <div className="flex items-center justify-center min-h-screen" style={{ backgroundColor: "#0a0c11" }}>
       <div className="w-full max-w-4xl shadow-lg rounded-lg p-8" style={{ backgroundColor: "#1b2532", marginTop: "20px" }}>
-        <h2 className="text-3xl font-semibold text-gray-100 mb-8 text-center">Add New Course</h2>
+        <h2 className="text-3xl font-semibold text-gray-100 mb-8 text-center">Edit Course</h2>
 
         <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
           {/* Course Name */}
