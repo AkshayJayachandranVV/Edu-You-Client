@@ -1,5 +1,5 @@
-import React from 'react';
-import moment from 'moment';
+import React from "react";
+import moment from "moment";
 
 interface ChatListProps {
   chats: Array<{
@@ -13,9 +13,17 @@ interface ChatListProps {
   onSelectChat: (chat: unknown) => void;
 }
 
-const ChatList: React.FC<ChatListProps> = ({ chats, onSelectChat }) => {
 
-  console.log(chats,"alll chatssss")
+
+
+const ChatList: React.FC<ChatListProps> = ({ chats, onSelectChat }) => {
+  console.log(chats, "alll chatssss");
+
+  function isMedia(message:string) {
+    // Check if message contains keywords that identify it as media
+    return /\.(jpg|jpeg|png|gif|mp4|mov|avi)$/i.test(message);
+  }
+
   return (
     <div className="flex flex-col bg-gray-800 text-white w-full lg:w-1/4 h-full p-4 border-r border-gray-700">
       <div className="text-lg font-semibold mb-4">Chats</div>
@@ -35,15 +43,23 @@ const ChatList: React.FC<ChatListProps> = ({ chats, onSelectChat }) => {
               <div className="flex flex-col flex-1">
                 <span className="text-sm font-bold">{chat.courseName}</span>
                 <span className="text-xs font-semibold text-gray-300 truncate">
-                  {chat.lastMessage ? chat.lastMessage : "No messages yet"}
+                  {chat.lastMessage
+                    ? isMedia(chat.lastMessage)
+                      ? "Media"
+                      : chat.lastMessage // Show "Media" if it's a media URL, otherwise show the text message
+                    : "No messages yet"}
                 </span>
               </div>
               <div className="text-right text-xs flex flex-col items-end">
                 <span className="text-gray-400">
-                  {chat.lastMessageTime ? moment(chat.lastMessageTime).format("hh:mm A") : ""}
+                  {chat.lastMessageTime
+                    ? moment(chat.lastMessageTime).format("hh:mm A")
+                    : ""}
                 </span>
                 {!chat.isRead && (
-                  <span className="text-xs text-blue-500 font-semibold mt-1">Unread</span>
+                  <span className="text-xs text-blue-500 font-semibold mt-1">
+                    Unread
+                  </span>
                 )}
               </div>
             </div>

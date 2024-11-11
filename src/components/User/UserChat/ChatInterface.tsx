@@ -9,6 +9,7 @@ import axios from "axios";
 import socketService from "../../../socket/socketService";
 import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 interface Message {
   id: number;
@@ -49,7 +50,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
     null
   );
   const [typingUser, setTypingUser] = useState<string | null>(null);
-
+  const navigate = useNavigate();
   const { username } = useSelector((state: RootState) => state.user);
 
   //  console.log(selectedChat)
@@ -544,6 +545,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
     scrollToBottom();
   }, [displayedMessages, messages]);
 
+  const handleGoLive = () => {
+    navigate(`/goLive/${selectedChat?.courseId}`);
+  };
+
   return (
     <div className="flex flex-col bg-gray-900 text-white w-full lg:w-/4 h-full p-4">
       {/* Chat Header */}
@@ -584,7 +589,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
             </>
           )}
         </div>
-        <span className="text-sm text-gray-400">Online</span>
+
+        <div className="flex items-center space-x-4">
+          <span className="text-sm text-gray-400">Online</span>
+
+          {/* "Go Live" button */}
+          {selectedChat && ( // Only render the button if selectedChat is truthy
+            <button
+              onClick={handleGoLive} // Define this function to start the live stream
+              className="px-4 py-2 bg-green-500 text-white rounded-md font-semibold hover:bg-green-600 transition duration-200"
+            >
+              Go Live
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Chat Messages */}
@@ -672,6 +690,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
       </div>
 
       {/* Message Input */}
+      {selectedChat && ( 
       <div className="flex items-center p-2 bg-gray-800 rounded-lg">
         <input
           type="text"
@@ -708,6 +727,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
           Send
         </button>
       </div>
+      )}
 
       {/* Emoji Picker */}
       {showEmojiPicker && <EmojiPicker onEmojiClick={handleEmojiClick} />}

@@ -1,20 +1,22 @@
 import React, { useEffect, useRef } from 'react';
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import { useParams } from 'react-router-dom';
+import { RootState } from "../../../redux/store";
+import { useSelector } from "react-redux";
 
-
-function TutorLiveStream() {
+function UserLiveStream() {
     const { courseId } = useParams(); // Use courseId as roomId
     const containerRef = useRef(null);
-    const role = ZegoUIKitPrebuilt.Host; // Tutor is the host role
-
-    const tutorId = localStorage.getItem("tutorId")
+    const role = ZegoUIKitPrebuilt.Audience; // Set user as audience
+    const { username } = useSelector((state: RootState) => state.user);
 
     const initialized = useRef(false); // Ensure initMeeting is only called once
 
+    const userId = localStorage.getItem("userId")
+
     useEffect(() => {
         const initMeeting = async () => {
-            if (initialized.current) return; // Exit if already initialized
+            if (initialized.current) return;
             initialized.current = true;
 
             const appID = 1971649609;
@@ -25,22 +27,22 @@ function TutorLiveStream() {
                 return;
             }
 
-            if(!tutorId){
-                 console.error("tutorIdd is missing");
-                return;
-            }
+
+            
+            if(!userId){
+                console.error("tutorIdd is missing");
+               return;
+           }
 
             const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
                 appID,
                 serverSecret,
-                courseId, // Use courseId directly as roomId
-                tutorId, // Generate a unique user ID
-                "Tutor"
+                courseId, // Use courseId as roomId
+                userId , // Generate a unique user ID for the session
+                username
             );
 
             const zp = ZegoUIKitPrebuilt.create(kitToken);
-
-
 
             zp.joinRoom({
                 container: containerRef.current,
@@ -48,6 +50,19 @@ function TutorLiveStream() {
                     mode: ZegoUIKitPrebuilt.LiveStreaming,
                     config: { role },
                 },
+
+
+                showPreJoinView: false,
+                showLeavingView: false,
+                showAudioVideoSettingsButton: false,
+                layout: "Grid",
+                useFrontFacingCamera: false,
+                turnOnMicrophoneWhenJoining: false,
+                turnOnCameraWhenJoining: false,
+                showMyMicrophoneToggleButton: false,  // Corrected property name
+                showMyCameraToggleButton: false,      // Corrected property name
+
+
             });
         };
 
@@ -58,7 +73,7 @@ function TutorLiveStream() {
         <div style={{ width: '100vw', height: '100vh' }}>
             <div ref={containerRef} />
         </div>
-    );
+    );  
 }
 
-export default TutorLiveStream;
+export default UserLiveStream;

@@ -14,6 +14,7 @@ import MyCourse from "../../components/User/MyCourse/MyCourse";
 import CourseView from "../../pages/User/CoursePurchased/CoursePurchased";
 import ErrorPage from '../../components/User/404/errorPage'; 
 import Chat from "../../pages/User/UserChat/UserChat";
+import LiveStream from "../../pages/User/UserLiveStreaming/UserLiveStreaming";
 import PrivateRoute from "./privateRoute";
 import PrivateRouteUser from "./privateRouteUser";
 import { useEffect, useState } from 'react';
@@ -58,6 +59,7 @@ const UserRoutes = () => {
                 <Route path='/myCourses' element={<PrivateRouteUser><MyCourse /></PrivateRouteUser>} />
                 <Route path='/courseView/:courseId' element={<PrivateRouteUser><CourseView /></PrivateRouteUser>} />
                 <Route path='/chat' element={<PrivateRouteUser><Chat /></PrivateRouteUser>} />
+                <Route path='/goLive/:courseId' element={<PrivateRouteUser><LiveStream /></PrivateRouteUser>} />
                 <Route path="*" element={<ErrorPage />} />
             </Routes>
 

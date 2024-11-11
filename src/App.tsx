@@ -5,6 +5,7 @@ import TutorRoutes from './routes/tutor/TutorRoutes'
 import {useEffect} from 'react'
 import SocketService from "./socket/socketService";
 import { toast } from 'sonner';
+// import { useState } from "react";
 
 
 
@@ -12,8 +13,7 @@ import './index.css';
 
 
 function App() {
-  const [showLiveStreamModal, setShowLiveStreamModal] = useState(false);
-  const [liveStreamLink, setLiveStreamLink] = useState('');
+
 
 
 

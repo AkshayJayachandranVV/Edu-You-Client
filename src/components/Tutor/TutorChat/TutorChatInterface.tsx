@@ -9,6 +9,7 @@ import axios from "axios";
 import socketService from "../../../socket/socketService";
 import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 interface Message {
   id: number;
@@ -51,6 +52,8 @@ const TutorChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   const [typingUser, setTypingUser] = useState<string | null>(null);
 
   const { username } = useSelector((state: RootState) => state.user);
+
+  const navigate = useNavigate()
 
   //  console.log(selectedChat)
 
@@ -544,48 +547,66 @@ const TutorChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
     scrollToBottom();
   }, [displayedMessages, messages]);
 
+
+
+  const handleGoLive = async()=>{
+    navigate(`/tutor/GoLive/${selectedChat?.courseId}`);
+  }
+
   return (
     <div className="flex flex-col bg-gray-900 text-white w-full lg:w-/4 h-full p-4">
       {/* Chat Header */}
       <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg shadow-lg w-full">
-        <div className="flex items-center space-x-3 w-full">
-          {selectedChat && (
-            <>
-              <img
-                className="h-10 w-10 rounded-full object-cover"
-                src={selectedChat.thumbnail}
-                alt="Group Profile Pic"
-              />
-              <div className="flex flex-col">
-                <span className="text-lg font-bold">
-                  {selectedChat.courseName}
-                </span>
+    <div className="flex items-center space-x-3 w-full">
+      {selectedChat && (
+        <>
+          <img
+            className="h-10 w-10 rounded-full object-cover"
+            src={selectedChat.thumbnail}
+            alt="Group Profile Pic"
+          />
+          <div className="flex flex-col">
+            <span className="text-lg font-bold">
+              {selectedChat.courseName}
+            </span>
 
-                {/* Conditionally render typing status or group members */}
-                <div className="text-sm text-gray-300 mt-1">
-                  {isTyping && typingUser ? (
-                    // Display typing status
-                    <span className="font-semibold">
-                      {typingUser} is typing...
-                    </span>
-                  ) : (
-                    // Display group members
-                    groupMembers &&
-                    groupMembers.length > 0 &&
-                    groupMembers.slice(0, 5).map((user, index) => (
-                      <span key={user._id} className="font-semibold">
-                        {user.username}
-                        {index < groupMembers.length - 1 ? ", " : ""}
-                      </span>
-                    ))
-                  )}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-        <span className="text-sm text-gray-400">Online</span>
-      </div>
+            {/* Conditionally render typing status or group members */}
+            <div className="text-sm text-gray-300 mt-1">
+              {isTyping && typingUser ? (
+                // Display typing status
+                <span className="font-semibold">
+                  {typingUser} is typing...
+                </span>
+              ) : (
+                // Display group members
+                groupMembers &&
+                groupMembers.length > 0 &&
+                groupMembers.slice(0, 5).map((user, index) => (
+                  <span key={user._id} className="font-semibold">
+                    {user.username}
+                    {index < groupMembers.length - 1 ? ", " : ""}
+                  </span>
+                ))
+              )}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+
+    <div className="flex items-center space-x-4">
+      <span className="text-sm text-gray-400">Online</span>
+      
+      {/* "Go Live" button */}
+      <button
+        onClick={handleGoLive} // Define this function to start the live stream
+        className="px-4 py-2 bg-green-500 text-white rounded-md font-semibold hover:bg-green-600 transition duration-200"
+      >
+        Go Live
+      </button>
+    </div>
+</div>
+
 
       {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2">

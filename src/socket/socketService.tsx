@@ -94,10 +94,10 @@ offTypingStatus(callback: (data: { isTyping: boolean; username: string }) => voi
   }
 
 
-  liveStream({courseId, roomId, tutorId }: {courseId:string, roomId: string, tutorId: string}) {
-    console.log(`Attempting to send message to room: ${roomId}, senderId: ${tutorId}, sjsjsj${courseId}`);
+  liveStream({courseId, roomId, tutorId,sharedLink}: {courseId:string, roomId: string, tutorId: string,sharedLink:string}) {
+    console.log(`Attempting to send message to room: ${roomId}, senderId: ${tutorId}, sjsjsj${courseId},gshsjshjs${sharedLink}`);
     if (this.socket.connected) {
-      this.socket.emit('goLive', { roomId, tutorId,courseId });
+      this.socket.emit('goLive', { roomId, tutorId,courseId,sharedLink});
     } else {
       console.error('Socket is not connected');
     }
