@@ -7,7 +7,7 @@ interface PrivateRouteProps{
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps>=({children})=> {
-const tutor = Cookies.get('tutorAccessToken')
+const tutor = Cookies.get('tutorRefreshToken')
 
   return  tutor? <Navigate to='/tutor/dashboard'/>:<>{children}</>
 }

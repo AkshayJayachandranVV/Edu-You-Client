@@ -32,6 +32,7 @@ interface ChatInterfaceProps {
   } | null;
 }
 
+
 const TutorChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [displayedMessages, setDisplayedMessages] = useState<Message[]>([]);

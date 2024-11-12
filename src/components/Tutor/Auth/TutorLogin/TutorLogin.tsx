@@ -68,10 +68,10 @@ function TutorLogin() {
 
           localStorage.setItem('tutorAccessToken', result.data.tutorAccessToken);
           localStorage.setItem('tutorId',id);
-          Cookies.set('tutorAccessToken', result.data.tutorAccessToken, { expires: 7 });
+          Cookies.set('tutorAccessToken', result.data.tutorAccessToken, { expires: 1 });    
+          Cookies.set('tutorRefreshToken', result.data.tutorRefreshToken, { expires: 7 }); 
           navigate('/tutor/dashboard');
         } else if (result.data.message === "User is Blocked") {
-          // Handle blocked tutor
           alert("You are blocked. Please contact support.");
           console.log("Tutor is blocked");
         } else {
@@ -106,7 +106,8 @@ function TutorLogin() {
 
         localStorage.setItem('tutorAccessToken', result.data.tutorAccessToken);
         localStorage.setItem('tutorId',id);
-        Cookies.set('tutorAccessToken', result.data.tutorAccessToken, { expires: 7 });
+        Cookies.set('tutorAccessToken', result.data.tutorAccessToken, { expires: 1 });    
+        Cookies.set('tutorRefreshToken', result.data.tutorRefreshToken, { expires: 7 });  
         setLoading(false);
         navigate('/tutor/dashboard'); // Redirect after successful login
       } else {

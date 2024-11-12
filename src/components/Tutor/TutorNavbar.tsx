@@ -46,6 +46,7 @@ export default function PrimarySearchAppBar() {
   const handleClose = () => {
     localStorage.removeItem("tutorAccessToken");
     Cookies.remove('tutorAccessToken');
+    Cookies.remove('tutorRefreshToken');
     navigate("/tutor/login");
   };
 

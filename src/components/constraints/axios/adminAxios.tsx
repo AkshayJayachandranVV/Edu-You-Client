@@ -1,34 +1,7 @@
-// import axios from 'axios';
-
-// const axiosInstance = axios.create({
-//   baseURL: 'http://localhost:4000',
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-// });
-
-
-
-// axiosInstance.interceptors.request.use((config) => {
-//     const token = localStorage.getItem('adminAccessToken');
-//     console.log(token,"got the adminAccessToken ---------------")
-//     if (token) {
-//       config.headers['Authorization'] = `Bearer ${token}`;
-//     }
-//     return config;
-//   }, (error) => {
-//     return Promise.reject(error);
-// });
-  
-//   export default axiosInstance;
-
-
-
-
 import axios from 'axios';
 
 // Function to get a cookie by name
-function getCookie(name: string): string | null {
+function getCookie(name:string) {
   const nameEQ = name + "=";
   const ca = document.cookie.split(';');
   for (let i = 0; i < ca.length; i++) {
@@ -40,7 +13,7 @@ function getCookie(name: string): string | null {
 }
 
 // Function to remove a cookie
-function deleteCookie(name: string) {
+function deleteCookie(name:string) {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 }
 
@@ -58,6 +31,9 @@ axiosInstance.interceptors.request.use(
     const token = getCookie('adminAccessToken'); // Get token from cookies
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
+      console.log('Admin access token added to headers:', token);
+    } else {
+      console.log('No admin access token found in cookies');
     }
     return config;
   },
@@ -67,18 +43,43 @@ axiosInstance.interceptors.request.use(
 // Response Interceptor to Handle Token Expiry and Unauthorized Access
 axiosInstance.interceptors.response.use(
   (response) => response, // Simply return response if successful
-  (error) => {
-    // Check if the error response status is 401
-    if (error.response && error.response.status === 401) {
-      console.log('Unauthorized access, redirecting to login...');
+  async (error) => {
+    const originalRequest = error.config;
 
-      // Clear the expired token from cookies
+    // Check if the error response status is 401 or 403
+    if ((error.response && error.response.status === 401) || (error.response && error.response.status === 403)) {
+      console.log('Admin access token might be expired, attempting to refresh it...');
+      
+      const refreshToken = getCookie('adminRefreshToken');
+      if (refreshToken) {
+        console.log('Found admin refresh token in cookies:', refreshToken);
+
+        try {
+          // Call backend to refresh the token
+          const response = await axios.post('http://localhost:4000/admin/refresh-token', { token: refreshToken });
+          const { accessToken } = response.data;
+
+          if (accessToken) {
+            // Save new access token in cookies and retry the original request
+            document.cookie = `adminAccessToken=${accessToken}; path=/;`;
+            originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+            console.log('New admin access token received and saved. Retrying the original request...');
+
+            return axiosInstance(originalRequest); // Retry the original request with the new token
+          } else {
+            console.log('No access token received in response. Redirecting to admin login...');
+          }
+        } catch (refreshError) {
+          console.error('Error refreshing admin token:', refreshError);
+        }
+      } else {
+        console.log('No admin refresh token available. Redirecting to login...');
+      }
+
+      // If refresh token is invalid or not available, redirect to login
       deleteCookie('adminAccessToken');
-
-      // Redirect to login page (use history, navigate, or window location)
-      window.location.href = '/admin/'; // Alternatively, you can use history or navigate if using React Router
-
-      return Promise.reject('Unauthorized access, redirecting to login.');
+      deleteCookie('adminRefreshToken');
+      window.location.href = '/admin/'; // Alternatively, use history/navigate if using React Router
     }
 
     // For other errors, simply reject the promise
@@ -87,4 +88,3 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
-

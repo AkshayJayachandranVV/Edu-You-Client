@@ -34,6 +34,7 @@ export default function PrimarySearchAppBar() {
   const handleClose = () => {
     localStorage.removeItem('adminAccessToken');
     Cookies.remove('adminAccessToken');
+    Cookies.remove('adminRefreshToken');
     navigate('/admin');
   };
 

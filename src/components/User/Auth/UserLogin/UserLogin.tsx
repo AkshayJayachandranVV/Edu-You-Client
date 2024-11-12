@@ -77,7 +77,8 @@ function UserLogin() {
           // Store the access token in local storage
           localStorage.setItem('userId',id);
           localStorage.setItem('userAccessToken', result.data.userAccessToken);
-          Cookies.set('userAccessToken', result.data.userAccessToken, { expires: 7 });
+          Cookies.set('userAccessToken', result.data.userAccessToken, { expires: 1 });
+          Cookies.set('userRefreshToken', result.data.userRefreshToken, { expires: 7 });
   
           // Navigate to the home page
           navigate('/');
