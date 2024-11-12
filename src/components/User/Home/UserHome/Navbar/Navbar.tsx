@@ -52,6 +52,7 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
     navigate("/login");
     localStorage.setItem("userAccessToken", "");
     Cookies.remove('userAccessToken');
+    Cookies.remove('userRefreshToken');
     socketService.disconnect();
   };
 

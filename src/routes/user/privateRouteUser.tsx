@@ -5,7 +5,7 @@ interface privateRouteUserProps{
     children:ReactNode
 }
 const PrivateRouteUser:React.FC<privateRouteUserProps>=({children})=> {
-    const user = Cookies.get('userAccessToken')
+    const user = Cookies.get('userRefreshToken')
 
     console.log(user,"--------------------------this is the token")
 

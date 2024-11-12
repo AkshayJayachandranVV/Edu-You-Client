@@ -123,7 +123,10 @@ function UserLogin() {
         // Store token and user ID locally
         localStorage.setItem('userId', id);
         localStorage.setItem('userAccessToken', result.data.userAccessToken);
-        Cookies.set('userAccessToken', result.data.userAccessToken, { expires: 7 });
+        // const accessTokenExpires = new Date(new Date().getTime() + 10 * 1000); // 10 seconds from now
+        Cookies.set('userAccessToken', result.data.userAccessToken, { expires: 1 });
+        Cookies.set('userRefreshToken', result.data.userRefreshToken, { expires: 7 });
+        
   
         setLoading(false);
         navigate("/");
