@@ -5,6 +5,7 @@ import AdminStudents from '../../pages/Admin/AdminDashboard/AdminStudents'
 import AdminTutors from '../../pages/Admin/AdminDashboard/AdminTutors'
 import AdminCourses from '../../pages/Admin/AdminDashboard/AdminCourses'
 import AdminReports from '../../pages/Admin/AdminDashboard/AdminReportCourse'
+import AdminPayouts from '../../pages/Admin/AdminDashboard/AdminPayouts'
 import ErrorPage from '../../components/User/404/errorPage'; 
 import PrivateRoute from "./privateRoute"
 import PrivateRouteAdmin from "./privateRouteAdmin"
@@ -19,6 +20,7 @@ const UserRoutes = () => {
             <Route path='/tutors' element={<PrivateRouteAdmin> <AdminTutors />  </PrivateRouteAdmin>} />
             <Route path='/courses' element={<PrivateRouteAdmin> <AdminCourses />  </PrivateRouteAdmin>} />
             <Route path='/reports' element={<PrivateRouteAdmin> <AdminReports />  </PrivateRouteAdmin>} />
+            <Route path='/payouts' element={<PrivateRouteAdmin> <AdminPayouts />  </PrivateRouteAdmin>} />
             <Route path="*" element={<ErrorPage />} />
         </Routes>
     )

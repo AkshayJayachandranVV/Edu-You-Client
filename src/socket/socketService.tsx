@@ -28,8 +28,11 @@ class SocketService {
     });
   }
 
-
-
+  onDisconnect(callback) {
+    if (this.socket) {
+      this.socket.on("disconnect", callback);
+    }
+  }
 
 
 
@@ -155,7 +158,7 @@ offTypingStatus(callback: (data: { isTyping: boolean; username: string }) => voi
       callback(data);
     });
   }
-
+ 
 
   onReceiveNotification(callback: (notification: { roomId: string; senderId: string; notification: string }) => void) {
     this.socket.on('receiveNotification', (notification) => {

@@ -75,7 +75,7 @@ export default function ProfilePage() {
   
     // If no new file and no preview image, return the existing thumbnail info
     if (!profileImageFile && !profileImage) {
-      alert("Please select a file first!");
+      toast.info("Please select a file first!");
       return null;
     }
   

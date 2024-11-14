@@ -32,12 +32,13 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
 
   const fetchNotification = async () => {
     try {
+      const userId = localStorage.getItem("userId")
       console.log("Entered to notify");
       const fetchNotify = await axiosInstance.get(userEndpoints.fetchNotify, {
-        params: { coursesEnrolled }, // Sending as query params
+        params: { coursesEnrolled,userId }, // Sending as query params
       });
 
-      console.log('Notification data:', fetchNotify.data);
+      console.log('Notification data:', fetchNotify);
       setNotifications(fetchNotify.data); // Update notifications state
     } catch (error) {
       console.error('Error fetching notifications:', error);

@@ -27,6 +27,8 @@ export const userEndpoints = {
     updateReadStatus: `${API_GATEWAY_BASE_URL}/updateReadStatus`,
     updateReadUsers: `${API_GATEWAY_BASE_URL}/updateReadUsers`,
     fetchGroupMembers: `${API_GATEWAY_BASE_URL}/fetchGroupMembers`,
+    reviewPost: `${API_GATEWAY_BASE_URL}/reviewPost`,
+    fetchReview: `${API_GATEWAY_BASE_URL}/fetchReview/courseId`,
 }
 
 

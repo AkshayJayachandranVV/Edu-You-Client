@@ -1,48 +1,47 @@
+// App.js
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AdminRoutes from './routes/admin/AdminRoutes'
-import UserRoutes from './routes/user/UserRoutes'
-import TutorRoutes from './routes/tutor/TutorRoutes'
-import {useEffect} from 'react'
+import AdminRoutes from './routes/admin/AdminRoutes';
+import UserRoutes from './routes/user/UserRoutes';
+import TutorRoutes from './routes/tutor/TutorRoutes';
+import { useEffect } from 'react';
 import SocketService from "./socket/socketService";
 import { toast } from 'sonner';
-// import { useState } from "react";
-
-
 
 import './index.css';
 
-
 function App() {
-
-
-
-
-  // useEffect(() => {
-  //   SocketService.connect();
-  //   return () => {
-  //     SocketService.disconnect();
-  //   };
-  // }, []);
-
-
   useEffect(() => {
     const userId = localStorage.getItem("userId");
 
     if (userId) {
+      const connectSocket = () => {
+        // Connect to the socket
         SocketService.connect();
-        SocketService.joinRoom(userId);  // Join general room
 
+        // Join the user-specific room
+        SocketService.joinRoom(userId);
+
+        // Handle notifications
         SocketService.onReceiveNotification((notification) => {
-            toast.success(notification.notification);
+          toast.success(notification.notification);
         });
-    }
 
-    return () => {
+        // Automatically reconnect if disconnected
+        SocketService.onDisconnect(() => {
+          console.log("Socket disconnected. Attempting to reconnect...");
+          setTimeout(connectSocket, 1000);  // Retry connection after a delay
+        });
+      };
+
+      // Initial connection
+      connectSocket();
+
+      // Clean up: disconnect socket on logout or component unmount
+      return () => {
         SocketService.disconnect();
-    };
-}, []);
-
-
+      };
+    }
+  }, []);
 
   return (
     <Router>
@@ -56,4 +55,3 @@ function App() {
 }
 
 export default App;
-   
