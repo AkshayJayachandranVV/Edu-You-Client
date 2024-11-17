@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../../User/Home/UserHome/Navbar/Navbar";
 import Footer from "../../User/Home/UserHome/Footer/Footer";
-import iconimage from "../../../assets/images/User/UserHome/Account.png";
 import bannerImage from "../../../assets/images/User/checkout.png";
 import axiosInstance from "../../../components/constraints/axios/userAxios";
 import { userEndpoints } from "../../../components/constraints/endpoints/userEndpoints";
 import { RootState } from "../../../redux/store";
 import { toast } from "sonner";
-import { useDispatch, useSelector } from "react-redux";
 import { loadStripe } from "@stripe/stripe-js";
 import { useParams } from "react-router-dom";
 import { tutorEndpoints } from "../../constraints/endpoints/TutorEndpoints";
-
+import { useSelector } from "react-redux";
+import CheckoutBanner  from './CheckoutBanner'
 interface Course {
   _id: string;
   courseName: string;
@@ -22,7 +21,7 @@ interface Course {
   courseLevel: string;
   demoURL: string;
   thumbnail: string;
-  thumbnailKey:string;
+  thumbnailKey: string;
   tutorId: string;
 }
 
@@ -32,11 +31,11 @@ interface Tutor {
   phone: string;
 }
 
+
 export default function Checkout() {
   const { courseId } = useParams();
   const [courseData, setCourseData] = useState<Course | null>(null);
   const [tutorDetails, setTutorDetails] = useState<Tutor | null>(null);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     sessionStorage.removeItem("orderCheck");
@@ -49,7 +48,7 @@ export default function Checkout() {
           );
           setCourseData(response.data.courses);
 
-          console.log(response.data,"hey got the thumbnailkey");
+          console.log(response.data, "hey got the thumbnailkey");
 
           // After fetching course data, fetch tutor details
           if (response.data.courses.tutorId) {
@@ -80,7 +79,7 @@ export default function Checkout() {
     fetchCourseDetails();
   }, [courseId]);
 
-  const userId = useSelector((state: RootState) => state.user.id);     
+  const userId = useSelector((state: RootState) => state.user.id);
 
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -140,28 +139,11 @@ export default function Checkout() {
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
-      <Navbar iconimage={iconimage} />
+      <Navbar />
 
       {/* Banner Section */}
-      <div className="relative bg-black p-6" style={{ minHeight: "150px" }}>
-        <img
-          src={bannerImage}
-          alt="Banner"
-          className="w-[700px] h-[400px] object-cover mb-4"
-          style={{ marginLeft: "700px", marginTop: "60px" }}
-        />
-        <h1
-          className="font-black text-white absolute"
-          style={{
-            top: "40%",
-            left: "220px",
-            transform: "translateY(-50%)",
-            fontSize: "80px",
-          }}
-        >
-          Checkout
-        </h1>
-      </div>
+      {/* Banner Section */}
+      <CheckoutBanner bannerImage={bannerImage}/>
 
       {/* Course and Tutor Data Rendering */}
       {courseData && (
@@ -202,39 +184,50 @@ export default function Checkout() {
 
               {/* Tutor Details */}
               <div className="bg-gray-900 rounded-lg shadow-xl p-6">
-                <h3 className="text-2xl font-extrabold text-center text-yellow-400 mb-4">Tutor Details</h3>
+                <h3 className="text-2xl font-extrabold text-center text-yellow-400 mb-4">
+                  Tutor Details
+                </h3>
                 {tutorDetails ? (
                   <div className="grid grid-cols-1 gap-3">
                     <div className="bg-gray-800 rounded-lg p-3">
                       <p className="text-lg">
-                        <span className="font-bold text-yellow-300">Name:</span> {tutorDetails.tutorname}
+                        <span className="font-bold text-yellow-300">Name:</span>{" "}
+                        {tutorDetails.tutorname}
                       </p>
                     </div>
                     <div className="bg-gray-800 rounded-lg p-3">
                       <p className="text-lg">
-                        <span className="font-bold text-yellow-300">Email:</span> {tutorDetails.email}
+                        <span className="font-bold text-yellow-300">
+                          Email:
+                        </span>{" "}
+                        {tutorDetails.email}
                       </p>
                     </div>
                     <div className="bg-gray-800 rounded-lg p-3">
                       <p className="text-lg">
-                        <span className="font-bold text-yellow-300">Phone:</span> {tutorDetails.phone}
+                        <span className="font-bold text-yellow-300">
+                          Phone:
+                        </span>{" "}
+                        {tutorDetails.phone}
                       </p>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-lg text-gray-400 text-center">Loading tutor details...</p>
+                  <p className="text-lg text-gray-400 text-center">
+                    Loading tutor details...
+                  </p>
                 )}
               </div>
             </div>
-            </div>
-
-            <button
-              onClick={() => handlePayment(courseData._id)}
-              className="bg-blue-600 text-white rounded-md px-4 py-2 mt-4 w-full hover:bg-blue-700"
-            >
-              Place Order
-            </button>
           </div>
+
+          <button
+            onClick={() => handlePayment(courseData._id)}
+            className="bg-blue-600 text-white rounded-md px-4 py-2 mt-4 w-full hover:bg-blue-700"
+          >
+            Place Order
+          </button>
+        </div>
       )}
 
       <Footer />

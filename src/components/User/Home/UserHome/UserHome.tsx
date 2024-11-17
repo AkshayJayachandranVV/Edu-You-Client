@@ -1,34 +1,24 @@
-import "./UserHome.css";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../../Home/UserHome/Navbar/Navbar";
 import Footer from "../../Home/UserHome/Footer/Footer";
-import iconimage from "../../../../assets/images/User/UserHome/Account.png";
-import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
-import { logout } from "../../../../redux/userSlice";
-import { useNavigate } from "react-router-dom";
-import { courseEndpoints } from "../../../constraints/endpoints/courseEndpoints";
-import { tutorEndpoints } from "../../../constraints/endpoints/TutorEndpoints";
-import axios from "axios";
-import { Link } from "react-router-dom";
-import { ContactPageSharp } from "@mui/icons-material";
-import {fetchNewSignedUrl} from '../../../../S3signedUrl/fetchNewSignedUrl';
-
+import { courseEndpoints} from "../../../constraints/endpoints/courseEndpoints";
+import banner from '../../../../assets/images/User/UserHome/userHome.png'
+import aboutUs from '../../../../assets/images/User/UserHome/aboutUs.webp'
 
 interface Course {
-  _id: string; // or number, depending on your implementation
-  thumbnail: string; // the original thumbnail key
-  thumbnailUrl?: string; // the new signed URL (optional)
+  _id: string;
+  thumbnail: string;
+  thumbnailUrl?: string;
   courseName: string;
-  courseDescription:string;
-  coursePrice:string;
+  courseDescription: string;
+  coursePrice: string;
 }
 
 export default function UserHome() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [courses, setCourses] = useState<Course[]>([]); // Explicitly typing the courses state
-  const [imageUrls, setImageUrls] = useState<{ [key: string]: string }>({});
+  const [courses, setCourses] = useState<Course[]>([]); // Explicitly typing the courses state=
   
 
   const handleCardClick = (courseId:string) => {
@@ -47,16 +37,6 @@ export default function UserHome() {
     fetchData();
   }, []);
 
-  // const fetchData = async () => {
-  //   try {
-  //     const result = await axios.get(courseEndpoints.userCourse);
-  //     console.log(result.data.courses,"--------------------------")
-  //     setCourses(result.data.courses); // store fetched courses in state
-  //     console.log(result.data.courses);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
 
   const fetchData = async () => {
@@ -67,7 +47,7 @@ export default function UserHome() {
       console.log(result.data.courses);
   
       // Generate signed URLs for each course's thumbnail
-      const initialUrls = await result.data.courses.reduce(async (accPromise, course) => {
+      const initialUrls = await result.data.courses.reduce(async (accPromise:any, course:Course) => {
         const acc = await accPromise; // Await the previous accumulator promise
         const data = {
           imageKey: course.thumbnail // Use the original thumbnail key
@@ -88,119 +68,124 @@ export default function UserHome() {
     }
   };
   
-  
-
-  const logOut = () => {
-    dispatch(logout());
-    navigate("/login");
-    localStorage.setItem("userAccessToken", "");
-    Cookies.remove("userAccessToken");
-  };
-
-  const handleProfileClick = () => {
-    navigate("/profile"); // Navigate to the /profile route
-  };
 
 
-  // const handleImageError = async (imageFilename: string) => {
-  //   try {
-  //     const response = await axios.post('http://localhost:4000/tutor/getSignedUrlId', { imageKey: imageFilename });
-  //     console.log(response.data, "--------------------url");
-
-  //     setCourses((prevCourses) =>
-  //       prevCourses.map((course) =>
-  //         course.thumbnail === imageFilename ? { ...course, thumbnailUrl: response.data } : course // Replace the old URL
-  //       )
-  //     );
-  //   } catch (error) {
-  //     console.error("Error fetching new signed URL:", error);
-  //   }
-  // };
-  
 
   return (
-    <div className="user-home">
+    <div className="min-h-screen bg-black text-white">
       <Navbar
-        iconimage={iconimage}
-        logOut={logOut}
-        handleProfileClick={handleProfileClick}
       />
 
-      <div className="container-16">
-        <div className="container-18">
-          <div className="discoverthe-professions-of-the-future">
-            Discover
-            <br />
-            the professions
-            <br />
-            of the future
-          </div>
-          <div className="lorem-ipsum-dolor-sit-amet-consectetur-adipiscing-elit-phasellus-imperdiet-nulla-et-dictum-interdum-nisi-lorem-egestas-odio-vitae-scelerisque-enim-ligula-venenatis-dolor-maecenas-nisl-est-ultrices-nec-congue-eget-auctor-vitae-massa">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            <br />
-            Phasellus imperdiet, nulla et dictum interdum, <br />
-            nisi lorem egestas odio, vitae scelerisque enim ligula venenatis
-            dolor.
-            <br />
-            Maecenas nisl est, ultrices nec congue eget, auctor vitae massa.
-          </div>
-          <button onClick={allCourse} className="get-started">Get Started</button>
-        </div>
-        <div className="user-home-1"></div>
-      </div>
-
-      {/* Top Courses Section */}
-      <div className="top-courses">
-        <div className="featured-courses">Featured Courses</div>
-        <div className="cards">
-      {/* Map over courses and display them in cards */}
-      {courses.length > 0 ? (
-        courses.map((course, index) => (
-          <div 
-            key={index} 
-            className="card" 
-            onClick={() => handleCardClick(course._id)} // Call the function with the course ID
-          >
-            <img  src={course.thumbnailUrl} alt={course.courseName} className="card-image" />
-            <h3 className="card-title">{course.courseName}</h3>
-            <p className="card-description">{course.courseDescription}</p>
-            <p className="card-amount">Rs. {course.coursePrice}</p>
-          </div>
-        ))
-      ) : (
-        <p>No courses available at the moment.</p>
-      )}
-    </div>
-      </div>
-
-      <div className="container-12">
-        <div className="rectangle-251"></div>
-        <div className="container-22">
-          <div className="about-us">About Us</div>
-          <div className="lorem-ipsum-has-been-the-industrys-standard-dummy-text-ever-since-the-1500-swhen-an-unknown-printer-took-agalley-of-type-and-scrambled-it-to-make-atype-specimen-book-versions-of-the-lorem-ipsum-text-have-been-used-in-typesetting-at-least-since-the-1960-swhen-it-was-popularized-by-advertisements-for-letraset-transfer-sheets-lorem-ipsum-was-introduced-to-templates-for-its-desktop-publishing-program-page-maker-as-have-many-la-te-xpackages-web-content-managers-such-as-joomla-and-word-press-and-css-libraries">
-            <br />
-            Lorem Ipsum has been the industry&#39;s standard dummy text
-            <br />
-            ever since the 1500s,when an unknown printer took a galley
-            <br />
-            of type and scrambled it to make a type specimen book. <br />
-            Versions of the Lorem ipsum text have been used in typesetting
-            <br />
-            at least since the 1960s,when it was popularized by advertisements
-            for <br />
-            Letraset transfer sheets. Lorem ipsum was introduced to templates
-            for its desktop
-            <br />
-            publishing program PageMaker. as have many LaTeX
-            <br />
-            packages, web content managers such as Joomla! and WordPress, and
-            CSS libraries.
-          </div>
-          <div className="container-21">
-            <span className="get-started-1">Get Started</span>
+      {/* Hero Section */}
+      <div className="relative w-full px-4 py-16 md:py-24 lg:py-32">
+        <div className="container mx-auto">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+            {/* Text Content */}
+            <div className="w-full lg:w-1/2 space-y-6">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight">
+                Discover
+                <br />
+                the professions
+                <br />
+                of the future
+              </h1>
+              <p className="text-lg md:text-xl opacity-80">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Phasellus imperdiet, nulla et dictum interdum,
+                nisi lorem egestas odio, vitae scelerisque enim ligula.
+              </p>
+              <button 
+                onClick={allCourse}
+                className="bg-[#16ECCA] hover:bg-[#14b3b0] text-white px-8 py-3 rounded-md text-lg transition-colors duration-300"
+              >
+                Get Started
+              </button>
+            </div>
+            
+            {/* Image */}
+            <div className="w-full lg:w-1/2">
+              <div className="relative h-64 md:h-96 lg:h-[500px] rounded-lg overflow-hidden">
+                <img 
+                  src={banner}
+                  alt="Hero"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Featured Courses Section */}
+      <div className="py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12">
+            Featured Courses
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {courses.length > 0 ? (
+              courses.map((course, index) => (
+                <div
+                  key={index}
+                  onClick={() => handleCardClick(course._id)}
+                  className="bg-white rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                >
+                  <div className="relative h-48 md:h-64">
+                    <img
+                      src={course.thumbnailUrl}
+                      alt={course.courseName}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-black text-xl font-bold mb-2">{course.courseName}</h3>
+                    <p className="text-gray-600 mb-4">{course.courseDescription}</p>
+                    <p className="text-[#16ECCA] text-2xl font-bold">Rs. {course.coursePrice}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="col-span-full text-center text-xl">No courses available at the moment.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* About Us Section */}
+      <div className="py-16 md:py-24 border-t border-white/20">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            {/* Image */}
+            <div className="w-full lg:w-1/2">
+              <div className="relative h-64 md:h-96 rounded-lg overflow-hidden">
+                <img
+                  src={aboutUs}
+                  alt="About Us"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+            
+            {/* Content */}
+            <div className="w-full lg:w-1/2 space-y-6">
+              <h2 className="text-3xl md:text-4xl font-bold">About Us</h2>
+              <p className="text-lg opacity-80">
+                Lorem Ipsum has been the industry's standard dummy text
+                ever since the 1500s, when an unknown printer took a galley
+                of type and scrambled it to make a type specimen book.
+                Versions of the Lorem ipsum text have been used in typesetting
+                at least since the 1960s, when it was popularized by advertisements
+                for Letraset transfer sheets.
+              </p>
+              <button className="bg-[#16ECCA] hover:bg-[#14b3b0] text-white px-8 py-3 rounded-md text-lg transition-colors duration-300">
+                Get Started
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <Footer />
     </div>
   );

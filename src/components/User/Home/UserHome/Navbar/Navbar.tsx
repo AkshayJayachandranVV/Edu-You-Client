@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './Navbar.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../../redux/store';
 import { useNavigate } from 'react-router-dom';
@@ -12,19 +11,27 @@ import Discussion from '../../../../../assets/images/User/UserHome/people.png';
 import axiosInstance from '../../../../constraints/axios/userAxios';
 import { userEndpoints } from '../../../../constraints/endpoints/userEndpoints';
 
+// Notification type
+interface Notification {
+  _id: string;
+  thumbnail: string;
+  coursename: string;
+  username: string;
+}
+
 interface NavbarProps {
-  iconimage: string;
-  onSearch: (query: string) => void;
+  onSearch?: (query: string) => void;  // Make onSearch optional
   showSearchBar?: boolean;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const coursesEnrolled = useSelector((state: RootState) => state.user.coursesEnrolled);
   const [searchInput, setSearchInput] = useState('');
   const profileDropdownRef = useRef<HTMLDivElement>(null);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   useEffect(() => {
     fetchNotification();
@@ -32,14 +39,12 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
 
   const fetchNotification = async () => {
     try {
-      const userId = localStorage.getItem("userId")
-      console.log("Entered to notify");
+      const userId = localStorage.getItem('userId');
       const fetchNotify = await axiosInstance.get(userEndpoints.fetchNotify, {
-        params: { coursesEnrolled,userId }, // Sending as query params
+        params: { coursesEnrolled, userId },
       });
 
-      console.log('Notification data:', fetchNotify);
-      setNotifications(fetchNotify.data); // Update notifications state
+      setNotifications(fetchNotify.data);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     }
@@ -50,8 +55,8 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
 
   const logOut = () => {
     dispatch(logout());
-    navigate("/login");
-    localStorage.setItem("userAccessToken", "");
+    navigate('/login');
+    localStorage.setItem('userAccessToken', '');
     Cookies.remove('userAccessToken');
     Cookies.remove('userRefreshToken');
     socketService.disconnect();
@@ -62,17 +67,19 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
   };
 
   const GoAllCourses = () => {
-    navigate("/allCourses");
+    navigate('/allCourses');
   };
 
   const onChat = () => {
-    navigate("/chat");
+    navigate('/chat');
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchInput(value);
-    onSearch(value);
+    if (onSearch) {
+      onSearch(value);
+    }
   };
 
   const toggleProfileDropdown = () => {
@@ -89,85 +96,108 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   return (
-    <nav className="navbar">
-      {showSearchBar && (
-        <input
-          type="text"
-          placeholder="Search..."
-          className="search-bar"
-          value={searchInput}
-          onChange={handleSearchChange}
-        />
-      )}
-      <div className="navbar-content">
-        <div className="nav-links">
-          <span className="nav-item home">Home</span>
-          <span onClick={GoAllCourses} className="nav-item courses">Courses</span>
+    <nav className="bg-[#000000] p-2 flex justify-between items-center h-[60px] text-white relative z-10">
+{showSearchBar && (
+  <div className="flex justify-center w-full">
+    <input
+      type="text"
+      placeholder="Search..."
+      className="bg-[#2c2d31] border-none rounded-2xl py-3 px-6 text-white text-sm outline-none h-[40px] w-[200px] sm:w-[500px]"
+      value={searchInput}
+      onChange={handleSearchChange}
+    />
+  </div>
+)}
+
+
+      <div className="flex justify-between items-center  gap-6 w-full pl-4">
+        {/* Move content to the right */}
+        <div className="flex gap-4 items-center ml-auto">
+          <span className="text-lg hidden sm:block">Home</span>
+          <span
+            onClick={GoAllCourses}
+            className="text-lg cursor-pointer hidden sm:block"
+          >
+            Courses
+          </span>
         </div>
-        <div className="nav-icons">
-
-
-
-
-        <div
-  className="notification-icon"
-  onMouseEnter={() => setShowNotifications(true)}
-  onMouseLeave={() => setShowNotifications(false)}
->
-  <img src={BellIcon} alt="Notifications" className="dropdown-icon" />
-  {notifications.length > 0 && (
-    <span className="notification-count">{notifications.length}</span>
-  )}
-  {showNotifications && (
-    <div className="notification-dropdown">
-      <h4>Notifications</h4>
-      <ul>
-        {notifications.map((notification) => (
-          <li key={notification._id} className="notification-item">
-            <img 
-              src={notification.thumbnail} 
-              alt={notification.coursename} 
-              className="notification-image" 
-            />
-            <span>{`${notification.username} sent a new message in ${notification.coursename}`}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )}
-</div>
-
-
-
-
-
-
-          <img
-            src={Discussion}
-            alt="Chat Icon"
-            className="dropdown-icon"
-            onClick={onChat}
-          />
-          <div className="profile-icon" onClick={toggleProfileDropdown} ref={profileDropdownRef}>
-            <img
-              src={iconImage}
-              alt="Profile Icon"
-              className="dropdown-icon"
-            />
-            {showProfileDropdown && (
-              <div className="profile-dropdown">
-                <button onClick={handleProfileClick} className="dropdown-link">Profile</button>
-                <button onClick={logOut} className="dropdown-link">Logout</button>
+        <div className="flex items-center gap-6 relative">
+          <div
+            className="relative cursor-pointer"
+            onMouseEnter={() => setShowNotifications(true)}
+            onMouseLeave={() => setShowNotifications(false)}
+          >
+            <img src={BellIcon} alt="Notifications" className="w-6 h-6" />
+            {notifications.length > 0 && (
+              <span className="absolute top-[-5px] right-[-10px] bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                {notifications.length}
+              </span>
+            )}
+            {showNotifications && (
+              <div className="absolute top-[40px] right-0 bg-[#1A1A1A] text-white rounded-lg shadow-lg p-3 w-[250px] md:w-[400px] z-10">
+                <h4 className="px-4 py-2 text-sm font-semibold border-b border-[#444]">Notifications</h4>
+                <ul>
+                  {notifications.map((notification) => (
+                    <li key={notification._id} className="flex items-center p-2 cursor-pointer hover:bg-[#444]">
+                      <img
+                        src={notification.thumbnail}
+                        alt={notification.coursename}
+                        className="w-8 h-8 rounded-full mr-2"
+                      />
+                      <span className="text-sm">{`${notification.username} sent a new message in ${notification.coursename}`}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
+          <img
+            src={Discussion}
+            alt="Chat Icon"
+            className="w-6 h-6 cursor-pointer"
+            onClick={onChat}
+          />
+          <div className="relative" onClick={toggleProfileDropdown} ref={profileDropdownRef}>
+            <img
+              src={iconImage}
+              alt="Profile Icon"
+              className="w-6 h-6 cursor-pointer"
+            />
+            {showProfileDropdown && (
+              <div className="absolute top-[40px] right-0 bg-[#2c2d31] text-white rounded-lg shadow-lg p-3 w-[250px] max-w-[300px] z-10">
+                <button onClick={handleProfileClick} className="w-full py-2 text-sm text-left hover:text-yellow-500">
+                  Profile
+                </button>
+                <button onClick={logOut} className="w-full py-2 text-sm text-left hover:text-yellow-500">
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+        {/* Mobile Hamburger Menu */}
+        <div className="sm:hidden flex items-center">
+          <button onClick={() => setShowMobileMenu(!showMobileMenu)} className="text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          {showMobileMenu && (
+            <div className="absolute top-[60px] right-0 bg-[#1e1f22] w-full flex flex-col items-center gap-4 p-4 text-white">
+              <span className="cursor-pointer" onClick={GoAllCourses}>Courses</span>
+              <span className="cursor-pointer">Home</span>
+              <button onClick={handleProfileClick} className="cursor-pointer">Profile</button>
+              <button onClick={logOut} className="cursor-pointer">Logout</button>
+              <span className="cursor-pointer" onClick={onChat}>Discussion</span>
+            </div>
+          )}
         </div>
       </div>
     </nav>

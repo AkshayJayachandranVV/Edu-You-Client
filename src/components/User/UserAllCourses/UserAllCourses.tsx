@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import iconimage from "../../../assets/images/User/UserHome/Account.png";
 import Navbar from "../../User/Home/UserHome/Navbar/Navbar";
 import Footer from "../../User/Home/UserHome/Footer/Footer";
 import axiosInstance from "../../../components/constraints/axios/userAxios";
@@ -46,8 +45,8 @@ export default function AllCourses() {
         const allCourses = await axiosInstance.get(userEndpoints.allCourses);
         console.log(allCourses.data, "gotcha");
         if (allCourses.data && allCourses.data) {
-          setCourseData(allCourses.data); // Set course data array
-          setFilteredCourses(allCourses.data);
+          setCourseData(allCourses.data.courses); // Set course data array
+          setFilteredCourses(allCourses.data.courses);
           setTimeout(() => {
             setLoading(false);
           }, 2000);
@@ -83,7 +82,7 @@ export default function AllCourses() {
 
   return (
     <div className="bg-gray-900 min-h-screen text-white">
-      <Navbar iconimage={iconimage} onSearch={handleSearch} showSearchBar={true} />
+      <Navbar  onSearch={handleSearch} showSearchBar={true} />
 
       {/* Banner Section */}
       <div className="bg-gray-800 py-12 text-center mt-14">
