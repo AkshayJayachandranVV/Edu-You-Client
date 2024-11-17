@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,6 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
+import Pagination from '@mui/material/Pagination';
 import axiosInstance from '../../../constraints/axios/adminAxios';
 import { adminEndpoints } from '../../../constraints/endpoints/adminEndpoints';
 
@@ -25,24 +26,29 @@ interface FormattedCourseReport {
   isListed: boolean;
 }
 
-// Use props to accept coursesData
+// Props to accept initial courses data
 interface ReportCoursesProps {
   initialCoursesData: FormattedCourseReport[];
 }
 
 const ReportCourses: React.FC<ReportCoursesProps> = ({ initialCoursesData }) => {
-  // Step 2: Set up state to hold course data
-  const [coursesData, setCoursesData] = React.useState<FormattedCourseReport[]>(initialCoursesData);
+  console.log("kittu",initialCoursesData)
+  const [coursesData, setCoursesData] = useState<FormattedCourseReport[]>(initialCoursesData);
+  const [currentPage, setCurrentPage] = useState(1); // State for current page
+  const itemsPerPage = 5; // Number of items per page
+
+  // Calculate the current page's data
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPageData = coursesData.slice(startIndex, endIndex);
 
   // Function to toggle listing status
   const toggleListStatus = async (courseId: string, currentStatus: boolean) => {
     try {
-      console.log(courseId, "=---------courseid");
       const response = await axiosInstance.post(adminEndpoints.listCourse, { courseId });
-
       console.log('Toggling list/unlist status:', response);
 
-      // Step 3: Update course data locally
+      // Update course data locally
       const updatedCourses = coursesData.map((course) =>
         course.courseId === courseId ? { ...course, isListed: !currentStatus } : course
       );
@@ -50,6 +56,11 @@ const ReportCourses: React.FC<ReportCoursesProps> = ({ initialCoursesData }) => 
     } catch (error) {
       console.error('Error toggling list/unlist status:', error);
     }
+  };
+
+  // Handle page change
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setCurrentPage(value);
   };
 
   return (
@@ -94,7 +105,7 @@ const ReportCourses: React.FC<ReportCoursesProps> = ({ initialCoursesData }) => 
               </TableRow>
             </TableHead>
             <TableBody>
-              {coursesData.map((report, index) => (
+              {currentPageData.map((report, index) => (
                 <TableRow
                   key={report.courseId}
                   sx={{
@@ -133,6 +144,15 @@ const ReportCourses: React.FC<ReportCoursesProps> = ({ initialCoursesData }) => 
             </TableBody>
           </Table>
         </TableContainer>
+        {/* Pagination */}
+        <Grid container justifyContent="center" sx={{ mt: 2 }}>
+          <Pagination
+            count={Math.ceil(coursesData.length / itemsPerPage)} // Calculate total pages
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+          />
+        </Grid>
       </Grid>
     </Grid>
   );

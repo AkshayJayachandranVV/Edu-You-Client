@@ -49,6 +49,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(
     null
   );
+  const [latestRoomId, setLatestRoomId] = useState<string | null>(
+  localStorage.getItem('latestRoomId')
+);
   const [typingUser, setTypingUser] = useState<string | null>(null);
   const navigate = useNavigate();
   const { username } = useSelector((state: RootState) => state.user);
@@ -56,12 +59,81 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
   //  console.log(selectedChat)
 
   useEffect(() => {
+    console.log('Initial connection effect triggered');
     SocketService.connect();
+
+    // Handle the case when page refreshes and there's no selectedChat
+    const storedRoomId = localStorage.getItem('latestRoomId');
+    if (!selectedChat && storedRoomId && userId) {
+      console.log('No selectedChat, but found stored roomId:', storedRoomId);
+      SocketService.unReadMessage(storedRoomId, userId);
+    }
+
     return () => {
+      console.log('Component unmounting, disconnecting socket');
       SocketService.disconnect();
-      // updateLeaveChat()
     };
   }, []);
+
+
+
+
+
+
+  useEffect(() => {
+    console.log('Cleanup effect triggered');
+    const handleChatExit = (roomId: string) => {
+      if (roomId && userId) {
+        console.log('Handling chat exit for room:', roomId);
+        SocketService.unReadMessage(roomId, userId);
+      }
+    };
+
+    return () => {
+      const storedRoomId = localStorage.getItem('latestRoomId');
+      if (selectedChat?.courseId) {
+        console.log('Cleanup: handling exit for selectedChat room:', selectedChat.courseId);
+        handleChatExit(selectedChat.courseId);
+      } else if (storedRoomId) {
+        console.log('Cleanup: handling exit for stored room:', storedRoomId);
+        handleChatExit(storedRoomId);
+      }
+    };
+  }, []);
+
+
+  
+ useEffect(() => {
+    console.log('Selected chat change effect triggered');
+    console.log('Current selectedChat:', selectedChat);
+    console.log('Current latestRoomId:', latestRoomId);
+
+    const handleChatExit = (roomId: string) => {
+      if (roomId && userId) {
+        console.log('Handling chat exit for room:', roomId);
+        SocketService.unReadMessage(roomId, userId);
+      }
+    };
+
+    if (selectedChat?.courseId) {
+      console.log('New chat selected, joining room:', selectedChat.courseId);
+      handleChatExit(selectedChat.courseId);
+      SocketService.joinRoom(selectedChat.courseId);
+      localStorage.setItem('latestRoomId', selectedChat.courseId);
+    } else {
+      const storedRoomId = localStorage.getItem('latestRoomId');
+      if (storedRoomId) {
+        console.log('No selectedChat, handling exit for stored room:', storedRoomId);
+        handleChatExit(storedRoomId);
+      }
+    }
+  }, [selectedChat]);
+  
+  
+
+
+
+
 
   const emitTyping = (isTyping: boolean, roomId: string, username: string) => {
     SocketService.emitTyping(isTyping, roomId, username); // Emit typing status with roomId and username

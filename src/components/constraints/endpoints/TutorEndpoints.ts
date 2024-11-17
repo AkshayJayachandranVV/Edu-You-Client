@@ -12,19 +12,22 @@ export const tutorEndpoints = {
     forgotOtpVerify: `${API_GATEWAY_BASE_URL}/forgotOtpVerify`,
     getPresignedUrlForUpload: `${API_GATEWAY_BASE_URL}/getPresignedUrlForUpload`,
     getSignedUrl:  `${API_GATEWAY_BASE_URL}/getSignedUrl`,
-    myCourses: `${API_GATEWAY_BASE_URL}/myCourses/tutorId`,
-    listCourse: `${API_GATEWAY_BASE_URL}/listCourse/courseId`,
+    myCourses: `${API_GATEWAY_BASE_URL}/myCourses`,
+    listCourse: `${API_GATEWAY_BASE_URL}/listCourse`,
     fetchEditCourse: `${API_GATEWAY_BASE_URL}/fetchEditCourse/courseId`,
     editProfile: `${API_GATEWAY_BASE_URL}/editProfile`,
     getTutorDetails: `${API_GATEWAY_BASE_URL}/getTutorDetails/tutorId`,
     getSignedUrlId:  `${API_GATEWAY_BASE_URL}/getSignedUrlId`,
-    payouts: `${API_GATEWAY_BASE_URL}/payouts/tutorId`,  
+    payouts: `${API_GATEWAY_BASE_URL}/payouts`,  
     courseStudents : `${API_GATEWAY_BASE_URL}/courseStudents/courseId`,
     getPresignedUrl: `${API_GATEWAY_BASE_URL}/getPresignedUrl`,
     cardsData: `${API_GATEWAY_BASE_URL}/cardsData/tutorId`,
     graphData: `${API_GATEWAY_BASE_URL}/graphData/tutorId`,
     courseView: `${API_GATEWAY_BASE_URL}/courseView/courseId`,
-    getUserCourses :  `${API_GATEWAY_BASE_URL}/getCourses/userId`,
+    getUserCourses :  `${API_GATEWAY_BASE_URL}/getCourses/userId`,    
+    addInformation :  `${API_GATEWAY_BASE_URL}/addInformation`,
+    profileDetails : `${API_GATEWAY_BASE_URL}/profileDetails/tutorId`,
+
 }
     
 

@@ -22,7 +22,7 @@ interface Course {
   createdAt: string;
 }
 
-const CourseComponent = ({ courseData }: { courseData: Course[] }) => {
+const CourseComponent = ({ courseData,startingIndex}) => {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [studentsData, setStudentsData] = useState<Student[]>([]); // State for students data
   const [noStudentsMessage, setNoStudentsMessage] = useState<string>(""); // State for no students message

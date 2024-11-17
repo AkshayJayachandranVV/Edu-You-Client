@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from "react";
-import "./AdminLogin.css";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { useNavigate } from "react-router-dom";
 import adminIcon from "../../../../assets/icons/User/administrator.png";
 import AdminImage from "../../../../assets/images/Admin/—Pngtree—information technology vector_12148048.png";
-import Spinner from '../../../Spinner/Spinner';
-import Cookies from 'js-cookie';
-import { adminEndpoints } from '../../../constraints/endpoints/adminEndpoints';
+import Spinner from "../../../Spinner/Spinner";
+import Cookies from "js-cookie";
+import { adminEndpoints } from "../../../constraints/endpoints/adminEndpoints";
 import axios from "axios";
 
 type formValues = {
@@ -22,18 +21,19 @@ function AdminLogin() {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
 
-
-
   const onSubmit = async (data: formValues) => {
     try {
       setLoading(true);
       const result = await axios.post(adminEndpoints.login, data);
 
       if (result.data.success) {
-        localStorage.setItem('adminAccessToken', result.data.adminAccessToken);
-        // Cookies.set('adminAccessToken', result.data.adminAccessToken, { expires: 7 });
-        Cookies.set('adminAccessToken', result.data.adminAccessToken, { expires: 1 });
-        Cookies.set('adminRefreshToken', result.data.adminRefreshToken, { expires: 7 });
+        localStorage.setItem("adminAccessToken", result.data.adminAccessToken);
+        Cookies.set("adminAccessToken", result.data.adminAccessToken, {
+          expires: 1,
+        });
+        Cookies.set("adminRefreshToken", result.data.adminRefreshToken, {
+          expires: 7,
+        });
         setLoading(false);
         navigate("/admin/dashboard");
       } else {
@@ -51,7 +51,7 @@ function AdminLogin() {
         }
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       setLoading(false);
       setError("email", {
         type: "manual",
@@ -65,23 +65,38 @@ function AdminLogin() {
       {isLoading ? (
         <Spinner />
       ) : (
-        <div className="admin-full-background">
-          <div className="admin-left-background">
-            <div className="admin-left-header">
-              <h1>Technology Alone <br /> Is Not Enough</h1>
-            </div>
-            <div className="admin-left-image">
-              <img className="admin-login-image" src={AdminImage} alt="Technology" />
+        <div className="flex flex-col md:flex-row h-screen w-screen overflow-hidden bg-gray-100">
+          {/* Left Section */}
+          <div className="flex flex-col justify-start items-center w-full md:w-1/2 bg-black text-white relative px-4 sm:px-6">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-6 text-center leading-tight">
+              Technology Alone <br /> Is Not Enough
+            </h1>
+            <div className="flex justify-center items-center mt-6 sm:mt-8 w-full h-full">
+              <img
+                className="max-w-[90%] sm:max-w-[70%] md:max-w-[50%] object-cover"
+                src={AdminImage}
+                alt="Technology"
+              />
             </div>
           </div>
-          <div className="admin-right-background">
-            <div className="admin-input-container">
-              <img className="admin-login-icon" src={adminIcon} alt="Lock Icon" />
-              <h1 className="admin-login-heading">Admin Login</h1>
-              <p>Nice to see you! Please login with your account</p>
+
+          {/* Right Section */}
+          <div className="flex flex-col justify-center items-center w-full md:w-1/2 bg-white p-6 sm:p-8">
+            <div className="text-center mb-8">
+              <img
+                className="w-12 h-12 sm:w-16 sm:h-16 mb-4"
+                src={adminIcon}
+                alt="Admin Icon"
+              />
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">
+                Admin Login
+              </h1>
+              <p className="text-gray-500 text-sm sm:text-base">
+                Nice to see you! Please login with your account
+              </p>
             </div>
             <form
-              className="admin-form-container"
+              className="w-full max-w-sm flex flex-col"
               onSubmit={handleSubmit(onSubmit)}
               noValidate
             >
@@ -91,12 +106,16 @@ function AdminLogin() {
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
-                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    value:
+                      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                     message: "Please enter a valid email address",
                   },
                 })}
+                className="w-full p-3 mb-4 border rounded-md focus:outline-none focus:ring focus:ring-blue-200 text-sm sm:text-base"
               />
-              <p className="login-error-message">{errors.email?.message}</p>
+              <p className="text-red-500 text-xs sm:text-sm mb-4">
+                {errors.email?.message}
+              </p>
 
               <input
                 type="password"
@@ -108,10 +127,18 @@ function AdminLogin() {
                     message: "Password must be at least 6 characters",
                   },
                 })}
+                className="w-full p-3 mb-4 border rounded-md focus:outline-none focus:ring focus:ring-blue-200 text-sm sm:text-base"
               />
-              <p className="login-error-message">{errors.password?.message}</p>
+              <p className="text-red-500 text-xs sm:text-sm mb-4">
+                {errors.password?.message}
+              </p>
 
-              <button type="submit">Login</button>
+              <button
+                type="submit"
+                className="w-full p-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition text-sm sm:text-base"
+              >
+                Login
+              </button>
             </form>
             <DevTool control={control} />
           </div>

@@ -58,18 +58,18 @@ interface DarkThemeTableProps {
   orderData: Order[];
 }
 
-export default function DarkThemeTable({ orderData }: DarkThemeTableProps) {
-  const [tableData, setTableData] = React.useState<Order[]>(orderData);
+export default function DarkThemeTable({ payoutsData,startIndex }: DarkThemeTableProps) {
+  const [tableData, setTableData] = React.useState<Order[]>(payoutsData );
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    if (Array.isArray(orderData)) {
-      console.log("Order data received:", orderData);
-      setTableData(orderData);
+    if (Array.isArray(payoutsData)) {
+      console.log("Order data received:", payoutsData);
+      setTableData(payoutsData);
     } else {
-      console.error("Received data is not an array:", orderData);
+      console.error("Received data is not an array:", payoutsData);
     }
-  }, [orderData]);
+  }, [payoutsData]);
 
 
 

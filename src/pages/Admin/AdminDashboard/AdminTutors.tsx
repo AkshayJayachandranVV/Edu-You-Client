@@ -1,25 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AdminNavbar from '../../../components/Admin/Dashboard/Navbar/Navbar';
-import AdminSidebar from '../../../components/Admin/Dashboard/Sidebar/Sidebar';
-import AdminTutors from '../../../components/Admin/Dashboard/Body/AdminTutors';
-import { adminEndpoints } from '../../../../src/components/constraints/endpoints/adminEndpoints';
-import axiosInstance from '../../../components/constraints/axios/adminAxios';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AdminNavbar from "../../../components/Admin/Dashboard/Navbar/Navbar";
+import AdminSidebar from "../../../components/Admin/Dashboard/Sidebar/Sidebar";
+import AdminUsers from "../../../components/Admin/Dashboard/Body/AdminTutors";
+import { adminEndpoints } from "../../../../src/components/constraints/endpoints/adminEndpoints";
+import axiosInstance from "../../../components/constraints/axios/adminAxios";
+import BasicPagination from "../../../components/Admin/Pagination/Pagination";
 
-const AdminTutorsPage = () => {
+const AdminUsersPage = () => {
   const navigate = useNavigate();
-  const [tutorsData, setTutorsData] = useState<FormattedTutor[]>([]);
-  const [loading, setLoading] = useState(true); // State to handle loading
-  const [error, setError] = useState<string | null>(null); // State to handle errors
+  const [usersData, setUsersData] = useState<FormattedUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 5;
 
-  interface Tutor {
+  interface User {
     tutorname: string;
     email: string;
-    phone?: string; // Assuming phone may or may not be available
+    phone?: string;
     isBlocked: boolean;
   }
 
-  interface FormattedTutor {
+  interface FormattedUser {
     sino: number;
     image: string;
     name: string;
@@ -29,62 +33,84 @@ const AdminTutorsPage = () => {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem('adminAccessToken');
+    const token = localStorage.getItem("adminAccessToken");
     if (!token) {
-      navigate('/admin/login');
+      navigate("/admin/login");
     } else {
-      fetchTutorsData();
+      fetchUsersData();
     }
-  }, [navigate]);
+  }, [currentPage, navigate]);
 
-  const fetchTutorsData = async () => {
+  const fetchUsersData = async () => {
     try {
       setLoading(true);
-  
-      // Fetch data from the API
-      const result = await axiosInstance.get<Tutor[]>(adminEndpoints.tutors); // Expecting an array of Tutor objects
-  
-      // Map and format the data
-      const formattedData: FormattedTutor[] = result.data.map((tutor: Tutor, index: number) => ({
-        sino: index + 1,
-        image: 'default.png', // Replace with actual image if needed
-        name: tutor.tutorname,
-        email: tutor.email,
-        phone: tutor.phone || 'Not Available', // Use 'Not Available' if phone is undefined
-        isBlocked: tutor.isBlocked,
-      }));
-  
-      // Set the formatted data and stop loading
-      setTutorsData(formattedData);
+      const skip = (currentPage - 1) * itemsPerPage;
+
+      // Fetch paginated data
+      const result = await axiosInstance.get(adminEndpoints.tutors, {
+        params: { skip, limit: itemsPerPage },
+      });
+
+      console.log(result)
+
+      const formattedData: FormattedUser[] = result.data.tutors.map(
+        (user: User, index: number) => ({
+          sino: skip + index + 1,
+          image: "default.png",
+          name: user.tutorname,
+          email: user.email,
+          phone: user.phone || "Not Available",
+          isBlocked: user.isBlocked,
+        })
+      );
+
+      setUsersData(formattedData);
+      setTotalItems(result.data.totalCount); // Total users count for pagination
       setLoading(false);
     } catch (err) {
       console.error(err);
-      setError('Failed to fetch data');
+      setError("Failed to fetch data");
       setLoading(false);
     }
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
-    <div style={{ display: 'flex', height: '100vh', backgroundColor: '#000000' }}>
+    <div style={{ display: "flex", height: "100vh", backgroundColor: "#000000" }}>
       <AdminSidebar />
-      <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <AdminNavbar />
-        <div className="flex-1 flex flex-col p-6" style={{ backgroundColor: '#000000', flexGrow: 1 }}>
+        <div
+          className="flex-1 flex flex-col p-6"
+          style={{ backgroundColor: "#000000", flexGrow: 1 }}
+        >
           <div
             className="flex-grow flex flex-col justify-start"
             style={{
-              marginBottom: '19px',
-              width: '75%',
-              marginLeft: 'auto',
-              alignSelf: 'flex-end',
+              marginBottom: "19px",
+              width: "75%",
+              marginLeft: "auto",
+              alignSelf: "flex-end",
+              paddingRight: "135px",
             }}
           >
             {loading ? (
-              <p style={{ color: '#FFFFFF' }}>Loading...</p>
+              <p style={{ color: "#FFFFFF" }}>Loading...</p>
             ) : error ? (
-              <p style={{ color: '#FFFFFF' }}>{error}</p>
+              <p style={{ color: "#FFFFFF" }}>{error}</p>
             ) : (
-              <AdminTutors tutorsData={tutorsData} />
+              <>
+                <AdminUsers tutorsData={usersData} />
+                <BasicPagination
+                  totalItems={totalItems}
+                  itemsPerPage={itemsPerPage}
+                  currentPage={currentPage}
+                  onPageChange={handlePageChange}
+                />
+              </>
             )}
           </div>
         </div>
@@ -93,4 +119,4 @@ const AdminTutorsPage = () => {
   );
 };
 
-export default AdminTutorsPage;
+export default AdminUsersPage;

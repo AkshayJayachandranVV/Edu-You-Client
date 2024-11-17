@@ -4,6 +4,7 @@ import AdminSidebar from "../../../components/Admin/Dashboard/Sidebar/Sidebar";
 import AdminCoursesTable from "../../../components/Admin/Dashboard/Body/AdminCourses"; // Assuming this is the table component
 import { adminEndpoints } from "../../../components/constraints/endpoints/adminEndpoints";
 import axiosInstance from "../../../components/constraints/axios/adminAxios";
+import BasicPagination from "../../../components/Admin/Pagination/Pagination";
 
 // Define the Course interface
 interface Course {
@@ -22,25 +23,37 @@ const AdminCourses = () => {
   const [coursesData, setCoursesData] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1); // Current page
+  const [totalItems, setTotalItems] = useState(0); // Total items from backend
+  const itemsPerPage = 5; // Items per page
 
   useEffect(() => {
-    fetchCoursesData();
-  }, []);
+    fetchCoursesData(currentPage); // Fetch data when page changes
+  }, [currentPage]);
 
-  const fetchCoursesData = async () => {
+  const fetchCoursesData = async (page: number) => {
     try {
       setLoading(true);
-      // Fetch data from the API
-      const result = await axiosInstance.get<Course[]>(adminEndpoints.courses);
 
-      // Set the fetched data
-      setCoursesData(result.data);
+      // Fetch paginated data from the API
+      const result = await axiosInstance.get(adminEndpoints.courses, {
+        params: { skip:page, limit: itemsPerPage },
+      });
+
+      console.log(result.data)
+
+      setCoursesData(result.data.courses);
+      setTotalItems(result.data.totalCount);
       setLoading(false);
     } catch (err) {
       console.error(err);
       setError("Failed to fetch courses data");
       setLoading(false);
     }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage); // Update current page
   };
 
   return (
@@ -67,12 +80,12 @@ const AdminCourses = () => {
             <h3
               style={{
                 color: "#FFFFFF",
-                fontWeight: "bold", // Use 'bold' for a stronger bold effect
-                fontSize: "4rem", // Increase the font size for a larger header
+                fontWeight: "bold",
+                fontSize: "4rem",
                 marginBottom: "20px",
-                marginLeft: "250px", // Adjusted to make the header more centered
-                width: "100%", // Set the width to 100% to make it occupy the full width of its container
-                textAlign: "left", // Adjust text alignment if needed
+                marginLeft: "250px",
+                width: "100%",
+                textAlign: "left",
               }}
             >
               Courses List
@@ -83,8 +96,15 @@ const AdminCourses = () => {
             ) : error ? (
               <p style={{ color: "#FFFFFF" }}>{error}</p>
             ) : (
-              // Pass the fetched courses data to the AdminCoursesTable component
-              <AdminCoursesTable courseData={coursesData} />
+              <>
+                <AdminCoursesTable data={{ initialCoursesData: coursesData, currentPage, itemsPerPage }} />
+                <BasicPagination
+                  totalItems={totalItems}
+                  itemsPerPage={itemsPerPage}
+                  currentPage={currentPage}
+                  onPageChange={handlePageChange}
+                />
+              </>
             )}
           </div>
         </div>

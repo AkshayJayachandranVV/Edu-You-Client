@@ -2,6 +2,7 @@ import {Route,Routes} from 'react-router-dom'
 import TutorLogin from "../../components/Tutor/Auth/TutorLogin/TutorLogin";
 import TutorSignup from "../../components/Tutor/Auth/TutorSignup/TutorSignup";
 import TutorOtp from "../../components/Tutor/Auth/TutorOtp/TutorOtp";
+import TutorInfo from "../../components/Tutor/Auth/TutorAdditionalInfo/TutorAdditionalInfo";
 import TutorResetPassword from "../../components/Tutor/Auth/TutorResetPassword/TutorResetPassword";
 import TutorForgotPassword from "../../components/Tutor/Auth/TutorForgotPass/TutorForgotPass";
 import TutorDashboard from "../../pages/Tutor/TutorDashboard/TutorDashboard";
@@ -34,6 +35,7 @@ const TutorRoutes = () => {
             <Route path='/login' element={ <PrivateRoute > <TutorLogin />  </PrivateRoute>} />
             <Route path='/otp' element={ <PrivateRoute >  <TutorOtp /> </PrivateRoute>} />
             <Route path='/signup' element={ <PrivateRoute > <TutorSignup />  </PrivateRoute>} />
+            <Route path='/addInformation' element={ <PrivateRoute> <TutorInfo />  </PrivateRoute>} />
             <Route path='/forgotPassword' element={ <PrivateRoute > <TutorForgotPassword />  </PrivateRoute>} />
             <Route path='/resetPassword' element={ <PrivateRoute ><TutorResetPassword />  </PrivateRoute>} />
             <Route path='/courseView/:courseId' element={ <PrivateRouteTutor> < TutorCourseView />  </PrivateRouteTutor>} />

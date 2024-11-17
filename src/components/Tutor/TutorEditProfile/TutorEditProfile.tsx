@@ -1,388 +1,561 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { BellIcon, ChatIcon, UserCircleIcon } from '@heroicons/react/outline';
-import { RootState } from "../../../redux/store";
-import axiosInstance from '../../../components/constraints/axios/tutorAxios';
-import { tutorEndpoints } from "../../../components/constraints/endpoints/TutorEndpoints";
-import {setTutor} from '../../../../src/redux/tutorSlice'
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import axios from "axios";
-import { toast } from 'sonner';
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { setTutor } from "../../../../src/redux/tutorSlice";
+import axiosInstance from "../../../components/constraints/axios/tutorAxios";
+import { tutorEndpoints } from "../../../components/constraints/endpoints/TutorEndpoints";
 
 interface ProfileFormInputs {
-    name: string;
+  name: string;
   email: string;
   phone: string;
-  profilePic: string;
   about: string;
-  _id:string
 }
 
-interface PasswordFormInputs {
-  currentPassword: string;
-  newPassword: string;
-  confirmNewPassword: string;
+interface Qualification {
+  title: string;
+  fileKey: string;
+  fileUrl: string;
 }
 
-export default function EditProfile() {
-    const dispatch = useDispatch();
-    const [profileImage, setProfileImage] = useState<string | null>(null);
-    const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
-    const { register, handleSubmit, formState: { errors }, setValue } = useForm<ProfileFormInputs>({
-      defaultValues: {
-        name: '',
-        email: '',
-        phone: '',
-        profilePic: "",
-        about: ''
-      }
-    });
-  
-    const { register: registerPassword, handleSubmit: handlePasswordSubmit, formState: { errors: passwordErrors } } = useForm<PasswordFormInputs>();
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    
-    const tutor = useSelector((state: RootState) => state.tutor);
-  
-    useEffect(() => {
-      fetchProfilSignedUrl();
-      if (tutor) {
-        setValue('name', tutor.tutorname || '');
-        setValue('email', tutor.email || '');
-        setValue('phone', tutor.phone || '');
-        setValue('about', tutor.bio || '');
-      }
-    }, [tutor, setValue]);
+export default function EditTutorProfile() {
+  const dispatch = useDispatch();
+  const [tutorData, setTutorData] = useState<any | null>(null);
+  const [profileImage, setProfileImage] = useState<string>("");
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+  const [qualifications, setQualifications] = useState<Qualification[]>([]);
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [cvKey, setCvKey] = useState<File | null>(null);
+  const [cvUrl, setCvUrl] = useState<string>("");
+  const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
+
+  const [editQualificationIndex, setEditQualificationIndex] = useState(null); // Tracks the index of the qualification being edited
+  const [editQualification, setEditQualification] = useState({}); // Tracks the qualification being edited
+
+  const [isEditingCv, setIsEditingCv] = useState(false); // Tracks if the CV is being edited
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<ProfileFormInputs>({
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      about: "",
+    },
+  });
+
+  const tutorId = localStorage.getItem("tutorId");
+
+  useEffect(() => {
+    fetchTutorData();
+  }, []);
+
+  const fetchTutorData = async () => {
+    try {
+      if (tutorId) {
+        const endpoint = `${tutorEndpoints.profileDetails.replace(
+          "tutorId",
+          tutorId
+        )}`;
+        const profile = await axiosInstance.get(endpoint);
+        console.log("Fetched profile data:", profile);
+
+        setTutorData(profile.data);
+        setProfileImage(profile.data.profile_picture);
+        setCvUrl(profile.data.cv);
+        setCvKey(profile.data.cv_key)
+
+        // Populate form fields with fetched data
+        setValue("name", profile.data.tutorname);
+        setValue("email", profile.data.email);
+        setValue("phone", profile.data.phone || "");
+        setValue("about", profile.data.bio || "");
 
 
-    const fetchProfilSignedUrl = async () => {
-      try {
-        const response = await axios.get(tutorEndpoints.getPresignedUrl, {
-          params: {
-            s3Key: tutor.profilePicture, // Assuming profilePicture contains the S3 key
-          },
-        });
-        const s3Url = response.data.url;
-        if (s3Url) setProfileImage(s3Url);  // Set the profileImage to S3 URL
-      } catch (error) {
-        console.error("Error fetching S3 URL:", error);
+        console.log("Formatted qualifications:", profile.data.qualifications.map((q: any) => ({
+          title: q.qualification,
+          fileKey: q.certificate_key,
+          fileUrl: q.certificate,
+        })));
+
+        console.log("Fetched qualifications:", profile.data.qualifications);
+
+
+        setQualifications(
+          profile.data.qualifications.map((q: any) => ({
+            title: q.qualification,
+            fileKey: q.certificate_key,
+            fileUrl: q.certificate
+            ,
+          }))
+        );
       }
-    };
+    } catch (error) {
+      toast.error("Failed to fetch profile data.");
+    }
+  };
+
   
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-  
-    const generateFileName = (originalName: string) => {
-      const extension = originalName.split(".").pop();
-      return `${Math.random().toString(36).substring(2, 15)}.${extension}`;
-    };
-  
-    const uploadProfile = async () => {
-      if (!profileImageFile && !profileImage) {
-        alert("Please select a file first!");
-        return null;
-      }
-    
-      try {
-        const fileName = generateFileName(profileImageFile!.name);
-    
-        const response = await axios.get(tutorEndpoints.getPresignedUrlForUpload, {
+
+  const startEditQualification = (index: number, qual: Qualification) => {
+    setEditQualificationIndex(index);
+    setEditQualification({ ...qual }); // Load current qualification for editing
+};
+
+const handleSaveQualification = async (index: number) => {
+    const updatedQualifications = [...qualifications];
+    if (editQualification.file) {
+        const uploadedFile = await uploadFile(editQualification.file);
+        if (uploadedFile) {
+            updatedQualifications[index] = {
+                title: editQualification.title,
+                fileKey: uploadedFile.fileKey,
+                fileUrl: uploadedFile.fileUrl,
+            };
+        }
+    } else {
+        updatedQualifications[index] = editQualification;
+    }
+    setQualifications(updatedQualifications);
+    setEditQualificationIndex(null);
+    setEditQualification({});
+};
+
+
+  const cancelEditQualification = () => {
+    setEditQualificationIndex(null);
+    setEditQualification({});
+  };
+
+  const handleRemoveQualification = (index) => {
+    const updatedQualifications = qualifications.filter(
+      (_, qualIndex) => qualIndex !== index
+    );
+
+    setQualifications(updatedQualifications);
+  };
+
+  const startEditCv = () => {
+    setIsEditingCv(true); // Enable CV editing mode
+  };
+
+  const saveCv = () => {
+    if (cvFile) {
+      // Replace current CV URL with the new file (in real apps, upload logic would go here)
+      const newCvUrl = URL.createObjectURL(cvFile);
+      setCvUrl(newCvUrl);
+    }
+
+    setIsEditingCv(false); // Exit CV editing mode
+  };
+
+  const uploadFile = async (file: File) => {
+    try {
+      const fileName = `${Math.random()
+        .toString(36)
+        .substring(2, 15)}.${file.name.split(".").pop()}`;
+      const { data } = await axios.get(
+        tutorEndpoints.getPresignedUrlForUpload,
+        {
           params: {
             filename: fileName,
-            fileType: profileImageFile!.type.startsWith('image') ? 'image' : 'video',
+            fileType: file.type.startsWith("image") ? "image" : "file",
           },
-        });
+        }
+      );
+
+      const { uploadUrl, viewUrl, key } = data;
+      console.log("viewUrl",viewUrl)
+      await axios.put(uploadUrl, file, {
+        headers: { "Content-Type": file.type },
+      });
+      return { fileUrl: viewUrl, fileKey: key };
+    } catch (error) {
+      toast.error("File upload failed.");
+      return null;
+    }
+  };
+
+  const onSubmitProfile = async (data: ProfileFormInputs) => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("phone", data.phone);
+    formData.append("about", data.about);
+
+    // Process qualifications
+    const updatedQualifications = await Promise.all(
+      qualifications.map(async (qual) => {
+          if (qual.fileKey) {
+            console.log("1")
+            console.log("qual.fileKey:",qual.fileKey)
+              return {
+                  title: qual.title,
+                  fileKey: qual.fileKey, // Store only fileKey
+              };
+          } else if (qual.file) {
+            console.log("2")
+              // New file uploaded for qualification
+              const uploadedQual = await uploadFile(qual.file);
+              if (uploadedQual) {
+                  return {
+                      title: qual.title,
+                      fileKey: uploadedQual.fileKey, // Store fileKey
+                  };
+              }
+          }
+          return qual; // Fallback to original qualification data
+      })
+  );
+  formData.append("qualifications", JSON.stringify(updatedQualifications));
+  
+
+  if (profileImageFile) {
+    const profilePic = await uploadFile(profileImageFile);
+    if (profilePic) formData.append("profile_picture", profilePic.fileKey); // Store fileKey
+} else if (tutorData?.profile_key) {
+    formData.append("profile_picture", tutorData.profile_key); // Existing fileKey
+}
+
+// Process CV
+if (cvFile) {
+    const uploadedCv = await uploadFile(cvFile);
+    if (uploadedCv) formData.append("cv", uploadedCv.fileKey); // Store fileKey
+} else if (tutorData?.cvKey || cvUrl) {
+    formData.append("cv", cvKey || cvUrl); // Existing fileKey or URL
+}
 
 
-        console.log(response.data,"git all the url")
-    
-        const { uploadUrl, viewUrl, key } = response.data;
-    
-        const result = await axios.put(uploadUrl, profileImageFile, {
-          headers: {
-            "Content-Type": profileImageFile!.type,
-          },
-        });
-    
-        if (result.status === 200) {
-          return { url: viewUrl, key };
+    try {
+        const response = await axiosInstance.put(
+            tutorEndpoints.editProfile,
+            formData
+        );
+        if (response.status === 200) {
+            toast.success("Profile updated successfully!");
+            dispatch(setTutor(response.data));
         } else {
-          return null;
+            toast.error("Profile update failed.");
         }
-      } catch (error) {
-        console.error("Error uploading file:", error);
-        return null;
-      }
-    };
-  
-    const onSubmitProfile = async (data: ProfileFormInputs) => {
-        console.log('Profile data submitted:', data);
-      
-        const formData = new FormData();
-        formData.append("tutorname", data.name);
-        formData.append("email", data.email);
-        formData.append("phone", data.phone);
-        formData.append("about", data.about);
-      
-        let profilePicKey: string = tutor.profilePicture || ""; 
-        let profilePicUrl: string = profileImage; 
-      
-        // Only if a new image is selected for upload
-        if (profileImageFile) {
-          const profilePic = await uploadProfile();
-          if (profilePic && profilePic.key) {
-            profilePicKey = profilePic.key;  // This is the key of the uploaded image
-            profilePicUrl = profilePic.url;  // This is the URL to display the uploaded image
-            setProfileImage(profilePicUrl);
-          }
-        }
+    } catch (error) {
+        toast.error("Error updating profile.");
+    }
+};
 
-        console.log("-------------")
-      
-        if (profilePicKey) {
-          formData.append("profile_picture", profilePicKey); // Append the uploaded image key, not profilePic
-        }
-      
-        // Log FormData to verify
-        for (const [key, value] of formData.entries()) {
-          console.log(key, value);
-        }
-      
-        try {
-          const result = await axiosInstance.put(tutorEndpoints.editProfile, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
 
-          console.log(result.data)
-      
-          if (result.status === 200) {
-            toast.success('Profile updated successfully');
-            const { _id, tutorname, email, phone, about } = result.data;
-            dispatch(setTutor({
-              id: _id,
-              tutorname,
-              email,
-              bio: about,
-              phone,
-              profilePicture: profilePicKey,  // Save the image key in the store
-              profilePictureUrl: profilePicUrl // Save the image URL in the store
-            }));
-          } else {
-            toast.error('Profile update failed');
-          }
-        } catch (error) {
-          console.error("Error submitting form", error);
-          toast.error('Error submitting profile update');
-        }
-      };
-      
-      
-  
-    const onSubmitPassword = (data: PasswordFormInputs) => {
-      if (data.newPassword !== data.confirmNewPassword) {
-        alert('Passwords do not match!');
-        return;
-      }
-      console.log('Password reset data:', data);
-    };
-  
-    const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setProfileImage(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-        setProfileImageFile(file); 
-      }
-    };
-  
-    const toggleDropdown = () => {
-      setDropdownOpen(!dropdownOpen);
-    };
-  
-    const handleProfilePicClick = () => {
-      fileInputRef.current?.click(); 
-    };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      setProfileImage(URL.createObjectURL(e.target.files[0]));
+      setProfileImageFile(e.target.files[0]);
+    }
+  };
+
+  const openPdfModal = (pdfUrl: string) => {
+    console.log("lalalalal")
+    console.log(pdfUrl)
+    setSelectedPdf(pdfUrl);
+  };
+
+  const closePdfModal = () => {
+    setSelectedPdf(null);
+  };
+
+  const cancelEditCv = () => {
+    setIsEditingCv(false);
+    setCvFile(null); // Reset file input
+  };
+
+
+  const handleAddQualification = () => {
+    setQualifications([
+      ...qualifications,
+      { title: "", file: null, fileUrl: "" }, // Add empty qualification object
+    ]);
+  };
 
   return (
-    <>
-      {/* Navbar */}
-      <nav className="bg-gray-800 p-4 flex justify-between items-center">
-        {/* Left side (Logo or Brand Name) */}
-        <div className="text-white text-xl font-bold">Tutor </div>
-
-        {/* Right side (Icons: Notifications, Messages, Profile) */}
-        <div className="flex items-center space-x-6">
-          {/* Notification Icon */}
-          <div className="relative">
-            <BellIcon className="h-6 w-6 text-white cursor-pointer" />
-            <span className="absolute top-0 right-0 inline-flex items-center justify-center h-3 w-3 rounded-full bg-red-500 text-white text-xs">
-              3
-            </span>
+    <div className="bg-gray-900 text-white min-h-screen p-10">
+      <div className="max-w-4xl mx-auto p-8 bg-gray-950 text-gray-200 rounded-lg shadow-xl">
+        <h2 className="text-3xl font-bold mb-6 text-center text-gray-100">
+          Edit Profile
+        </h2>
+        <form onSubmit={handleSubmit(onSubmitProfile)} className="space-y-6">
+          {/* Profile Picture */}
+          <div>
+            <label htmlFor="imageUpload" className="block mb-2 text-gray-300">
+              Profile Picture
+            </label>
+            <div className="profile-image-container">
+              <label htmlFor="imageUpload">
+                <img
+                  src={profileImage}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full object-cover mx-auto"
+                />
+              </label>
+              <input
+                type="file"
+                id="imageUpload"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleImageChange}
+              />
+            </div>
           </div>
 
-          {/* Message Icon */}
-          <div className="relative">
-            <ChatIcon className="h-6 w-6 text-white cursor-pointer" />
-            <span className="absolute top-0 right-0 inline-flex items-center justify-center h-3 w-3 rounded-full bg-red-500 text-white text-xs">
-              5
-            </span>
+          {/* Name, Email, Phone, About */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block mb-1 text-gray-300">Name</label>
+              <input
+                {...register("name", {
+                  required: "Name is required.",
+                  minLength: {
+                    value: 3,
+                    message: "Name must be at least 3 characters.",
+                  },
+                })}
+                className="block w-full p-3 rounded bg-gray-800 text-gray-200 border border-gray-700"
+                placeholder="Enter your name"
+              />
+              {errors.name && (
+                <span className="text-red-500 text-sm">Name is required.</span>
+              )}
+            </div>
+            <div>
+              <label className="block mb-1 text-gray-300">Email</label>
+              <input
+                {...register("email", {
+                  required: "Email is required.",
+                  pattern: {
+                    value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                    message: "Enter a valid email.",
+                  },
+                })}
+                className="block w-full p-3 rounded bg-gray-800 text-gray-200 border border-gray-700"
+                placeholder="Enter your email"
+                readOnly
+              />
+              {errors.email && (
+                <span className="text-red-500 text-sm">Email is required.</span>
+              )}
+            </div>
           </div>
 
-          {/* Profile Icon with Dropdown */}
-          <div className="relative">
-            <UserCircleIcon
-              className="h-8 w-8 text-white cursor-pointer"
-              onClick={toggleDropdown}
+          <div>
+            <label className="block mb-1 text-gray-300">Phone</label>
+            <input
+              {...register("phone", { required: true })}
+              className="block w-full p-3 rounded bg-gray-800 text-gray-200 border border-gray-700"
+              placeholder="Enter your phone number"
             />
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-lg shadow-lg">
-                <ul className="py-2">
-                  <li className="px-4 py-2 hover:bg-gray-600 cursor-pointer">
-                    Dashboard
-                  </li>
-                  <li className="px-4 py-2 hover:bg-gray-600 cursor-pointer">
-                    Logout
-                  </li>
-                </ul>
+            {errors.phone && (
+              <span className="text-red-500 text-sm">
+                Phone number is required.
+              </span>
+            )}
+          </div>
+
+          <div>
+            <label className="block mb-1 text-gray-300">About</label>
+            <textarea
+              {...register("about")}
+              className="block w-full p-3 rounded bg-gray-800 text-gray-200 border border-gray-700"
+              placeholder="Write about yourself"
+              rows={4}
+            ></textarea>
+          </div>
+
+          {/* Qualifications */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-100 mb-4">
+              Qualifications
+            </h3>
+
+            {qualifications.map((qual, index) => (
+              <div
+                key={index}
+                className="flex flex-col gap-4 bg-gray-800 p-3 rounded mb-2 border border-gray-700"
+              >
+                {editQualificationIndex === index ? (
+                  <>
+                    {/* Editing Mode */}
+                    <div>
+                      <label className="block mb-1 text-gray-300">
+                        Qualification Title
+                      </label>
+                      <input
+                        type="text"
+                        value={editQualification.title}
+                        onChange={(e) =>
+                          setEditQualification((prev) => ({
+                            ...prev,
+                            title: e.target.value,
+                          }))
+                        }
+                        className="block w-full p-3 rounded bg-gray-800 text-gray-200 border border-gray-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mb-1 text-gray-300">
+                        Upload File
+                      </label>
+                      <input
+                        type="file"
+                        onChange={(e) =>
+                          setEditQualification((prev) => ({
+                            ...prev,
+                            file: e.target.files ? e.target.files[0] : null,
+                          }))
+                        }
+                        className="block w-full text-gray-200"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleSaveQualification(index)}
+                      className="text-green-400 hover:text-green-500"
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={cancelEditQualification}
+                      className="text-red-400 hover:text-red-500"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {/* View Mode */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-300">{qual.title}</span>
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-400 hover:text-blue-500"
+                        onClick={() => openPdfModal(qual.fileUrl)}
+                      >
+                        View
+                      </a>
+                    </div>
+                    <div className="flex justify-between mt-2">
+                      <button
+                        type="button"
+                        onClick={() => startEditQualification(index, qual)}
+                        className="text-yellow-400 hover:text-yellow-500"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveQualification(index)}
+                        className="text-red-400 hover:text-red-500"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={handleAddQualification}
+              className="text-blue-400 hover:text-blue-500 mt-4"
+            >
+             + Add More Qualification
+            </button>
+          </div>
+
+          {/* CV */}
+          <div>
+            <label className="block mb-1 text-gray-300">Upload CV</label>
+            {isEditingCv ? (
+              <div>
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) =>
+                    e.target.files && setCvFile(e.target.files[0])
+                  }
+                  className="block w-full text-gray-200"
+                />
+                <button
+                  type="button"
+                  onClick={saveCv}
+                  className="text-green-400 hover:text-green-500 mt-2"
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={cancelEditCv}
+                  className="text-red-400 hover:text-red-500 mt-2"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div>
+                {cvUrl && (
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-500"
+                    onClick={() => openPdfModal(cvUrl)}
+                  >
+                    View Current CV
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={startEditCv}
+                  className="text-yellow-400 hover:text-yellow-500 mt-2"
+                >
+                  Edit CV
+                </button>
               </div>
             )}
           </div>
-        </div>
-      </nav>
 
-      {/* Main Content */}
-      <div className="min-h-screen bg-gray-900 text-white p-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          {/* Profile Edit Form */}
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
-
-            {/* Profile Picture Preview */}
-            <div className="mb-4 flex justify-center">
-              <div
-                className={"w-32 h-32 rounded-full bg-gray-600 overflow-hidden "}
-                onClick={handleProfilePicClick}
-              >
-                {profileImage ? (
-                  <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <svg className="w-full h-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                  </svg>
-                )}
-              </div>
-            </div>
-
-            {/* Hidden File Input */}
-            <input
-              type="file"
-              accept="image/*"
-              {...register('profilePic')}
-              ref={fileInputRef}
-              className="hidden"
-              onChange={handleProfilePicChange}
-            />
-
-            <form onSubmit={handleSubmit(onSubmitProfile)}>
-              <div className="mb-4">
-                <label className="block text-gray-400">Name</label>
-                <input
-                  type="text"
-                  {...register('name', { required: 'Name is required' })}
-                  className="w-full p-2 rounded bg-gray-700 text-white"
-                />
-                {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-400">Email</label>
-                <input
-                  type="email"
-                  {...register('email', { required: 'Email is required' })}
-                  className="w-full p-2 rounded bg-gray-700 text-white"
-                />
-                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-400">Phone</label>
-                <input
-                  type="text"
-                  {...register('phone', { required: 'Phone number is required' })}
-                  className="w-full p-2 rounded bg-gray-700 text-white"
-                />
-                {errors.phone && <p className="text-red-500 text-sm">{errors.phone.message}</p>}
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-400">Description</label>
-                <textarea
-                  {...register('about', { required: 'Description is required' })}
-                  className="w-full p-2 rounded bg-gray-700 text-white"
-                />
-                {errors.about && <p className="text-red-500 text-sm">{errors.about.message}</p>}
-              </div>
-
-
-              
-                <button
-                  type="submit"
-                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-                >
-                  Save Changes
-                </button>
-            </form>
-          </div>
-
-          {/* Password Reset Form */}
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold mb-4">Reset Password</h2>
-
-            <form onSubmit={handlePasswordSubmit(onSubmitPassword)}>
-              <div className="mb-4">
-                <label className="block text-gray-400">Current Password</label>
-                <input
-                  type="password"
-                  {...registerPassword('currentPassword', { required: 'Current password is required' })}
-                  className="w-full p-2 rounded bg-gray-700 text-white"
-                />
-                {passwordErrors.currentPassword && <p className="text-red-500 text-sm">{passwordErrors.currentPassword.message}</p>}
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-400">New Password</label>
-                <input
-                  type="password"
-                  {...registerPassword('newPassword', { required: 'New password is required' })}
-                  className="w-full p-2 rounded bg-gray-700 text-white"
-                />
-                {passwordErrors.newPassword && <p className="text-red-500 text-sm">{passwordErrors.newPassword.message}</p>}
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-400">Confirm New Password</label>
-                <input
-                  type="password"
-                  {...registerPassword('confirmNewPassword', { required: 'Please confirm your new password' })}
-                  className="w-full p-2 rounded bg-gray-700 text-white"
-                />
-                {passwordErrors.confirmNewPassword && <p className="text-red-500 text-sm">{passwordErrors.confirmNewPassword.message}</p>}
-              </div>
-
-              <button
-                type="submit"
-                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-              >
-                Reset Password
-              </button>
-            </form>
-          </div>
-        </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded"
+          >
+            Update Profile
+          </button>
+        </form>
       </div>
-    </>
+      {selectedPdf && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="bg-gray-900 p-8 rounded-lg w-11/12 max-w-4xl">
+            <h2 className="text-2xl font-bold mb-6 text-indigo-500">
+              Document Viewer
+            </h2>
+            <iframe
+              src={selectedPdf}
+              className="w-full h-96 border-0"
+              title="Document Viewer"
+            ></iframe>
+            <button
+              onClick={closePdfModal}
+              className="mt-6 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-8 rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

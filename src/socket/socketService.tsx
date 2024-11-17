@@ -35,6 +35,20 @@ class SocketService {
   }
 
 
+  // Emit readMessages event with roomId
+unReadMessage(roomId:string,userId:string) {
+  console.log(`Attempting to send readMessages for roomId: ${roomId} ${userId}`);
+  if (this.socket.connected) {
+    this.socket.emit('unReadMessages',{userId,roomId}); // Emit the event with roomId
+  } else {
+    console.error('Socket is not connected');
+  }
+}
+
+
+
+
+
 
 // Emit readMessages event with roomId
 messageReadUpdate(roomId:string) {

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import AdminNavbar from "../../../components/Admin/Dashboard/Navbar/Navbar";
 import AdminSidebar from "../../../components/Admin/Dashboard/Sidebar/Sidebar";
 import AdminPayouts from "../../../components/Admin/Dashboard/Body/AdminPayouts";
+import BasicPagination from "../../../components/Admin/Pagination/Pagination";
+
 import { adminEndpoints } from "../../../../src/components/constraints/endpoints/adminEndpoints";
 import axiosInstance from "../../../components/constraints/axios/adminAxios";
 
@@ -22,24 +24,35 @@ interface CourseData {
 }
 
 const AdminPayoutPage: React.FC = () => {
-  const [coursesData, setCoursesData] = useState<CourseData[]>([]); // State with CourseData type
-  const [loading, setLoading] = useState(true); // State to handle loading
-  const [error, setError] = useState<string | null>(null); // State to handle errors
+  const [coursesData, setCoursesData] = useState<CourseData[]>([]); // Courses data
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
+  const [currentPage, setCurrentPage] = useState(1); // Current page
+  const [totalItems, setTotalItems] = useState(0); // Total items from backend
+  const itemsPerPage = 5; // Items per page
 
   useEffect(() => {
-    fetchCourseData(); // Fetch course data on component mount
-  }, []);
+    fetchOrders(); // Fetch courses on component mount or page change
+  }, [currentPage]);
 
-  const fetchCourseData = async () => {
+  const fetchOrders = async () => {
     try {
+      console.log("hyyyyy ");
       setLoading(true);
-      // Fetch data from the API
-      const result = await axiosInstance.get(adminEndpoints.payouts);
+      const skip = (currentPage - 1) * itemsPerPage;
+
+      // Fetch data from the API with skip and limit
+
+      console.log(itemsPerPage, skip);
+      const result = await axiosInstance.get(adminEndpoints.payouts, {
+        params: { skip, limit: itemsPerPage },
+      });
 
       console.log(result, "Fetched data from payouts endpoint");
 
       // Set the fetched data to state
-      setCoursesData(result.data);
+      setCoursesData(result.data.orders); // Assuming API returns { courses, totalCount }
+      setTotalItems(result.data.totalCount); // Set total items for pagination
       setLoading(false);
     } catch (err) {
       console.error(err);
@@ -48,8 +61,14 @@ const AdminPayoutPage: React.FC = () => {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page); // Update current page
+  };
+
   return (
-    <div style={{ display: "flex", height: "100vh", backgroundColor: "#000000" }}>
+    <div
+      style={{ display: "flex", height: "100vh", backgroundColor: "#000000" }}
+    >
       <AdminSidebar />
       <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <AdminNavbar />
@@ -65,7 +84,7 @@ const AdminPayoutPage: React.FC = () => {
               marginBottom: "10px",
               textAlign: "center",
               width: "100%",
-              marginLeft: '80px'
+              marginLeft: "80px",
             }}
           >
             Courses Payouts
@@ -74,7 +93,7 @@ const AdminPayoutPage: React.FC = () => {
           <div
             className="flex-grow flex flex-col justify-start"
             style={{
-              marginBottom: "250vh",
+              marginBottom: "10vh",
               marginLeft: "12vw",
               alignSelf: "flex-end",
             }}
@@ -84,7 +103,21 @@ const AdminPayoutPage: React.FC = () => {
             ) : error ? (
               <p style={{ color: "#FFFFFF" }}>{error}</p>
             ) : (
-              <AdminPayouts initialCoursesData={coursesData} /> // Pass the coursesData to AdminPayouts component
+              <>
+                {/* Render paginated data */}
+                <AdminPayouts data={{ initialCoursesData: coursesData, currentPage, itemsPerPage }} />
+
+
+
+
+                {/* Render pagination */}
+                <BasicPagination
+                  totalItems={totalItems}
+                  itemsPerPage={itemsPerPage}
+                  currentPage={currentPage}
+                  onPageChange={handlePageChange}
+                />
+              </>
             )}
           </div>
         </div>

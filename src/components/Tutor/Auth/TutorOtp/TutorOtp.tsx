@@ -117,7 +117,9 @@ function TutorOtp() {
 
         if (result.data.success) {
           setLoading(false);
-          navigate("/tutor/login"); // Adjust the navigation path as needed
+          console.log(result.data,"check check 0000")
+          localStorage.setItem("tutorId",result.data.id)
+          navigate("/tutor/addInformation"); 
         } else {
           if (result.data.message === "Incorrect Otp") {
             setLoading(false);

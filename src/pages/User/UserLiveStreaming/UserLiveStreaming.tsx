@@ -19,7 +19,7 @@ function UserLiveStream() {
             if (initialized.current) return;
             initialized.current = true;
 
-            const appID = 1971649609;
+            const appID = import.meta.env.VITE_LIVE_APP_ID;
             const serverSecret = import.meta.env.VITE_LIVE_SERVER_SECRET;
 
             if (!appID || !serverSecret || !courseId) {

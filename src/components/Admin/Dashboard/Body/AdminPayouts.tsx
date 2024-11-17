@@ -6,10 +6,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
-import axiosInstance from "../../../constraints/axios/adminAxios";
-import { adminEndpoints } from "../../../constraints/endpoints/adminEndpoints";
 
 // Define the shape of the course report data
 interface FormattedCourseReport {
@@ -28,11 +25,14 @@ interface FormattedCourseReport {
 // Use props to accept coursesData
 interface ReportCoursesProps {
   initialCoursesData: FormattedCourseReport[];
+  currentPage: number;
+  itemsPerPage: number;
 }
 
 const ReportCourses: React.FC<ReportCoursesProps> = ({
-  initialCoursesData,
+data
 }) => {
+  const { initialCoursesData, currentPage, itemsPerPage } = data;
   const [coursesData, setCoursesData] =
     React.useState<FormattedCourseReport[]>(initialCoursesData);
 
@@ -103,38 +103,41 @@ const ReportCourses: React.FC<ReportCoursesProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {coursesData.map((report, index) => (
-                <TableRow
-                  key={report.courseId}
-                  sx={{
-                    bgcolor: "#1b2532", // Apply the same color for all rows
-                    borderBottom: "2px solid #333", // Add a border line after each row
-                  }}
-                >
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{report.userName}</TableCell>
-                  <TableCell>{report.tutorName}</TableCell>
-                  <TableCell>{report.title}</TableCell>
-                  <TableCell>
-                    <img
-                      src={report.thumbnail}
-                      alt="Course Thumbnail"
-                      style={{
-                        width: 80,
-                        height: 80,
-                        objectFit: "cover",
-                        borderRadius: 4,
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {new Date(report.createdAt).toLocaleString()}
-                  </TableCell>
-                  <TableCell>{report.discountPrice}</TableCell>
-                  <TableCell>{report.tutorShare}</TableCell>
-                  <TableCell>{report.adminShare}</TableCell>
-                </TableRow>
-              ))}
+              {coursesData.map((report, index) => {
+                const serialNumber = (currentPage - 1) * itemsPerPage + index + 1;
+                return (
+                  <TableRow
+                    key={report.courseId}
+                    sx={{
+                      bgcolor: "#1b2532", // Apply the same color for all rows
+                      borderBottom: "2px solid #333", // Add a border line after each row
+                    }}
+                  >
+                    <TableCell>{serialNumber}</TableCell>
+                    <TableCell>{report.userName}</TableCell>
+                    <TableCell>{report.tutorName}</TableCell>
+                    <TableCell>{report.title}</TableCell>
+                    <TableCell>
+                      <img
+                        src={report.thumbnail}
+                        alt="Course Thumbnail"
+                        style={{
+                          width: 80,
+                          height: 80,
+                          objectFit: "cover",
+                          borderRadius: 4,
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {new Date(report.createdAt).toLocaleString()}
+                    </TableCell>
+                    <TableCell>{report.discountPrice}</TableCell>
+                    <TableCell>{report.tutorShare}</TableCell>
+                    <TableCell>{report.adminShare}</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>

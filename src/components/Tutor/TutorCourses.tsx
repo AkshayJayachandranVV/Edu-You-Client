@@ -55,12 +55,13 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 interface DarkThemeTableProps {
   courseData: Course[];
+  startingIndex: number; // Prop for serial number offset
 }
 
-export default function DarkThemeTable({ courseData }: DarkThemeTableProps) {
+export default function DarkThemeTable({ courseData, startingIndex }: DarkThemeTableProps) {
   const [coursesData, setCourseData] = React.useState<Course[]>([]);
-  const navigate = useNavigate()
-  // Log the course data only once or when courseData changes
+  const navigate = useNavigate();
+
   React.useEffect(() => {
     if (Array.isArray(courseData)) {
       console.log(courseData, "got it  --- in the courseData");
@@ -68,7 +69,7 @@ export default function DarkThemeTable({ courseData }: DarkThemeTableProps) {
     } else {
       console.error("courseData is not an array:", courseData);
     }
-  }, [courseData]); // Runs only when `courseData` changes
+  }, [courseData]);
 
   const listCourse = async (courseId: string) => {
     try {
@@ -84,21 +85,19 @@ export default function DarkThemeTable({ courseData }: DarkThemeTableProps) {
             : course
         )
       );
-
-      // Optionally update the course listing state here
     } catch (error) {
       console.error("Error listing/unlisting course", error);
     }
   };
 
-  const viewCourse = async(courseId:string) =>{
+  const viewCourse = async (courseId: string) => {
     navigate(`/tutor/courseView/${courseId}`);
-}
+  };
 
-  const editCourse = async(courseId:string) =>{
-      navigate(`/tutor/editCourse/${courseId}`);
-  }
-  
+  const editCourse = async (courseId: string) => {
+    navigate(`/tutor/editCourse/${courseId}`);
+  };
+
   return (
     <div className="bg-gray-900 min-h-screen p-8 text-white">
       <Typography variant="h4" align="center" gutterBottom sx={{ color: "#FFC107" }}>
@@ -134,7 +133,7 @@ export default function DarkThemeTable({ courseData }: DarkThemeTableProps) {
               coursesData.map((course, index) => (
                 <StyledTableRow key={course._id}>
                   <StyledTableCell component="th" scope="row">
-                    {index + 1}
+                    {startingIndex + index}
                   </StyledTableCell>
                   <StyledTableCell align="right">{course.courseName}</StyledTableCell>
                   <StyledTableCell align="right">
@@ -152,12 +151,22 @@ export default function DarkThemeTable({ courseData }: DarkThemeTableProps) {
                     {new Date(course.createdAt).toLocaleString()}
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    <Button onClick={()=>viewCourse(course._id)} variant="contained" color="primary" size="small">
+                    <Button
+                      onClick={() => viewCourse(course._id)}
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                    >
                       View
                     </Button>
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    <Button onClick={()=>editCourse(course._id)} variant="contained" color="primary" size="small">
+                    <Button
+                      onClick={() => editCourse(course._id)}
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                    >
                       Edit
                     </Button>
                   </StyledTableCell>

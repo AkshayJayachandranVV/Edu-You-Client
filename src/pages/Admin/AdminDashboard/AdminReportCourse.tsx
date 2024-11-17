@@ -4,11 +4,15 @@ import AdminSidebar from '../../../components/Admin/Dashboard/Sidebar/Sidebar';
 import AdminReports from '../../../components/Admin/Dashboard/Body/AdminReportCourses';
 import { adminEndpoints } from '../../../../src/components/constraints/endpoints/adminEndpoints';
 import axiosInstance from '../../../components/constraints/axios/adminAxios';
+import BasicPagination from "../../../components/Admin/Pagination/Pagination";
 
 const AdminTutorsPage = () => {
   const [coursesData, setCoursesData] = useState([]); // State to store course data
   const [loading, setLoading] = useState(true); // State to handle loading
   const [error, setError] = useState<string | null>(null); // State to handle errors
+  const [currentPage, setCurrentPage] = useState(1); // Current page
+  const [totalItems, setTotalItems] = useState(0); // Total items from backend
+  const itemsPerPage = 5; // Items per page
 
   useEffect(() => {
     fetchCourseData(); // Fetch course data on component mount
@@ -20,7 +24,7 @@ const AdminTutorsPage = () => {
       // Fetch data from the API
       const result = await axiosInstance.get(adminEndpoints.reportCourses); // Adjust the endpoint as necessary
 
-      console.log(result,"heheheheheh")
+      console.log(result.data,"heheheheheh")
       
       // Assuming result.data is an array of reported courses
       const formattedData = result.data.map((item) => ({
@@ -46,6 +50,12 @@ const AdminTutorsPage = () => {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page); // Update current page
+  };
+
+
+
   return (
     <div style={{ display: 'flex', height: '100vh', backgroundColor: '#000000' }}>
       <AdminSidebar />
@@ -58,7 +68,15 @@ const AdminTutorsPage = () => {
             ) : error ? (
               <p style={{ color: '#FFFFFF' }}>{error}</p>
             ) : (
-              <AdminReports initialCoursesData={coursesData} /> // Pass the coursesData to AdminReports component
+              <>
+              <AdminReports initialCoursesData={coursesData} /> 
+              <BasicPagination
+                  totalItems={totalItems}
+                  itemsPerPage={itemsPerPage}
+                  currentPage={currentPage}
+                  onPageChange={handlePageChange}
+                />
+              </>
             )}
           </div>
         </div>
