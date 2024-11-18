@@ -17,30 +17,29 @@ import Chat from "../../pages/User/UserChat/UserChat";
 import LiveStream from "../../pages/User/UserLiveStreaming/UserLiveStreaming";
 import PrivateRoute from "./privateRoute";
 import PrivateRouteUser from "./privateRouteUser";
-import { useEffect, useState } from 'react';
-import socketService from '../../socket/socketService';
-import LiveStreamModal from '../../components/User/UserLiveMessage/UserLiveMessage'; // Import the LiveStreamModal
+// import { useEffect, useState } from 'react';
+// import socketService from '../../socket/socketService';
 
 const UserRoutes = () => {
-    const [showLiveStreamModal, setShowLiveStreamModal] = useState(false);
-    const [liveStreamLink, setLiveStreamLink] = useState('');
+    // const [showLiveStreamModal, setShowLiveStreamModal] = useState(false);
+    // const [liveStreamLink, setLiveStreamLink] = useState('');
 
-    const handleGoLive = () => {
-        // Redirect to the live stream link
-        window.location.href = liveStreamLink;
-    };
+    // const handleGoLive = () => {
+    //     // Redirect to the live stream link
+    //     window.location.href = liveStreamLink;
+    // };
 
-    const handleCancel = () => {
-        setShowLiveStreamModal(false);
-    };
+    // const handleCancel = () => {
+    //     setShowLiveStreamModal(false);
+    // };
 
-    useEffect(() => {
-        socketService.RecieveLiveStreamLink(({ roomId, tutorId, sharedLink }) => {
-            // Trigger the modal when the live stream link is received
-            setShowLiveStreamModal(true);
-            setLiveStreamLink(sharedLink);
-        });
-    }, []);
+    // useEffect(() => {
+    //     socketService.RecieveLiveStreamLink(({ roomId, tutorId, sharedLink }) => {
+    //         // Trigger the modal when the live stream link is received
+    //         setShowLiveStreamModal(true);
+    //         setLiveStreamLink(sharedLink);
+    //     });
+    // }, []);
 
     return (
         <>
@@ -63,12 +62,12 @@ const UserRoutes = () => {
                 <Route path="*" element={<ErrorPage />} />
             </Routes>
 
-            {/* Live Stream Modal visible across all routes */}
+            {/* Live Stream Modal visible across all routes
             <LiveStreamModal
                 show={showLiveStreamModal}
                 onGoLive={handleGoLive}
                 onCancel={handleCancel}
-            />
+            /> */}
         </>
     );
 };

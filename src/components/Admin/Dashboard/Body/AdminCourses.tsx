@@ -7,7 +7,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../constraints/axios/adminAxios";
 import { adminEndpoints } from "../../../constraints/endpoints/adminEndpoints";
 
@@ -25,7 +24,11 @@ interface Course {
 }
 
 interface DarkThemeTableProps {
-  courseData: Course[];
+  data: {
+    initialCoursesData: Course[];
+    currentPage: number;
+    itemsPerPage: number;
+  };
 }
 
 const DarkThemeTable: React.FC<DarkThemeTableProps> = ({ data }) => {
@@ -61,77 +64,53 @@ const DarkThemeTable: React.FC<DarkThemeTableProps> = ({ data }) => {
       component={Paper}
       sx={{
         borderRadius: "sm",
-        bgcolor: "#1b2532", // Dark background for the table container
+        bgcolor: "#1b2532",
+        overflowX: "auto", // Allow horizontal scroll on small screens
       }}
     >
-      <Table
-        sx={{
-          "& tbody": {
-            color: "#fff", // Text color for table rows
-          },
-          "& thead": {
-            bgcolor: "#1b2532", // Dark background for table headers
-            color: "#fff", // Text color for table headers
-          },
-          "& th, & td": {
-            borderColor: "#1b2532", // Border color
-            color: "#fff", // Text color for cells
-          },
-        }}
-      >
+      <Table sx={{ "& tbody": { color: "#fff" }, "& th, & td": { color: "#fff", borderColor: "#1b2532" } }}>
         <TableHead>
           <TableRow>
-            <TableCell>SI No</TableCell>
-            <TableCell>Course Name</TableCell>
-            <TableCell>Thumbnail</TableCell>
-            <TableCell>Category</TableCell>
-            <TableCell>Level</TableCell>
-            <TableCell>Price</TableCell>
-            <TableCell>Discount Price</TableCell>
-            <TableCell>Date</TableCell>
-            {/* <TableCell>Delete</TableCell> */}
-            <TableCell>Action</TableCell>
+            <TableCell className="text-sm sm:text-base">SI No</TableCell>
+            <TableCell className="text-sm sm:text-base">Course Name</TableCell>
+            <TableCell className="text-sm sm:text-base">Thumbnail</TableCell>
+            <TableCell className="text-sm sm:text-base">Category</TableCell>
+            <TableCell className="text-sm sm:text-base">Level</TableCell>
+            <TableCell className="text-sm sm:text-base">Price</TableCell>
+            <TableCell className="text-sm sm:text-base">Discount Price</TableCell>
+            <TableCell className="text-sm sm:text-base">Date</TableCell>
+            <TableCell className="text-sm sm:text-base">Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-  {coursesData.map((course, index) => {
-    const serialNumber = (currentPage - 1) * itemsPerPage + index + 1; // Calculate the serial number
-    return (
-      <TableRow
-        key={course._id}
-        sx={{
-          bgcolor: index % 2 === 0 ? '#1b2532' : '#1e1f22', // Alternate row colors
-        }}
-      >
-        <TableCell>{serialNumber}</TableCell> {/* Display serial number */}
-        <TableCell>{course.courseName}</TableCell>
-        <TableCell>
-          <img
-            src={course.thumbnail}
-            alt={course.courseName}
-            style={{ width: '50px', height: 'auto' }}
-          />
-        </TableCell>
-        <TableCell>{course.courseCategory}</TableCell>
-        <TableCell>{course.courseLevel}</TableCell>
-        <TableCell>{course.coursePrice}</TableCell>
-        <TableCell>{course.courseDiscountPrice}</TableCell>
-        <TableCell>{new Date(course.createdAt).toLocaleString()}</TableCell>
-        <TableCell>
-          <Button
-            onClick={() => toggleListStatus(course._id, course.isListed || false)}
-            variant="contained"
-            sx={{ bgcolor: course.isListed ? 'red' : 'green' }} // Color change based on status
-            size="small"
-          >
-            {course.isListed ? 'Unlist' : 'List'}
-          </Button>
-        </TableCell>
-      </TableRow>
-    );
-  })}
-</TableBody>
-
+          {coursesData.map((course, index) => {
+            const serialNumber = (currentPage - 1) * itemsPerPage + index + 1;
+            return (
+              <TableRow key={course._id} sx={{ bgcolor: index % 2 === 0 ? "#1b2532" : "#1e1f22" }}>
+                <TableCell>{serialNumber}</TableCell>
+                <TableCell>{course.courseName}</TableCell>
+                <TableCell>
+                  <img src={course.thumbnail} alt={course.courseName} className="w-12 h-auto" />
+                </TableCell>
+                <TableCell>{course.courseCategory}</TableCell>
+                <TableCell>{course.courseLevel}</TableCell>
+                <TableCell>{course.coursePrice}</TableCell>
+                <TableCell>{course.courseDiscountPrice}</TableCell>
+                <TableCell>{new Date(course.createdAt).toLocaleString()}</TableCell>
+                <TableCell>
+                  <Button
+                    onClick={() => toggleListStatus(course._id, course.isListed || false)}
+                    variant="contained"
+                    sx={{ bgcolor: course.isListed ? "red" : "green" }}
+                    size="small"
+                  >
+                    {course.isListed ? "Unlist" : "List"}
+                  </Button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
       </Table>
     </TableContainer>
   );

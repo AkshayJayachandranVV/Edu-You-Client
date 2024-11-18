@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AdminNavbar from "../../../components/Admin/Dashboard/Navbar/Navbar";
 import AdminSidebar from "../../../components/Admin/Dashboard/Sidebar/Sidebar";
 import AdminCoursesTable from "../../../components/Admin/Dashboard/Body/AdminCourses"; // Assuming this is the table component
@@ -37,10 +37,10 @@ const AdminCourses = () => {
 
       // Fetch paginated data from the API
       const result = await axiosInstance.get(adminEndpoints.courses, {
-        params: { skip:page, limit: itemsPerPage },
+        params: { skip: page, limit: itemsPerPage },
       });
 
-      console.log(result.data)
+      console.log(result.data);
 
       setCoursesData(result.data.courses);
       setTotalItems(result.data.totalCount);
@@ -57,56 +57,40 @@ const AdminCourses = () => {
   };
 
   return (
-    <div
-      style={{ display: "flex", height: "100vh", backgroundColor: "#000000" }}
-    >
+    <div className="flex flex-col md:flex-row h-screen bg-black overflow-x-hidden">
       <AdminSidebar />
-      <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+      <div className="flex-grow flex flex-col">
         <AdminNavbar />
-        <div
-          className="flex-1 flex flex-col p-6"
-          style={{ backgroundColor: "#000000" }}
-        >
-          <div
-            className="flex-grow flex flex-col justify-start"
-            style={{
-              marginBottom: "465px",
-              width: "75%",
-              marginLeft: "auto",
-              paddingRight: "115px",
-              alignSelf: "flex-end",
-            }}
-          >
-            <h3
-              style={{
-                color: "#FFFFFF",
-                fontWeight: "bold",
-                fontSize: "4rem",
-                marginBottom: "20px",
-                marginLeft: "250px",
-                width: "100%",
-                textAlign: "left",
-              }}
-            >
-              Courses List
-            </h3>
+        <div className="flex-1 p-4 bg-black text-white">
+          <h3 className="text-center font-bold text-2xl mb-4">Courses List</h3>
 
-            {loading ? (
-              <p style={{ color: "#FFFFFF" }}>Loading...</p>
-            ) : error ? (
-              <p style={{ color: "#FFFFFF" }}>{error}</p>
-            ) : (
-              <>
-                <AdminCoursesTable data={{ initialCoursesData: coursesData, currentPage, itemsPerPage }} />
-                <BasicPagination
-                  totalItems={totalItems}
-                  itemsPerPage={itemsPerPage}
-                  currentPage={currentPage}
-                  onPageChange={handlePageChange}
-                />
-              </>
-            )}
-          </div>
+          {loading ? (
+            <p className="text-center">Loading...</p>
+          ) : error ? (
+            <p className="text-center">{error}</p>
+          ) : (
+            <>
+              <div className="w-full overflow-x-auto mb-8">
+                {/* Ensure the table is responsive and horizontally scrollable */}
+                <div className="overflow-x-auto">
+                  <AdminCoursesTable
+                    data={{
+                      initialCoursesData: coursesData,
+                      currentPage,
+                      itemsPerPage,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <BasicPagination
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+              />
+            </>
+          )}
         </div>
       </div>
     </div>

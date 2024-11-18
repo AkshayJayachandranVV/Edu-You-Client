@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import ChatList from '../../../components/Tutor/TutorChat/TutorChatList';
 import ChatInterface from '../../../components/Tutor/TutorChat/TutorChatInterface';
-// import Navbar from '../../../components/User/Home/UserHome/Navbar/Navbar';
-// import iconimage from '../../../assets/images/User/UserHome/Account.png';
 import axiosInstance from '../../../components/constraints/axios/tutorAxios';
 import { tutorEndpoints } from "../../../components/constraints/endpoints/TutorEndpoints";
 
-interface Chat {
+export interface Chat {
   _id: string;
+  courseId: string;
   courseName: string;
   thumbnail: string;
+  lastMessage: string;
+  lastMessageTime: string;
+  isRead?: boolean;
 }
 
 interface CourseResponse {

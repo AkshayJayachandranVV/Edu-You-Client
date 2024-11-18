@@ -1,5 +1,3 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useState,useEffect } from 'react';
 import AdminNavbar from '../../../components/Admin/Dashboard/Navbar/Navbar';
 import AdminSidebar from '../../../components/Admin/Dashboard/Sidebar/Sidebar';
@@ -10,8 +8,6 @@ import axiosInstance from '../../../components/constraints/axios/adminAxios';
 import { adminEndpoints } from '../../../components/constraints/endpoints/adminEndpoints';
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(2); // Example current step
   const [earningsData, setEarningsData] = useState(0);
   const [totalCourses, setTotalCourses] = useState(0);
   const [totalStudents, setTotalStudents] = useState(0);

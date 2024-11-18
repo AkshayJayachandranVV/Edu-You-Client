@@ -131,7 +131,7 @@ export default function PrimarySearchAppBar() {
           top: -10,
         }}
       >
-        <Toolbar sx={{ minHeight: 60 }}> {/* Adjust the height here */}
+        <Toolbar sx={{ minHeight: 60 }}>
           <IconButton
             size="large"
             edge="start"
@@ -144,7 +144,11 @@ export default function PrimarySearchAppBar() {
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: 'none', sm: 'block' }, color: '#43b27f' }} // Text color
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              color: '#43b27f',
+              fontSize: { xs: '1.2rem', sm: '1.5rem' }, // Adjust font size for responsiveness
+            }}
           >
             Admin
           </Typography>

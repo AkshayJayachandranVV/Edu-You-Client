@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -9,34 +9,34 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 
 // Define the shape of the course report data
-interface FormattedCourseReport {
-  courseId: string;
+interface CourseData {
   courseName: string;
   thumbnail: string;
   userId: string;
   userName: string;
   tutorName: string;
-  tutorShare: string;
+  tutorShare: number;  // Change this to 'number' to match AdminPayoutPage
   createdAt: string;
   adminShare: number;
-  discountPrice: string;
+  discountPrice: number;
+  courseId: string;
 }
+
 
 // Use props to accept coursesData
-interface ReportCoursesProps {
-  initialCoursesData: FormattedCourseReport[];
-  currentPage: number;
-  itemsPerPage: number;
+interface CoursesProps {
+  data: {
+    initialCoursesData: CourseData[];
+    currentPage: number;
+    itemsPerPage: number;
+  };
 }
 
-const ReportCourses: React.FC<ReportCoursesProps> = ({
-data
-}) => {
+const ReportCourses: React.FC<CoursesProps> = ({ data }) => {
   const { initialCoursesData, currentPage, itemsPerPage } = data;
-  const [coursesData, setCoursesData] =
-    React.useState<FormattedCourseReport[]>(initialCoursesData);
-
-  console.log("initial data:", initialCoursesData);
+  const [coursesData] = React.useState<CourseData[]>(
+    initialCoursesData
+  );
 
   return (
     <Grid container justifyContent="center" sx={{ p: 2 }}>
@@ -44,9 +44,9 @@ data
         <TableContainer
           component={Paper}
           sx={{
-            borderRadius: "sm",
+            borderRadius: 2,
             bgcolor: "#1b2532",
-            overflowX: "auto",
+            overflowX: "auto", // Enable horizontal scrolling
             maxWidth: "100%",
           }}
         >
@@ -60,15 +60,15 @@ data
               },
               "& th": {
                 color: "#fff", // Set the text color for the header cells
-                padding: "24px",
+                padding: "16px",
                 borderColor: "#1b2532",
               },
               "& td": {
                 borderColor: "#1b2532",
                 color: "#fff",
-                padding: "24px",
+                padding: "16px",
               },
-              width: "100%",
+              width: "100%", // Ensure the table takes the full width
             }}
           >
             <TableHead>
@@ -103,38 +103,45 @@ data
               </TableRow>
             </TableHead>
             <TableBody>
-              {coursesData.map((report, index) => {
-                const serialNumber = (currentPage - 1) * itemsPerPage + index + 1;
+              {coursesData.map((course, index) => {
+                const serialNumber =
+                  (currentPage - 1) * itemsPerPage + index + 1;
                 return (
                   <TableRow
-                    key={report.courseId}
+                    key={course.courseId}
                     sx={{
                       bgcolor: "#1b2532", // Apply the same color for all rows
                       borderBottom: "2px solid #333", // Add a border line after each row
                     }}
                   >
                     <TableCell>{serialNumber}</TableCell>
-                    <TableCell>{report.userName}</TableCell>
-                    <TableCell>{report.tutorName}</TableCell>
-                    <TableCell>{report.title}</TableCell>
+                    <TableCell>{course.userName || "N/A"}</TableCell>
+                    <TableCell>{course.tutorName || "N/A"}</TableCell>
+                    <TableCell>{course.courseName || "N/A"}</TableCell>
                     <TableCell>
-                      <img
-                        src={report.thumbnail}
-                        alt="Course Thumbnail"
-                        style={{
-                          width: 80,
-                          height: 80,
-                          objectFit: "cover",
-                          borderRadius: 4,
-                        }}
-                      />
+                      {course.thumbnail ? (
+                        <img
+                          src={course.thumbnail}
+                          alt="Course Thumbnail"
+                          style={{
+                            width: 80,
+                            height: 80,
+                            objectFit: "cover",
+                            borderRadius: 4,
+                          }}
+                        />
+                      ) : (
+                        "No Image"
+                      )}
                     </TableCell>
                     <TableCell>
-                      {new Date(report.createdAt).toLocaleString()}
+                      {course.createdAt
+                        ? new Date(course.createdAt).toLocaleString()
+                        : "N/A"}
                     </TableCell>
-                    <TableCell>{report.discountPrice}</TableCell>
-                    <TableCell>{report.tutorShare}</TableCell>
-                    <TableCell>{report.adminShare}</TableCell>
+                    <TableCell>{course.discountPrice || "N/A"}</TableCell>
+                    <TableCell>{course.tutorShare || "N/A"}</TableCell>
+                    <TableCell>{course.adminShare || "N/A"}</TableCell>
                   </TableRow>
                 );
               })}

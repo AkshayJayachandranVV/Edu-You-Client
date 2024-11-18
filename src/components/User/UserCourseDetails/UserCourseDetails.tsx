@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Navbar from "../../User/Home/UserHome/Navbar/Navbar";
 import Footer from "../../User/Home/UserHome/Footer/Footer";
-import iconimage from "../../../assets/images/User/UserHome/Account.png";
 import axiosInstance from "../../../components/constraints/axios/userAxios";
 import { userEndpoints } from "../../../components/constraints/endpoints/userEndpoints";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +9,7 @@ import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { toast } from 'sonner';
-import Modal from "react-modal";
+
 
 interface Course {
   _id: string;
@@ -42,6 +41,13 @@ interface Review {
   createdAt: string; // Ensure this field is present in the API response
 }
 
+
+declare global {
+  interface Window {
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
+
 export default function UserCourseDetails() {
   const { courseId } = useParams();
   const [courseData, setCourseData] = useState<Course | null>(null);
@@ -50,7 +56,6 @@ export default function UserCourseDetails() {
   const [reviewText, setReviewText] = useState("");
   const [reviews, setReviews] = useState<Review[]>([]);
   const [error, setError] = useState("");
-  const [submissionError, setSubmissionError] = useState("");
 
   const { id, username, profilePicture } = useSelector(
     (state: RootState) => state.user
@@ -62,7 +67,7 @@ export default function UserCourseDetails() {
 
   useEffect(() => {
     fetchReviews();
-  }, [courseId]);
+  });
 
   const fetchReviews = async () => {
     try {
@@ -112,13 +117,11 @@ export default function UserCourseDetails() {
         toast.info("User already added review.");
       } else {
         toast.warning("Something went wrong.");
-        setSubmissionError(result.data.message || "Error submitting review.");
       }
       setUserRating(0)
       setReviewText("")
     } catch (error) {
       console.error("Error posting review:", error);
-      setSubmissionError("Error submitting the review. Please try again.");
     }
   };
 
@@ -150,10 +153,11 @@ export default function UserCourseDetails() {
 
   const getYouTubeID = (url: string) => {
     const regex =
-      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const match = url.match(regex);
     return match ? match[1] : null;
   };
+  
 
   useEffect(() => {
     const tag = document.createElement("script");
@@ -165,6 +169,7 @@ export default function UserCourseDetails() {
     }
 
     window.onYouTubeIframeAPIReady = () => {
+      console.log("YouTube API is ready");
       // YouTube API logic here
     };
   }, []);
@@ -179,7 +184,7 @@ export default function UserCourseDetails() {
 
   return (
     <div className="course-description bg-black text-gray-100">
-      <Navbar iconimage={iconimage} />
+      <Navbar />
       <div className="bg-gradient-to-r from-gray-900 to-black mt-12 shadow-lg">
         <div className="container mx-auto flex flex-col lg:flex-row items-center lg:items-start py-10 space-y-6 lg:space-y-0 lg:space-x-10">
           <div className="course-banner flex-1">

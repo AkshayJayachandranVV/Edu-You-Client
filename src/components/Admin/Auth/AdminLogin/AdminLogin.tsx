@@ -65,15 +65,15 @@ function AdminLogin() {
       {isLoading ? (
         <Spinner />
       ) : (
-        <div className="flex flex-col md:flex-row h-screen w-screen overflow-hidden bg-gray-100">
+        <div className="flex flex-col md:flex-row h-screen bg-gray-100 overflow-hidden">
           {/* Left Section */}
-          <div className="flex flex-col justify-start items-center w-full md:w-1/2 bg-black text-white relative px-4 sm:px-6">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-6 text-center leading-tight">
+          <div className="hidden md:flex flex-col justify-center items-center w-1/2 bg-black text-white p-6 sm:p-8 h-full">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-center leading-tight">
               Technology Alone <br /> Is Not Enough
             </h1>
-            <div className="flex justify-center items-center mt-6 sm:mt-8 w-full h-full">
+            <div className="flex justify-center items-center mt-6 sm:mt-8 w-full max-h-[50%]">
               <img
-                className="max-w-[90%] sm:max-w-[70%] md:max-w-[50%] object-cover"
+                className="max-w-[80%] sm:max-w-[70%] lg:max-w-[60%] object-contain"
                 src={AdminImage}
                 alt="Technology"
               />
@@ -81,14 +81,14 @@ function AdminLogin() {
           </div>
 
           {/* Right Section */}
-          <div className="flex flex-col justify-center items-center w-full md:w-1/2 bg-white p-6 sm:p-8">
+          <div className="flex flex-col justify-center items-center w-full md:w-1/2 bg-white p-6 sm:p-8 h-full">
             <div className="text-center mb-8">
               <img
                 className="w-12 h-12 sm:w-16 sm:h-16 mb-4"
                 src={adminIcon}
                 alt="Admin Icon"
               />
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">
                 Admin Login
               </h1>
               <p className="text-gray-500 text-sm sm:text-base">
@@ -96,7 +96,7 @@ function AdminLogin() {
               </p>
             </div>
             <form
-              className="w-full max-w-sm flex flex-col"
+              className="w-full max-w-xs sm:max-w-sm flex flex-col"
               onSubmit={handleSubmit(onSubmit)}
               noValidate
             >
@@ -106,8 +106,7 @@ function AdminLogin() {
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
-                    value:
-                      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                     message: "Please enter a valid email address",
                   },
                 })}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import AdminNavbar from '../../../components/Admin/Dashboard/Navbar/Navbar';
 import AdminSidebar from '../../../components/Admin/Dashboard/Sidebar/Sidebar';
 import AdminReports from '../../../components/Admin/Dashboard/Body/AdminReportCourses';
@@ -6,28 +6,42 @@ import { adminEndpoints } from '../../../../src/components/constraints/endpoints
 import axiosInstance from '../../../components/constraints/axios/adminAxios';
 import BasicPagination from "../../../components/Admin/Pagination/Pagination";
 
+
+interface CourseData {
+  courseId: string;
+  userId: string;
+  username: string;
+  email: string;
+  reason: string;
+  description: string;
+  createdAt: string;
+  courseName: string;
+  thumbnail: string;
+  isListed: boolean;
+}
+
+
 const AdminTutorsPage = () => {
-  const [coursesData, setCoursesData] = useState([]); // State to store course data
-  const [loading, setLoading] = useState(true); // State to handle loading
-  const [error, setError] = useState<string | null>(null); // State to handle errors
-  const [currentPage, setCurrentPage] = useState(1); // Current page
-  const [totalItems, setTotalItems] = useState(0); // Total items from backend
-  const itemsPerPage = 5; // Items per page
+  const [coursesData, setCoursesData] = useState<CourseData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null); 
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [totalItems] = useState(0); 
+  const itemsPerPage = 5; 
 
   useEffect(() => {
-    fetchCourseData(); // Fetch course data on component mount
+    fetchCourseData(); 
   }, []);
 
   const fetchCourseData = async () => {
     try {
       setLoading(true);
-      // Fetch data from the API
-      const result = await axiosInstance.get(adminEndpoints.reportCourses); // Adjust the endpoint as necessary
+      const result = await axiosInstance.get(adminEndpoints.reportCourses);
 
       console.log(result.data,"heheheheheh")
       
       // Assuming result.data is an array of reported courses
-      const formattedData = result.data.map((item) => ({
+      const formattedData = result.data.map((item:any) => ({
         courseId: item.courseId,
         userId: item.userId,
         username: item.username,

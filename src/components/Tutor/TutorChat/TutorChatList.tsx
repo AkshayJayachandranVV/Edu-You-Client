@@ -1,18 +1,20 @@
 import React from 'react';
 import moment from 'moment';
 
-interface ChatListProps {
-  chats: Array<{
-    courseId: string;
-    courseName: string;
-    thumbnail: string;
-    lastMessage: string;
-    lastMessageTime: string;
-    isRead?: boolean; // Optional property to indicate if the message is read
-  }>;
-  onSelectChat: (chat: unknown) => void;
+interface Chat {
+  _id:string;
+  courseId: string;
+  courseName: string;
+  thumbnail: string;
+  lastMessage: string;
+  lastMessageTime: string;
+  isRead?: boolean;
 }
 
+interface ChatListProps {
+  chats: Chat[]; 
+  onSelectChat: (chat: Chat) => void; 
+}
 const TutorChatList: React.FC<ChatListProps> = ({ chats, onSelectChat }) => {
 
   console.log(chats,"alll chatssss")

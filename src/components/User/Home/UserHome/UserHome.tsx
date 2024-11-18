@@ -104,7 +104,7 @@ export default function UserHome() {
             
             {/* Image */}
             <div className="w-full lg:w-1/2">
-              <div className="relative h-64 md:h-96 lg:h-[500px] rounded-lg overflow-hidden">
+              <div className="relative h-64 md:h-96 lg:h-[400px] rounded-lg overflow-hidden">
                 <img 
                   src={banner}
                   alt="Hero"

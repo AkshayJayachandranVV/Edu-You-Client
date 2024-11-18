@@ -3,7 +3,6 @@ import AdminNavbar from "../../../components/Admin/Dashboard/Navbar/Navbar";
 import AdminSidebar from "../../../components/Admin/Dashboard/Sidebar/Sidebar";
 import AdminPayouts from "../../../components/Admin/Dashboard/Body/AdminPayouts";
 import BasicPagination from "../../../components/Admin/Pagination/Pagination";
-
 import { adminEndpoints } from "../../../../src/components/constraints/endpoints/adminEndpoints";
 import axiosInstance from "../../../components/constraints/axios/adminAxios";
 
@@ -18,10 +17,13 @@ interface CourseData {
   title: string;
   tutorId: string;
   tutorName: string;
-  tutorShare: number;
+  tutorShare: number;  // Ensure this is 'number'
   userId: string;
+  courseId: string;
   userName: string;
+  courseName: string;
 }
+
 
 const AdminPayoutPage: React.FC = () => {
   const [coursesData, setCoursesData] = useState<CourseData[]>([]); // Courses data
@@ -33,7 +35,7 @@ const AdminPayoutPage: React.FC = () => {
 
   useEffect(() => {
     fetchOrders(); // Fetch courses on component mount or page change
-  }, [currentPage]);
+  });
 
   const fetchOrders = async () => {
     try {
@@ -66,51 +68,34 @@ const AdminPayoutPage: React.FC = () => {
   };
 
   return (
-    <div
-      style={{ display: "flex", height: "100vh", backgroundColor: "#000000" }}
-    >
+    <div className="flex flex-col md:flex-row h-screen bg-black overflow-x-hidden">
       <AdminSidebar />
-      <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+      <div className="flex-grow flex flex-col">
         <AdminNavbar />
-        <div
-          className="flex-1 flex flex-col p-6"
-          style={{ backgroundColor: "#000000", flexGrow: 1 }}
-        >
-          <h3
-            style={{
-              color: "#FFFFFF",
-              fontWeight: "bold",
-              fontSize: "4rem",
-              marginBottom: "10px",
-              textAlign: "center",
-              width: "100%",
-              marginLeft: "80px",
-            }}
-          >
+        <div className="flex-1 p-6 bg-black text-white">
+          <h3 className="text-center font-bold text-4xl mb-4 pl-4">
             Courses Payouts
           </h3>
 
-          <div
-            className="flex-grow flex flex-col justify-start"
-            style={{
-              marginBottom: "10vh",
-              marginLeft: "12vw",
-              alignSelf: "flex-end",
-            }}
-          >
+          <div className="flex-grow flex flex-col justify-start pl-6 pr-6">
             {loading ? (
-              <p style={{ color: "#FFFFFF" }}>Loading...</p>
+              <p className="text-center text-white">Loading...</p>
             ) : error ? (
-              <p style={{ color: "#FFFFFF" }}>{error}</p>
+              <p className="text-center text-white">{error}</p>
             ) : (
               <>
-                {/* Render paginated data */}
-                <AdminPayouts data={{ initialCoursesData: coursesData, currentPage, itemsPerPage }} />
+                {/* Make the table responsive by adding scroll, aligned to the left */}
+                <div className="overflow-x-auto w-full mb-8 lg:pl-40 lg:pr-6">
+                  <AdminPayouts
+                    data={{
+                      initialCoursesData:coursesData ,
+                      currentPage,
+                      itemsPerPage,
+                    }}
+                  />
+                </div>
 
-
-
-
-                {/* Render pagination */}
+                {/* Pagination */}
                 <BasicPagination
                   totalItems={totalItems}
                   itemsPerPage={itemsPerPage}

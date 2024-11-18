@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../../../components/Admin/Dashboard/Navbar/Navbar";
 import AdminSidebar from "../../../components/Admin/Dashboard/Sidebar/Sidebar";
@@ -39,7 +39,7 @@ const AdminUsersPage = () => {
     } else {
       fetchUsersData();
     }
-  }, [currentPage, navigate]);
+  }, []);
 
   const fetchUsersData = async () => {
     try {
@@ -79,40 +79,36 @@ const AdminUsersPage = () => {
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", backgroundColor: "#000000" }}>
+    <div className="flex flex-col md:flex-row h-screen bg-black text-white overflow-x-hidden">
       <AdminSidebar />
-      <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+      <div className="flex-grow flex flex-col">
         <AdminNavbar />
-        <div
-          className="flex-1 flex flex-col p-6"
-          style={{ backgroundColor: "#000000", flexGrow: 1 }}
-        >
-          <div
-            className="flex-grow flex flex-col justify-start"
-            style={{
-              marginBottom: "19px",
-              width: "75%",
-              marginLeft: "auto",
-              alignSelf: "flex-end",
-              paddingRight: "135px",
-            }}
-          >
-            {loading ? (
-              <p style={{ color: "#FFFFFF" }}>Loading...</p>
-            ) : error ? (
-              <p style={{ color: "#FFFFFF" }}>{error}</p>
-            ) : (
-              <>
-                <AdminUsers tutorsData={usersData} />
-                <BasicPagination
-                  totalItems={totalItems}
-                  itemsPerPage={itemsPerPage}
-                  currentPage={currentPage}
-                  onPageChange={handlePageChange}
-                />
-              </>
-            )}
-          </div>
+        <div className="flex-1 p-4 bg-black">
+          <h3 className="text-center font-bold text-2xl mb-4">Tutors List</h3>
+
+          {loading ? (
+            <p className="text-center">Loading...</p>
+          ) : error ? (
+            <p className="text-center">{error}</p>
+          ) : (
+            <>
+              <div className="w-full flex justify-center">
+                <div
+                  className="w-full md:w-3/4 lg:w-2/3 overflow-x-auto mb-8"
+                  style={{ marginLeft: "10%" }}
+                >
+                  {/* Responsive tutors data table */}
+                  <AdminUsers tutorsData={usersData} />
+                </div>
+              </div>
+              <BasicPagination
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+              />
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -62,6 +62,10 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
     socketService.disconnect();
   };
 
+  const handleHome = () => {
+    navigate('/');
+  };
+
   const handleProfileClick = () => {
     navigate('/profile');
   };
@@ -73,6 +77,13 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
   const onChat = () => {
     navigate('/chat');
   };
+
+
+  const myCourse = () => {
+    navigate('/myCourses');
+  };
+
+  
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -120,7 +131,7 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
       <div className="flex justify-between items-center  gap-6 w-full pl-4">
         {/* Move content to the right */}
         <div className="flex gap-4 items-center ml-auto">
-          <span className="text-lg hidden sm:block">Home</span>
+          <span onClick={handleHome} className="text-lg cursor-pointer hidden sm:block">Home</span>
           <span
             onClick={GoAllCourses}
             className="text-lg cursor-pointer hidden sm:block"
@@ -175,6 +186,9 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
                 <button onClick={handleProfileClick} className="w-full py-2 text-sm text-left hover:text-yellow-500">
                   Profile
                 </button>
+                <button onClick={myCourse} className="w-full py-2 text-sm text-left hover:text-yellow-500">
+                  My Courses
+                </button>
                 <button onClick={logOut} className="w-full py-2 text-sm text-left hover:text-yellow-500">
                   Logout
                 </button>
@@ -195,6 +209,7 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
               <span className="cursor-pointer">Home</span>
               <button onClick={handleProfileClick} className="cursor-pointer">Profile</button>
               <button onClick={logOut} className="cursor-pointer">Logout</button>
+              <button onClick={myCourse} className="cursor-pointer">MyCourse</button>
               <span className="cursor-pointer" onClick={onChat}>Discussion</span>
             </div>
           )}

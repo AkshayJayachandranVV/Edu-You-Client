@@ -1,6 +1,5 @@
 import React,{useEffect} from 'react';
 import successImg from '../../../assets/images/User/successPayment.jpeg'
-import stripe from 'stripe'
 import axiosInstance from '../../../components/constraints/axios/userAxios';
 import { userEndpoints } from "../../../components/constraints/endpoints/userEndpoints";
    

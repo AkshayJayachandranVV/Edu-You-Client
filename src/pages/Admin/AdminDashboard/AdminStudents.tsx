@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AdminNavbar from "../../../components/Admin/Dashboard/Navbar/Navbar";
 import AdminSidebar from "../../../components/Admin/Dashboard/Sidebar/Sidebar";
 import AdminStudents from "../../../components/Admin/Dashboard/Body/AdminStudents";
@@ -32,18 +32,18 @@ const AdminStudentPage = () => {
 
   useEffect(() => {
     fetchStudentsData();
-  }, [currentPage]); // Re-fetch data whenever the currentPage changes
+  }); // Re-fetch data whenever the currentPage changes
 
   const fetchStudentsData = async () => {
     try {
       setLoading(true);
       const skip = (currentPage - 1) * itemsPerPage;
-  
+
       // Fetch paginated data from the server
       const result = await axiosInstance.get(adminEndpoints.students, {
         params: { skip, limit: itemsPerPage },
       });
-  
+
       // Format data and calculate SINO based on skip value
       const formattedData: FormattedStudent[] = result.data.users.map(
         (student: Student, index: number) => ({
@@ -55,7 +55,7 @@ const AdminStudentPage = () => {
           isBlocked: student.isBlocked,
         })
       );
-  
+
       // Update state with fetched and formatted data
       setStudentsData(formattedData);
       setTotalItems(result.data.totalUsers); // Total items for pagination
@@ -66,50 +66,42 @@ const AdminStudentPage = () => {
       setLoading(false);
     }
   };
-  
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page); // Update the current page to trigger useEffect
   };
 
   return (
-    <div
-      style={{ display: "flex", height: "100vh", backgroundColor: "#000000" }}
-    >
+    <div className="flex flex-col md:flex-row h-screen bg-black text-white overflow-x-hidden">
       <AdminSidebar />
-      <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+      <div className="flex-grow flex flex-col">
         <AdminNavbar />
-        <div
-          className="flex-1 flex flex-col p-6"
-          style={{ backgroundColor: "#000000", flexGrow: 1 }}
-        >
-          <div
-            className="flex-grow flex flex-col justify-start"
-            style={{
-              marginBottom: "19px",
-              width: "75%",
-              marginLeft: "auto",
-              alignSelf: "flex-end",
-              paddingRight: "135px",
-            }}
-          >
-            {loading ? (
-              <p style={{ color: "#FFFFFF" }}>Loading...</p>
-            ) : error ? (
-              <p style={{ color: "#FFFFFF" }}>{error}</p>
-            ) : (
-              <>
-                <AdminStudents studentsData={studentsData} />
-                {/* Render pagination */}
-                <BasicPagination
-                  totalItems={totalItems}
-                  itemsPerPage={itemsPerPage}
-                  currentPage={currentPage}
-                  onPageChange={handlePageChange}
-                />
-              </>
-            )}
-          </div>
+        <div className="flex-1 p-4 bg-black">
+          <h3 className="text-center font-bold text-2xl mb-4">Students List</h3>
+
+          {loading ? (
+            <p className="text-center">Loading...</p>
+          ) : error ? (
+            <p className="text-center">{error}</p>
+          ) : (
+            <>
+              <div className="w-full flex justify-center">
+                <div
+                  className="w-full md:w-3/4 lg:w-2/3 overflow-x-auto mb-8"
+                  style={{ marginLeft: "10%" }}
+                >
+                  {/* Responsive student data table */}
+                  <AdminStudents studentsData={studentsData} />
+                </div>
+              </div>
+              <BasicPagination
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+              />
+            </>
+          )}
         </div>
       </div>
     </div>
