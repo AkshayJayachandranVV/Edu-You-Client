@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import TutorNavbar from "../../../components/Tutor/TutorNavbar";
 import TutorSidebar from "../../../components/Tutor/TutorSidebar";
 import TutorCourses from "../../../components/Tutor/TutorCourses";

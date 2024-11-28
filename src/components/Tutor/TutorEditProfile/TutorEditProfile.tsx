@@ -18,6 +18,7 @@ interface Qualification {
   title: string;
   fileKey: string;
   fileUrl: string;
+  file?: File;
 }
 
 export default function EditTutorProfile() {
@@ -31,8 +32,11 @@ export default function EditTutorProfile() {
   const [cvUrl, setCvUrl] = useState<string>("");
   const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
 
-  const [editQualificationIndex, setEditQualificationIndex] = useState(null); // Tracks the index of the qualification being edited
-  const [editQualification, setEditQualification] = useState({}); // Tracks the qualification being edited
+  const [editQualificationIndex, setEditQualificationIndex] = useState<
+    number | null
+  >(null);
+  const [editQualification, setEditQualification] =
+    useState<Qualification | null>(null);
 
   const [isEditingCv, setIsEditingCv] = useState(false); // Tracks if the CV is being edited
 
@@ -69,7 +73,7 @@ export default function EditTutorProfile() {
         setTutorData(profile.data);
         setProfileImage(profile.data.profile_picture);
         setCvUrl(profile.data.cv);
-        setCvKey(profile.data.cv_key)
+        setCvKey(profile.data.cv_key);
 
         // Populate form fields with fetched data
         setValue("name", profile.data.tutorname);
@@ -77,63 +81,66 @@ export default function EditTutorProfile() {
         setValue("phone", profile.data.phone || "");
         setValue("about", profile.data.bio || "");
 
-
-        console.log("Formatted qualifications:", profile.data.qualifications.map((q: any) => ({
-          title: q.qualification,
-          fileKey: q.certificate_key,
-          fileUrl: q.certificate,
-        })));
+        console.log(
+          "Formatted qualifications:",
+          profile.data.qualifications.map((q: any) => ({
+            title: q.qualification,
+            fileKey: q.certificate_key,
+            fileUrl: q.certificate,
+          }))
+        );
 
         console.log("Fetched qualifications:", profile.data.qualifications);
-
 
         setQualifications(
           profile.data.qualifications.map((q: any) => ({
             title: q.qualification,
             fileKey: q.certificate_key,
-            fileUrl: q.certificate
-            ,
+            fileUrl: q.certificate,
           }))
         );
       }
     } catch (error) {
+      console.log(error);
       toast.error("Failed to fetch profile data.");
     }
   };
 
-  
-
   const startEditQualification = (index: number, qual: Qualification) => {
     setEditQualificationIndex(index);
     setEditQualification({ ...qual }); // Load current qualification for editing
-};
+  };
 
-const handleSaveQualification = async (index: number) => {
+  const handleSaveQualification = async (index: number) => {
+    if (!editQualification) return; // Ensure editQualification is not null
+
     const updatedQualifications = [...qualifications];
+
+    // Check if a file is being edited
     if (editQualification.file) {
-        const uploadedFile = await uploadFile(editQualification.file);
-        if (uploadedFile) {
-            updatedQualifications[index] = {
-                title: editQualification.title,
-                fileKey: uploadedFile.fileKey,
-                fileUrl: uploadedFile.fileUrl,
-            };
-        }
+      const uploadedFile = await uploadFile(editQualification.file); // Ensure file exists on the type
+      if (uploadedFile) {
+        updatedQualifications[index] = {
+          title: editQualification.title, // Title from editQualification
+          fileKey: uploadedFile.fileKey, // Uploaded fileKey
+          fileUrl: uploadedFile.fileUrl, // Uploaded fileUrl
+        };
+      }
     } else {
-        updatedQualifications[index] = editQualification;
+      updatedQualifications[index] = editQualification;
     }
+
     setQualifications(updatedQualifications);
     setEditQualificationIndex(null);
-    setEditQualification({});
-};
-
+    setEditQualification(null); // Reset to null
+  };
 
   const cancelEditQualification = () => {
     setEditQualificationIndex(null);
-    setEditQualification({});
+    setEditQualification(null);
   };
 
-  const handleRemoveQualification = (index) => {
+  const handleRemoveQualification = (index: any) => {
     const updatedQualifications = qualifications.filter(
       (_, qualIndex) => qualIndex !== index
     );
@@ -171,12 +178,13 @@ const handleSaveQualification = async (index: number) => {
       );
 
       const { uploadUrl, viewUrl, key } = data;
-      console.log("viewUrl",viewUrl)
+      console.log("viewUrl", viewUrl);
       await axios.put(uploadUrl, file, {
         headers: { "Content-Type": file.type },
       });
       return { fileUrl: viewUrl, fileKey: key };
     } catch (error) {
+      console.log(error);
       toast.error("File upload failed.");
       return null;
     }
@@ -192,63 +200,60 @@ const handleSaveQualification = async (index: number) => {
     // Process qualifications
     const updatedQualifications = await Promise.all(
       qualifications.map(async (qual) => {
-          if (qual.fileKey) {
-            console.log("1")
-            console.log("qual.fileKey:",qual.fileKey)
-              return {
-                  title: qual.title,
-                  fileKey: qual.fileKey, // Store only fileKey
-              };
-          } else if (qual.file) {
-            console.log("2")
-              // New file uploaded for qualification
-              const uploadedQual = await uploadFile(qual.file);
-              if (uploadedQual) {
-                  return {
-                      title: qual.title,
-                      fileKey: uploadedQual.fileKey, // Store fileKey
-                  };
-              }
+        if (qual.fileKey) {
+          console.log("1");
+          console.log("qual.fileKey:", qual.fileKey);
+          return {
+            title: qual.title,
+            fileKey: qual.fileKey, // Store only fileKey
+          };
+        } else if (qual.file) {
+          console.log("2");
+          // New file uploaded for qualification
+          const uploadedQual = await uploadFile(qual.file);
+          if (uploadedQual) {
+            return {
+              title: qual.title,
+              fileKey: uploadedQual.fileKey, // Store fileKey
+            };
           }
-          return qual; // Fallback to original qualification data
+        }
+        return qual; // Fallback to original qualification data
       })
-  );
-  formData.append("qualifications", JSON.stringify(updatedQualifications));
-  
+    );
+    formData.append("qualifications", JSON.stringify(updatedQualifications));
 
-  if (profileImageFile) {
-    const profilePic = await uploadFile(profileImageFile);
-    if (profilePic) formData.append("profile_picture", profilePic.fileKey); // Store fileKey
-} else if (tutorData?.profile_key) {
-    formData.append("profile_picture", tutorData.profile_key); // Existing fileKey
-}
+    if (profileImageFile) {
+      const profilePic = await uploadFile(profileImageFile);
+      if (profilePic) formData.append("profile_picture", profilePic.fileKey); // Store fileKey
+    } else if (tutorData?.profile_key) {
+      formData.append("profile_picture", tutorData.profile_key); // Existing fileKey
+    }
 
-// Process CV
-if (cvFile) {
-    const uploadedCv = await uploadFile(cvFile);
-    if (uploadedCv) formData.append("cv", uploadedCv.fileKey); // Store fileKey
-} else if (tutorData?.cvKey || cvUrl) {
-    formData.append("cv", cvKey || cvUrl); // Existing fileKey or URL
-}
-
+    // Process CV
+    if (cvFile) {
+      const uploadedCv = await uploadFile(cvFile);
+      if (uploadedCv) formData.append("cv", uploadedCv.fileKey); // Store fileKey
+    } else if (tutorData?.cvKey || cvUrl) {
+      formData.append("cv", cvKey || cvUrl); // Existing fileKey or URL
+    }
 
     try {
-        const response = await axiosInstance.put(
-            tutorEndpoints.editProfile,
-            formData
-        );
-        if (response.status === 200) {
-            toast.success("Profile updated successfully!");
-            dispatch(setTutor(response.data));
-        } else {
-            toast.error("Profile update failed.");
-        }
+      const response = await axiosInstance.put(
+        tutorEndpoints.editProfile,
+        formData
+      );
+      if (response.status === 200) {
+        toast.success("Profile updated successfully!");
+        dispatch(setTutor(response.data));
+      } else {
+        toast.error("Profile update failed.");
+      }
     } catch (error) {
-        toast.error("Error updating profile.");
+      console.log(error);
+      toast.error("Error updating profile.");
     }
-};
-
-
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
@@ -258,8 +263,8 @@ if (cvFile) {
   };
 
   const openPdfModal = (pdfUrl: string) => {
-    console.log("lalalalal")
-    console.log(pdfUrl)
+    console.log("lalalalal");
+    console.log(pdfUrl);
     setSelectedPdf(pdfUrl);
   };
 
@@ -272,11 +277,15 @@ if (cvFile) {
     setCvFile(null); // Reset file input
   };
 
-
   const handleAddQualification = () => {
     setQualifications([
       ...qualifications,
-      { title: "", file: null, fileUrl: "" }, // Add empty qualification object
+      {
+        title: "", // Default empty title
+        fileKey: "", // Empty fileKey as a placeholder
+        fileUrl: "", // Default empty URL
+        file: undefined, // Explicitly set file as undefined
+      },
     ]);
   };
 
@@ -393,16 +402,21 @@ if (cvFile) {
                       </label>
                       <input
                         type="text"
-                        value={editQualification.title}
+                        value={editQualification?.title || ""}
                         onChange={(e) =>
                           setEditQualification((prev) => ({
-                            ...prev,
+                            ...(prev || {
+                              title: "",
+                              fileKey: "",
+                              fileUrl: "",
+                            }),
                             title: e.target.value,
                           }))
                         }
                         className="block w-full p-3 rounded bg-gray-800 text-gray-200 border border-gray-700"
                       />
                     </div>
+
                     <div>
                       <label className="block mb-1 text-gray-300">
                         Upload File
@@ -410,7 +424,7 @@ if (cvFile) {
                       <input
                         type="file"
                         onChange={(e) =>
-                          setEditQualification((prev) => ({
+                          setEditQualification((prev: any) => ({
                             ...prev,
                             file: e.target.files ? e.target.files[0] : null,
                           }))
@@ -473,7 +487,7 @@ if (cvFile) {
               onClick={handleAddQualification}
               className="text-blue-400 hover:text-blue-500 mt-4"
             >
-             + Add More Qualification
+              + Add More Qualification
             </button>
           </div>
 

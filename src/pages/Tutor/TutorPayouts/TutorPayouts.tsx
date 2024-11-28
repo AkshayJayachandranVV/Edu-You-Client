@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import TutorNavbar from "../../../components/Tutor/TutorNavbar";
 import TutorSidebar from "../../../components/Tutor/TutorSidebar";
 import TutorPayouts from "../../../components/Tutor/TutorPayouts";
@@ -16,6 +16,7 @@ interface Order {
   discountPrice: number;
   createdAt: string;
   isListed?: boolean;
+  courseLvele:string
 }
 
 const Course = () => {
@@ -101,7 +102,6 @@ const Course = () => {
                 <>
                   <TutorPayouts
                     payoutsData={orderData}
-                    startingIndex={(currentPage - 1) * itemsPerPage + 1}
                   />
                   <BasicPagination
                     totalItems={totalItems}

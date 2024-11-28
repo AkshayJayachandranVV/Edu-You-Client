@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSections, saveLessons, removeSectionFromRedux, removeLessonFromRedux } from "../../../../src/redux/courseSlice";
@@ -17,6 +17,7 @@ interface Lesson {
   video: string | null; // Adjust to match Redux type (string for URL, not File)
   displayVideo?: string | null;
   description: string;
+  
 }
 
 interface Section {
@@ -52,8 +53,7 @@ const AddLesson: React.FC<AddLessonProps> = ({ onNext, onBack }) => {
   const dispatch = useDispatch();
   const [open, setOpen] = React.useState<boolean>(false);
   const [count, setCount] = React.useState<boolean>(false);
-  const [duration, setDuration] = React.useState<number>(30);
-  const [previewVideos, setPreviewVideos] = useState<string | null>(null);
+  const [duration] = React.useState<number>(30);
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
   const [previewUrls, setPreviewUrls] = useState<{ [key: string]: string }>({});
   const [selectedFiles, setSelectedFiles] = useState<{

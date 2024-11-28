@@ -24,7 +24,7 @@ interface CourseProps {
     coursePrice: number;
     courseDiscountPrice: number;
     demoURL: string;
-    thumbnailUrl: string;
+    thumbnailUrl: string | null; // Allow null here
     courseRating?: number;
     courseEnrolled?: number;
     courseLanguage?: string;
@@ -34,6 +34,7 @@ interface CourseProps {
   };
   selectedVideo: string | null;
 }
+
 
 const CourseDetails: React.FC<CourseProps> = ({ course, selectedVideo: propSelectedVideo }) => {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
@@ -72,7 +73,7 @@ const CourseDetails: React.FC<CourseProps> = ({ course, selectedVideo: propSelec
             Your browser does not support the video tag.
           </video>
         ) : (
-          <img src={course.thumbnailUrl} alt={`${course.courseName} thumbnail`} className="w-full rounded-lg shadow-lg" />
+          <img src={course.thumbnailUrl || ""} alt={`${course.courseName} thumbnail`} className="w-full rounded-lg shadow-lg" />
         )}
       </div>
 

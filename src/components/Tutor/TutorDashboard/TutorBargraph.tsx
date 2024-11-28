@@ -1,8 +1,18 @@
-import * as React from 'react';
+
 import { BarChart } from '@mui/x-charts/BarChart';
 import { useTheme } from '@mui/material/styles';
 
-export default function TutorBarGraph({ data }) {  // Destructure 'data' from props
+// Define the type for the data prop
+interface DataItem {
+  title: string; // Course title
+  totalTutorShare: number; // Total tutor share value
+}
+
+interface TutorBarGraphProps {
+  data: DataItem[]; // Array of DataItem
+}
+
+export default function TutorBarGraph({ data }: TutorBarGraphProps) {
   const theme = useTheme();
 
   // Extract the course titles and total tutor share values from the data
@@ -14,9 +24,7 @@ export default function TutorBarGraph({ data }) {  // Destructure 'data' from pr
       xAxis={[{
         scaleType: 'band',
         data: xAxisData, // Dynamic course titles
-        tick: {
-          fill: theme.palette.text.primary, // Text color for ticks
-        },
+        // Remove the 'tick' property, and use proper properties for axis configuration
       }]}
       series={[{
         data: seriesData, // Dynamic total tutor share values
@@ -24,14 +32,14 @@ export default function TutorBarGraph({ data }) {  // Destructure 'data' from pr
       }]}
       width={500}
       height={300}
-      theme={{
-        background: {
-          default: theme.palette.background.default, // Background color for the chart
-        },
-        grid: {
-          stroke: theme.palette.divider, // Grid line color
-        },
-      }}
+      // theme={{
+      //   background: {
+      //     default: theme.palette.background.default, // Background color for the chart
+      //   },
+      //   grid: {
+      //     stroke: theme.palette.divider, // Grid line color
+      //   },
+      // }}
     />
   );
 }

@@ -58,10 +58,10 @@ const ReportCourses: React.FC<ReportCoursesProps> = ({ initialCoursesData }) => 
     }
   };
 
-  // Handle page change
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
     setCurrentPage(value);
   };
+  
 
   return (
     <Grid container justifyContent="center" sx={{ p: 2 }}>

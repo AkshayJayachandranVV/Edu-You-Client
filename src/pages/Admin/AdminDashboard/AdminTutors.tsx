@@ -21,6 +21,7 @@ const AdminUsersPage = () => {
     email: string;
     phone?: string;
     isBlocked: boolean;
+    profile_picture:string;
   }
 
   interface FormattedUser {
@@ -30,6 +31,7 @@ const AdminUsersPage = () => {
     email: string;
     phone: string;
     isBlocked: boolean;
+    profile_picture:string;
   }
 
   useEffect(() => {
@@ -56,7 +58,7 @@ const AdminUsersPage = () => {
       const formattedData: FormattedUser[] = result.data.tutors.map(
         (user: User, index: number) => ({
           sino: skip + index + 1,
-          image: "default.png",
+          image: user.profile_picture,
           name: user.tutorname,
           email: user.email,
           phone: user.phone || "Not Available",
@@ -84,7 +86,7 @@ const AdminUsersPage = () => {
       <div className="flex-grow flex flex-col">
         <AdminNavbar />
         <div className="flex-1 p-4 bg-black">
-          <h3 className="text-center font-bold text-2xl mb-4">Tutors List</h3>
+          <h3 className="text-center font-bold text-5xl mb-4 pl-24">Tutors List</h3>
 
           {loading ? (
             <p className="text-center">Loading...</p>

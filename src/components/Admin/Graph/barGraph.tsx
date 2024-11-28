@@ -1,27 +1,42 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import { BarChart } from '@mui/x-charts/BarChart';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import { BarChart } from "@mui/x-charts/BarChart";
 
-export default function BarAnimation({ graphData }) {
+interface GraphData {
+  courseTitle: string;
+  totalAdminShare: number;
+}
 
-  console.log(graphData,"kitty")
-  const [seriesNb, setSeriesNb] = React.useState(2);
-  const [itemNb, setItemNb] = React.useState(5);
-  const [skipAnimation, setSkipAnimation] = React.useState(false);
+interface BarAnimationProps {
+  graphData: GraphData[];
+}
 
-  // Process graphData into a suitable format for the BarChart
-  const processedData = graphData.map((data) => ({
-    label: data.courseTitle,  // Use courseTitle as label
-    data: [data.totalAdminShare],  // Wrap totalAdminShare in an array for the chart data
-  }));
+export default function BarAnimation({ graphData }: BarAnimationProps) {
+  console.log(graphData, "Processed graph data");
 
+  const [seriesNb] = React.useState(2);
+  const [itemNb] = React.useState(5);
+  const [skipAnimation] = React.useState(false);
 
+  // Transform graphData into a format suitable for BarChart
+  const processedData = [
+    {
+      label: "Admin Share",
+      data: graphData.map((data) => data.totalAdminShare),
+    },
+  ];
+
+  const xLabels = graphData.map((data) => data.courseTitle);
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: "100%" }}>
       <BarChart
         height={300}
-        series={processedData.slice(0, seriesNb).map((s) => ({ ...s, data: s.data.slice(0, itemNb) }))}
+        xAxis={[{ scaleType: "band", data: xLabels }]} // xAxis labels for courses
+        series={processedData.slice(0, seriesNb).map((s) => ({
+          ...s,
+          data: s.data.slice(0, itemNb),
+        }))}
         skipAnimation={skipAnimation}
       />
     </Box>

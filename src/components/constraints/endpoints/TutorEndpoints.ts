@@ -1,4 +1,4 @@
-export const API_GATEWAY_BASE_URL ='http://localhost:4000/tutor';
+export const API_GATEWAY_BASE_URL =import.meta.env.VITE_API_GATEWAY_TUTOR_URL;
 
 
 export const tutorEndpoints = {
@@ -11,7 +11,7 @@ export const tutorEndpoints = {
     googleLogin: `${API_GATEWAY_BASE_URL}/google_login`,
     forgotOtpVerify: `${API_GATEWAY_BASE_URL}/forgotOtpVerify`,
     getPresignedUrlForUpload: `${API_GATEWAY_BASE_URL}/getPresignedUrlForUpload`,
-    getSignedUrl:  `${API_GATEWAY_BASE_URL}/getSignedUrl`,
+    getSignedUrl:  `${API_GATEWAY_BASE_URL}/getSignedUrlId`,
     myCourses: `${API_GATEWAY_BASE_URL}/myCourses`,
     listCourse: `${API_GATEWAY_BASE_URL}/listCourse`,
     fetchEditCourse: `${API_GATEWAY_BASE_URL}/fetchEditCourse/courseId`,

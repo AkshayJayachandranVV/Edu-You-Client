@@ -8,7 +8,6 @@ import { RootState } from "../../../redux/store";
 import { toast } from "sonner";
 import { loadStripe } from "@stripe/stripe-js";
 import { useParams } from "react-router-dom";
-import { tutorEndpoints } from "../../constraints/endpoints/TutorEndpoints";
 import { useSelector } from "react-redux";
 import CheckoutBanner  from './CheckoutBanner'
 interface Course {
@@ -66,7 +65,7 @@ export default function Checkout() {
       try {
         console.log("reached here ", tutorId);
         const response = await axiosInstance.get(
-          `${tutorEndpoints.getTutorDetails.replace("tutorId", tutorId)}`
+          `${userEndpoints.getTutorDetails.replace("tutorId", tutorId)}`
         );
 
         console.log(response);

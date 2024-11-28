@@ -1,0 +1,19 @@
+.spinner-container {
+    background-color: #0f172a; /* Dark theme background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.95); /* Slight transparency */
+    z-index: 50; /* Ensure it appears on top */
+}
+
+.dna-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

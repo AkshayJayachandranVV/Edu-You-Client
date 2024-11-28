@@ -7,9 +7,9 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
+import Loader from "../../Spinner/Spinner2/Spinner2";
 import moment from "moment";
-import { toast } from 'sonner';
-
+import { toast } from "sonner";
 
 interface Course {
   _id: string;
@@ -41,7 +41,6 @@ interface Review {
   createdAt: string; // Ensure this field is present in the API response
 }
 
-
 declare global {
   interface Window {
     onYouTubeIframeAPIReady: () => void;
@@ -56,6 +55,15 @@ export default function UserCourseDetails() {
   const [reviewText, setReviewText] = useState("");
   const [reviews, setReviews] = useState<Review[]>([]);
   const [error, setError] = useState("");
+  const [tutor, setTutor] = useState<{
+    name: string;
+    profile_picture: string;
+    expertise: string;
+  }>({
+    name: "",
+    profile_picture: "",
+    expertise: "",
+  });
 
   const { id, username, profilePicture } = useSelector(
     (state: RootState) => state.user
@@ -67,7 +75,30 @@ export default function UserCourseDetails() {
 
   useEffect(() => {
     fetchReviews();
-  });
+    fetchTutor();
+  }, [courseId]);
+
+  const fetchTutor = async () => {
+    try {
+      if (courseId) {
+        const response = await axiosInstance.get(
+          `${userEndpoints.fetchTutor.replace("courseId", courseId)}`
+        );
+        console.log("kitty", response);
+
+        // Check if the response contains valid data and store it in state
+        if (response.data) {
+          setTutor({
+            name: response.data.name || "", // Set name, default to an empty string if undefined
+            profile_picture: response.data.profile_picture || "", // Set profile picture URL
+            expertise: response.data.expertise || "", // Set expertise, default to an empty string if undefined
+          });
+        }
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
 
   const fetchReviews = async () => {
     try {
@@ -80,8 +111,7 @@ export default function UserCourseDetails() {
         `${userEndpoints.fetchReview.replace("courseId", courseId)}`
       );
       console.log("response", response);
-        setReviews(response.data || []);
-
+      setReviews(response.data || []);
     } catch (error) {
       console.log("Error fetching reviews:", error);
       setReviews([]); // Set reviews as an empty array on error
@@ -107,19 +137,22 @@ export default function UserCourseDetails() {
         userEndpoints.reviewPost,
         reviewData
       );
-      console.log(result.data)
+      console.log(result.data);
       if (result.data.success) {
         toast.success("Review added successfully");
         const newReview = result.data.review;
         setReviews((prevReviews) => [newReview, ...prevReviews]);
         closeModal();
-      }else if(result.data.success==false && result.data.message=="Can't give more than one review."){
+      } else if (
+        result.data.success == false &&
+        result.data.message == "Can't give more than one review."
+      ) {
         toast.info("User already added review.");
       } else {
         toast.warning("Something went wrong.");
       }
-      setUserRating(0)
-      setReviewText("")
+      setUserRating(0);
+      setReviewText("");
     } catch (error) {
       console.error("Error posting review:", error);
     }
@@ -157,7 +190,6 @@ export default function UserCourseDetails() {
     const match = url.match(regex);
     return match ? match[1] : null;
   };
-  
 
   useEffect(() => {
     const tag = document.createElement("script");
@@ -179,14 +211,15 @@ export default function UserCourseDetails() {
   };
 
   if (!courseData) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   return (
     <div className="course-description bg-black text-gray-100">
       <Navbar />
       <div className="bg-gradient-to-r from-gray-900 to-black mt-12 shadow-lg">
-        <div className="container mx-auto flex flex-col lg:flex-row items-center lg:items-start py-10 space-y-6 lg:space-y-0 lg:space-x-10">
+        <div className="container mx-auto flex flex-col lg:flex-row items-center lg:items-start py-10 space-y-6 lg:space-y-0 lg:space-x-10 bg-gray-900 text-white rounded-lg shadow-lg">
+          {/* Course Banner */}
           <div className="course-banner flex-1">
             <iframe
               className="w-full h-64 lg:h-96 object-cover rounded-lg shadow-lg"
@@ -199,14 +232,34 @@ export default function UserCourseDetails() {
               allowFullScreen
             ></iframe>
           </div>
+
+          {/* Course and Tutor Details */}
           <div className="flex-1 lg:w-2/3 space-y-4">
-            <h1 className="text-4xl font-bold text-white">
-              {courseData.courseName}
-            </h1>
+            <h1 className="text-4xl font-bold">{courseData.courseName}</h1>
             <p className="text-gray-400">{courseData.courseDescription}</p>
+
+            {/* Tutor Details */}
+            <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-4 lg:space-y-0 lg:space-x-6">
+              {/* Tutor Profile Picture */}
+              <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-yellow-400 shadow-md">
+                <img
+                  src={tutor.profile_picture}
+                  alt="Tutor"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Tutor Information */}
+              <div className="space-y-2">
+                <h2 className="text-2xl font-semibold">{tutor.name}</h2>
+                <p className="text-gray-400">{tutor.expertise}</p>
+              </div>
+            </div>
+
+            {/* Course Stats */}
             <div className="flex items-center space-x-6 text-gray-400">
               <span className="text-yellow-400">No Rating</span>
-              <span>9 Enrolled</span>
+              {/* <span>9 Enrolled</span> */}
               <span>English</span>
             </div>
           </div>

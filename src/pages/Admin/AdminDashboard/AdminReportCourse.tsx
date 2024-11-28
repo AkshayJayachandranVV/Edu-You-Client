@@ -75,7 +75,8 @@ const AdminTutorsPage = () => {
       <AdminSidebar />
       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <AdminNavbar />
-        <div className="flex-1 flex flex-col p-6" style={{ backgroundColor: '#000000', flexGrow: 1 }}>
+        <div className="flex-1 p-4 bg-black text-white" style={{ backgroundColor: '#000000', flexGrow: 1 }}>
+        <h3 className="text-center font-bold text-5xl mb-2 ml-36">Report Courses</h3>
           <div className="flex-grow flex flex-col justify-start" style={{  marginBottom:'250vh', marginLeft: '14vw', alignSelf: 'flex-end' }}>
             {loading ? (
               <p style={{ color: '#FFFFFF' }}>Loading...</p>

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import './TutorOtp.css'; // Updated CSS filename
+import { useState, useEffect } from "react";
 import bgImage from '../../../../assets/images/TutorReminiLogin.jpg';
 import otpIcon from '../../../../assets/icons/otp.png';
 import { useForm } from 'react-hook-form';
@@ -22,13 +21,17 @@ function TutorOtp() {
   });
   const [isResendDisabled, setIsResendDisabled] = useState<boolean>(true);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(false);
+   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('tutorAccessToken');
-    if (token) {
-      navigate("/tutor/dashboard");
-    }
-  }, [navigate]);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    handleResize(); // Set initial state
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
 
 
@@ -155,56 +158,100 @@ function TutorOtp() {
 
   return (
     <>
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <div className='tutorotp-full-background'>
-          <div className='tutorotp-input-part'>
-            <div className='tutorotp-input-head'>
-              <img className='tutorotp-icon' src={otpIcon} alt="Lock Icon" />
-              <div className='tutorotp-input-header'>
-                <h1>OTP VERIFICATION</h1>
-                <p>Please enter your OTP</p>
-              </div>
-            </div>
-            <form className='tutorotp-form-container' onSubmit={handleSubmit(onSubmit)} noValidate>
-              <input
-                type='password'
-                placeholder='OTP'
-                {...register('otp', {
-                  required: 'OTP is required',
-                  pattern: {
-                    value: /^[0-9]+$/,
-                    message: 'OTP must be only numbers'
-                  },
-                  minLength: {
-                    value: 6,
-                    message: 'OTP must be exactly 6 digits'
-                  }
-                })}
-                disabled={isSubmitDisabled} // Disable input when timer reaches 0
-                className={isSubmitDisabled ? 'disabled-input' : ''} // Apply disabled style
+    {isLoading ? (
+      <Spinner />
+    ) : (
+      <div
+        className={`flex justify-center items-center min-h-screen relative ${
+          isMobile ? "bg-cover bg-center" : "bg-gray-100"
+        }`}
+        style={isMobile ? { backgroundImage: `url(${bgImage})` } : {}}
+      >
+        {/* Desktop background */}
+        {!isMobile && (
+          <>
+            <div className="absolute top-0 left-0 h-screen w-[70vw] bg-[#1ecae1] z-10"></div>
+            <div className="absolute top-0 right-0 h-screen w-[56vw] bg-white z-10">
+              <img
+                className="h-full w-[67vw] object-cover absolute top-0 right-0"
+                src={bgImage}
+                alt="Background"
               />
-              {errors.otp && <p className='tutorotp-error-message'>{errors.otp.message}</p>}
-              <button 
-                type='submit' 
-                disabled={isSubmitDisabled} // Disable submit button when timer reaches 0
-                className={isSubmitDisabled ? 'disabled-button' : ''} // Apply disabled style
-              >
-                Submit
-              </button>
-            </form>
-            <p>{`Resend OTP in ${timer} seconds`}</p>
-            <button onClick={handleResendOtp} disabled={isResendDisabled}>Resend OTP</button>
-            <p>Already have an account? <a href="#">Log in</a></p>
+            </div>
+          </>
+        )}
+  
+        {/* Form container */}
+        <div
+          className={`absolute ${
+            isMobile
+              ? "inset-0 flex items-center justify-center bg-transparent"
+              : "top-[5vh] left-[10vw] min-h-[90vh] w-[40vw] bg-white"
+          } z-20 flex flex-col items-center justify-start py-8`}
+        >
+          <div className="flex flex-col items-center mb-8">
+            <img className="w-14 h-14 mb-4" src={otpIcon} alt="Lock Icon" />
+            <div className="text-center">
+              <h1 className="text-xl font-bold">OTP VERIFICATION</h1>
+              <p className="text-base">Please enter your OTP</p>
+            </div>
           </div>
-          <div className='tutorotp-left-background'></div>
-          <div className='tutorotp-right-background'>
-            <img className='tutorotp-image-background' src={bgImage} alt="Background" />
-          </div>
+  
+          <form className="w-4/5 flex flex-col items-center" onSubmit={handleSubmit(onSubmit)} noValidate>
+            <input
+              type="password"
+              placeholder="OTP"
+              {...register('otp', {
+                required: 'OTP is required',
+                pattern: {
+                  value: /^[0-9]+$/,
+                  message: 'OTP must be only numbers',
+                },
+                minLength: {
+                  value: 6,
+                  message: 'OTP must be exactly 6 digits',
+                },
+              })}
+              disabled={isSubmitDisabled}
+              className={`w-full py-3 mb-4 rounded border ${
+                errors.otp ? 'border-red-500' : 'border-gray-300'
+              } text-base ${isSubmitDisabled ? 'bg-gray-300' : ''}`}
+            />
+            {errors.otp && <p className="text-red-500 text-sm mb-2">{errors.otp.message}</p>}
+  
+            <button
+              type="submit"
+              disabled={isSubmitDisabled}
+              className={`w-full py-3 rounded bg-[#1ecae1] text-white font-medium hover:bg-[#17b2cc] mb-4 ${
+                isSubmitDisabled ? 'bg-gray-300 cursor-not-allowed' : ''
+              }`}
+            >
+              Submit
+            </button>
+          </form>
+  
+          <p>{`Resend OTP in ${timer} seconds`}</p>
+          <button
+            onClick={handleResendOtp}
+            disabled={isResendDisabled}
+            className={`${isResendDisabled ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600'}`}
+          >
+            Resend OTP
+          </button>
+  
+          <p>
+            Already have an account?{' '}
+            <a href="#" className="text-blue-600">
+              Log in
+            </a>
+          </p>
         </div>
-      )}
-    </>
+      </div>
+    )}
+  </>
+  
+
+  
   );
 }
 

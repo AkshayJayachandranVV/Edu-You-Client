@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../../redux/store';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../../../../redux/userSlice';
+import { logoutStore } from '../../../../../redux/store';
 import Cookies from 'js-cookie';
 import socketService from '../../../../../socket/socketService';
 import iconImage from '../../../../../assets/images/User/UserHome/Account.png';
@@ -54,6 +55,7 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
   const navigate = useNavigate();
 
   const logOut = () => {
+    dispatch(logoutStore());
     dispatch(logout());
     navigate('/login');
     localStorage.setItem('userAccessToken', '');

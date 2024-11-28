@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../../Home/UserHome/Navbar/Navbar";
 import Footer from "../../Home/UserHome/Footer/Footer";
-import { courseEndpoints} from "../../../constraints/endpoints/courseEndpoints";
-import banner from '../../../../assets/images/User/UserHome/userHome.png'
-import aboutUs from '../../../../assets/images/User/UserHome/aboutUs.webp'
+import { courseEndpoints } from "../../../constraints/endpoints/courseEndpoints";
+import banner from "../../../../assets/images/User/UserHome/userHome.png";
+import aboutUs from "../../../../assets/images/User/UserHome/aboutUs.webp";
+import { tutorEndpoints } from "../../../constraints/endpoints/TutorEndpoints";
 
 interface Course {
   _id: string;
@@ -19,9 +20,8 @@ interface Course {
 export default function UserHome() {
   const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]); // Explicitly typing the courses state=
-  
 
-  const handleCardClick = (courseId:string) => {
+  const handleCardClick = (courseId: string) => {
     // Call your function here
     console.log(`Course ID clicked: ${courseId}`);
 
@@ -29,52 +29,49 @@ export default function UserHome() {
     navigate(`/courseDetails/${courseId}`);
   };
 
-  const allCourse = ()=>{
-    navigate('/allCourses')
-  }
+  const allCourse = () => {
+    navigate("/allCourses");
+  };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-
-
   const fetchData = async () => {
     try {
       const result = await axios.get(courseEndpoints.userCourse);
       setCourses(result.data.courses); // Store fetched courses in state
-  
+
       console.log(result.data.courses);
-  
+
       // Generate signed URLs for each course's thumbnail
-      const initialUrls = await result.data.courses.reduce(async (accPromise:any, course:Course) => {
-        const acc = await accPromise; // Await the previous accumulator promise
-        const data = {
-          imageKey: course.thumbnail // Use the original thumbnail key
-        };
-  
-        console.log(data);
-        const response = await axios.post('http://localhost:4000/tutor/getSignedUrlId', data); // Await the axios post
-        console.log(response.data, "--------------------url");
-        
-        // Assign the signed URL to the course object
-        acc.push({ ...course, thumbnailUrl: response.data }); // Store the signed URL in thumbnailUrl
-        return acc;
-      }, Promise.resolve([])); // Start with an empty array
-  
+      const initialUrls = await result.data.courses.reduce(
+        async (accPromise: any, course: Course) => {
+          const acc = await accPromise; // Await the previous accumulator promise
+          const data = {
+            imageKey: course.thumbnail, // Use the original thumbnail key
+          };
+
+          console.log(data);
+          const response = await axios.post(tutorEndpoints.getSignedUrl, data); // Await the axios post
+          console.log(response.data, "--------------------url");
+
+          // Assign the signed URL to the course object
+          acc.push({ ...course, thumbnailUrl: response.data }); // Store the signed URL in thumbnailUrl
+          return acc;
+        },
+        Promise.resolve([])
+      ); // Start with an empty array
+
       setCourses(initialUrls); // Set updated courses with thumbnailUrl
     } catch (error) {
       console.log(error);
     }
   };
-  
-
-
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Navbar
-      />
+      <Navbar />
 
       {/* Hero Section */}
       <div className="relative w-full px-4 py-16 md:py-24 lg:py-32">
@@ -90,22 +87,21 @@ export default function UserHome() {
                 of the future
               </h1>
               <p className="text-lg md:text-xl opacity-80">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Phasellus imperdiet, nulla et dictum interdum,
-                nisi lorem egestas odio, vitae scelerisque enim ligula.
+                Learn from yesterday, live for today, and build for tomorrow
+                with the power of education.
               </p>
-              <button 
+              <button
                 onClick={allCourse}
                 className="bg-[#16ECCA] hover:bg-[#14b3b0] text-white px-8 py-3 rounded-md text-lg transition-colors duration-300"
               >
                 Get Started
               </button>
             </div>
-            
+
             {/* Image */}
             <div className="w-full lg:w-1/2">
               <div className="relative h-64 md:h-96 lg:h-[400px] rounded-lg overflow-hidden">
-                <img 
+                <img
                   src={banner}
                   alt="Hero"
                   className="w-full h-full object-cover"
@@ -117,36 +113,68 @@ export default function UserHome() {
       </div>
 
       {/* Featured Courses Section */}
-      <div className="py-16 md:py-24">
+      <div className="py-8 md:py-12 mt-[-40px] md:mt-[-80px]">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12">
             Featured Courses
           </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {courses.length > 0 ? (
               courses.map((course, index) => (
                 <div
                   key={index}
                   onClick={() => handleCardClick(course._id)}
-                  className="bg-white rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                  className="bg-[#1E293B] rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 cursor-pointer border border-[#2D3748]"
                 >
+                  {/* Thumbnail */}
                   <div className="relative h-48 md:h-64">
                     <img
                       src={course.thumbnailUrl}
                       alt={course.courseName}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover rounded-t-lg"
                     />
                   </div>
+
+                  {/* Course Details */}
                   <div className="p-6">
-                    <h3 className="text-black text-xl font-bold mb-2">{course.courseName}</h3>
-                    <p className="text-gray-600 mb-4">{course.courseDescription}</p>
-                    <p className="text-[#16ECCA] text-2xl font-bold">Rs. {course.coursePrice}</p>
+                    <h3 className="text-[#E2E8F0] text-xl font-semibold mb-2">
+                      {course.courseName}
+                    </h3>
+                    <p className="text-[#A0AEC0] mb-4 text-sm">
+                      {course.courseDescription.length > 80
+                        ? course.courseDescription.slice(0, 80) + "..."
+                        : course.courseDescription}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-[#38B2AC] text-2xl font-bold">
+                        Rs. {course.coursePrice}
+                      </p>
+                      {/* Star Rating Placeholder */}
+                      <div className="flex items-center gap-1">
+                        {Array(5)
+                          .fill(0)
+                          .map((_, starIndex) => (
+                            <span
+                              key={starIndex}
+                              className={`${
+                                starIndex < Math.round(course.rating || 0)
+                                  ? "text-yellow-400"
+                                  : "text-gray-500"
+                              }`}
+                            >
+                              ★
+                            </span>
+                          ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="col-span-full text-center text-xl">No courses available at the moment.</p>
+              <p className="col-span-full text-center text-xl text-[#E2E8F0]">
+                No courses available at the moment.
+              </p>
             )}
           </div>
         </div>
@@ -166,19 +194,29 @@ export default function UserHome() {
                 />
               </div>
             </div>
-            
+
             {/* Content */}
             <div className="w-full lg:w-1/2 space-y-6">
               <h2 className="text-3xl md:text-4xl font-bold">About Us</h2>
               <p className="text-lg opacity-80">
-                Lorem Ipsum has been the industry's standard dummy text
-                ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book.
-                Versions of the Lorem ipsum text have been used in typesetting
-                at least since the 1960s, when it was popularized by advertisements
-                for Letraset transfer sheets.
+                Welcome to our e-learning platform, where education meets
+                innovation. Our mission is to empower learners from all walks of
+                life by providing access to high-quality, affordable, and
+                flexible courses that fit their unique needs. Whether you're
+                looking to advance your career, learn a new skill, or explore
+                your passions, we have something for everyone.
+                <br />
+                <br />
+                Designed with cutting-edge technology and expert instructors,
+                our platform ensures an engaging, personalized, and seamless
+                learning experience. We believe that knowledge has the power to
+                transform lives and open doors to endless opportunities. Join us
+                today and start shaping your future!
               </p>
-              <button className="bg-[#16ECCA] hover:bg-[#14b3b0] text-white px-8 py-3 rounded-md text-lg transition-colors duration-300">
+              <button
+                onClick={allCourse}
+                className="bg-[#16ECCA] hover:bg-[#14b3b0] text-white px-8 py-3 rounded-md text-lg transition-colors duration-300"
+              >
                 Get Started
               </button>
             </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import  { useEffect, useRef } from 'react';
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import { useParams } from 'react-router-dom';
 
@@ -17,7 +17,7 @@ function TutorLiveStream() {
             if (initialized.current) return; // Exit if already initialized
             initialized.current = true;
 
-            const appID = 1971649609;
+            const appID = parseInt(import.meta.env.VITE_LIVE_APP_ID);
             const serverSecret = import.meta.env.VITE_LIVE_SERVER_SECRET;
 
             if (!appID || !serverSecret || !courseId) {

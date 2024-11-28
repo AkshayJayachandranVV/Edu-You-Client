@@ -19,7 +19,7 @@ function deleteCookie(name: string) {
 
 // Create an axios instance
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:4000',
+  baseURL: import.meta.env.VITE_BACKEND_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -56,7 +56,7 @@ axiosInstance.interceptors.response.use(
 
         try {
           // Call backend to refresh the token
-          const response = await axios.post('http://localhost:4000/tutor/refresh-token', { token: refreshToken });
+          const response = await axios.post(import.meta.env.VITE_TUTOR_REFRESH_TOKEN, { token: refreshToken });
           const { accessToken } = response.data;
 
           if (accessToken) {

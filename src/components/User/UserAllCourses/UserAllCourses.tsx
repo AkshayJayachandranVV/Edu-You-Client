@@ -3,6 +3,7 @@ import Navbar from "../../User/Home/UserHome/Navbar/Navbar";
 import Footer from "../../User/Home/UserHome/Footer/Footer";
 import axiosInstance from "../../../components/constraints/axios/userAxios";
 import { userEndpoints } from "../../../components/constraints/endpoints/userEndpoints";
+import BasicPagination from "../../../components/Admin/Pagination/Pagination";
 import { useNavigate } from "react-router-dom";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Card from "@mui/joy/Card";
@@ -37,27 +38,37 @@ export default function AllCourses() {
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 8; 
+
+  const fetchCourseDetails = async (page: number) => {
+    try {
+      setLoading(true);
+      const skip = (page - 1) * itemsPerPage;
+      const response = await axiosInstance.get(userEndpoints.allCourses, {
+        params: { skip, limit: itemsPerPage },
+      });
+
+      if (response.data) {
+        setCourseData(response.data.courses);
+        setFilteredCourses(response.data.courses);
+        setTotalItems(response.data.totalCount);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching course details:", error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchCourseDetails = async () => {
-      try {
-        setLoading(true);
-        const allCourses = await axiosInstance.get(userEndpoints.allCourses);
-        console.log(allCourses.data, "gotcha");
-        if (allCourses.data && allCourses.data) {
-          setCourseData(allCourses.data.courses); // Set course data array
-          setFilteredCourses(allCourses.data.courses);
-          setTimeout(() => {
-            setLoading(false);
-          }, 2000);
-        }
-      } catch (error) {
-        console.error("Error fetching course details:", error);
-      }
-    };
+    fetchCourseDetails(currentPage);
+  }, [currentPage]);
 
-    fetchCourseDetails();
-  }, []);
+
+
+
 
   // Effect to filter courses based on search query
   useEffect(() => {
@@ -204,6 +215,13 @@ export default function AllCourses() {
           </div>
         </div>
       </div>
+
+      <BasicPagination
+        totalItems={totalItems}
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
 
       <Footer />
     </div>

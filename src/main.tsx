@@ -1,5 +1,4 @@
-import {
-  BrowserRouter as BrowserRouter} from "react-router-dom";
+
 import { createRoot } from "react-dom/client";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "sonner";

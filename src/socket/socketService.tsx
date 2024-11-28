@@ -4,15 +4,19 @@ class SocketService {
   private socket: Socket;
   private retryCount: number = 0;
   private maxRetries: number = 5;
-  private retryDelay: number = 2000;
 
   constructor() {
     const userId = localStorage.getItem("userId")
-    this.socket = io(`http://localhost:4000?userId=${userId}`, {
+    this.socket = io(import.meta.env.VITE_BACKEND_URL, {
+      query: { userId },
       transports: ['websocket'],
       upgrade: false,
+      reconnection: true, // Enable automatic reconnection
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000, // Initial delay between retries
+      reconnectionDelayMax: 5000 // Maximum delay between retries
     });
-
+    
     this.socket.on('connect', () => {
       console.log('Socket connected:', this.socket.id);
       this.retryCount = 0;
@@ -26,9 +30,14 @@ class SocketService {
     this.socket.on('connect_error', (error: Error) => {
       console.log('Socket connection error', error);
     });
+
+    this.socket.on('connect_timeout', (timeout) => {
+      console.error('Connection timeout:', timeout);
+      this.handleReconnect();
+    });
   }
 
-  onDisconnect(callback) {
+  onDisconnect(callback:any) {
     if (this.socket) {
       this.socket.on("disconnect", callback);
     }
@@ -44,9 +53,6 @@ unReadMessage(roomId:string,userId:string) {
     console.error('Socket is not connected');
   }
 }
-
-
-
 
 
 
@@ -122,7 +128,7 @@ offTypingStatus(callback: (data: { isTyping: boolean; username: string }) => voi
 
 
 
-  sendMessage({ roomId, senderId, content }: { roomId: string, senderId: string, content: string }) {
+  sendMessage({ roomId, senderId, content}: { roomId: string, senderId: string, content: string }) {
     console.log(`Attempting to send message to room: ${roomId}, message: ${content}, senderId: ${senderId}`);
     if (this.socket.connected) {
       this.socket.emit('sendMessage', { roomId, senderId, content });
@@ -190,17 +196,19 @@ offTypingStatus(callback: (data: { isTyping: boolean; username: string }) => voi
 }
   
 
-  private handleReconnect() {
-    if (this.retryCount < this.maxRetries) {
-      console.log(`Retrying connection... (${this.retryCount + 1}/${this.maxRetries})`);
-      this.retryCount += 1;
-      setTimeout(() => {
-        this.socket.connect();
-      }, this.retryDelay);
-    } else {
-      console.error('Max retry attempts reached. Could not reconnect.');
-    }
+private handleReconnect() {
+  const reconnectInterval = Math.min(5000 * this.retryCount, 30000); // Max wait of 30 seconds
+  if (this.retryCount < this.maxRetries) {
+    console.log(`Retrying connection in ${reconnectInterval / 1000} seconds...`);
+    this.retryCount++;
+    setTimeout(() => {
+      this.socket.connect();
+    }, reconnectInterval);
+  } else {
+    console.error('Max retry attempts reached. Could not reconnect.');
   }
+}
+
 }
 
 export default new SocketService();

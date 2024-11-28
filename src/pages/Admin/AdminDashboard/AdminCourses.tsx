@@ -58,42 +58,46 @@ const AdminCourses = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-black overflow-x-hidden">
-      <AdminSidebar />
-      <div className="flex-grow flex flex-col">
-        <AdminNavbar />
-        <div className="flex-1 p-4 bg-black text-white">
-          <h3 className="text-center font-bold text-2xl mb-4">Courses List</h3>
-
-          {loading ? (
-            <p className="text-center">Loading...</p>
-          ) : error ? (
-            <p className="text-center">{error}</p>
-          ) : (
-            <>
-              <div className="w-full overflow-x-auto mb-8">
-                {/* Ensure the table is responsive and horizontally scrollable */}
-                <div className="overflow-x-auto">
-                  <AdminCoursesTable
-                    data={{
-                      initialCoursesData: coursesData,
-                      currentPage,
-                      itemsPerPage,
-                    }}
-                  />
-                </div>
+    <AdminSidebar />
+    <div className="flex-grow flex flex-col">
+      <AdminNavbar />
+      <div className="flex-1 p-4 bg-black text-white">
+        <h3 className="text-center font-bold text-5xl mb-2 ml-16">Courses List</h3>
+  
+        {loading ? (
+          <p className="text-center">Loading...</p>
+        ) : error ? (
+          <p className="text-center">{error}</p>
+        ) : (
+          <>
+            <div className="w-full flex justify-center">
+              <div
+                className="w-full md:w-3/4 lg:w-2/3 overflow-x-auto mb-8"
+                style={{ marginLeft: "10%" }}
+              >
+                {/* Responsive courses data table */}
+                <AdminCoursesTable
+                  data={{
+                    initialCoursesData: coursesData,
+                    currentPage,
+                    itemsPerPage,
+                  }}
+                />
               </div>
-
-              <BasicPagination
-                totalItems={totalItems}
-                itemsPerPage={itemsPerPage}
-                currentPage={currentPage}
-                onPageChange={handlePageChange}
-              />
-            </>
-          )}
-        </div>
+            </div>
+  
+            <BasicPagination
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </>
+        )}
       </div>
     </div>
+  </div>
+  
   );
 };
 

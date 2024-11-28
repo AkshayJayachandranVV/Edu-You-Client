@@ -19,6 +19,7 @@ const AdminStudentPage = () => {
     email: string;
     phone?: string;
     isBlocked: boolean;
+    profile_picture:string;
   }
 
   interface FormattedStudent {
@@ -28,11 +29,13 @@ const AdminStudentPage = () => {
     email: string;
     phone: string;
     isBlocked: boolean;
+    profile_picture:string;
   }
 
   useEffect(() => {
     fetchStudentsData();
-  }); // Re-fetch data whenever the currentPage changes
+  }, [currentPage]); 
+  
 
   const fetchStudentsData = async () => {
     try {
@@ -48,7 +51,7 @@ const AdminStudentPage = () => {
       const formattedData: FormattedStudent[] = result.data.users.map(
         (student: Student, index: number) => ({
           sino: skip + index + 1, // Adjust SINO based on current page
-          image: "default.png", // Assuming a default image for students
+          image: student.profile_picture, // Assuming a default image for students
           name: student.username,
           email: student.email,
           phone: student.phone || "Not Available",
@@ -77,7 +80,7 @@ const AdminStudentPage = () => {
       <div className="flex-grow flex flex-col">
         <AdminNavbar />
         <div className="flex-1 p-4 bg-black">
-          <h3 className="text-center font-bold text-2xl mb-4">Students List</h3>
+          <h3 className="text-center font-bold text-5xl mb-4 pl-24">Students List</h3>
 
           {loading ? (
             <p className="text-center">Loading...</p>

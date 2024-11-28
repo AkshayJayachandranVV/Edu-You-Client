@@ -1,8 +1,12 @@
-import React,{useEffect,useState} from 'react';
+import React from "react";
 
+interface StatsCardProps {
+  title: string;  // Title of the stat card
+  value: string | number;  // Value to be displayed (could be a string or a number)
+  bgColor: string;  // Background color class for the card
+}
 
-
-const StatsCard = ({ title, value, bgColor }) => {
+const StatsCard: React.FC<StatsCardProps> = ({ title, value, bgColor }) => {
 
 
   return (

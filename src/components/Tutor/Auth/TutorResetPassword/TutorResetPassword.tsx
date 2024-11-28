@@ -1,5 +1,4 @@
-import React, { useState,useEffect } from 'react';
-import './TutorResetPassword.css';
+import  { useState,useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { DevTool } from '@hookform/devtools';
 import { useNavigate } from 'react-router-dom';
@@ -17,16 +16,21 @@ type formValues = {
 function ResetPassword() {
   const form = useForm<formValues>();
   const { register, control, handleSubmit, formState, setError } = form;
+  const [isMobile, setIsMobile] = useState(false);
   const { errors } = formState;
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('tutorAccessToken');
-    if (token) {
-      navigate("/tutor/dashboard");
-    }
-  }, [navigate]);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    handleResize(); // Set initial state
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
 
   const onSubmit = async (data: formValues) => {
     if (data.newPassword !== data.confirmPassword) {
@@ -71,59 +75,109 @@ function ResetPassword() {
 
   return (
     <>
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <div className='reset-password-full-background'>
-          <div className='reset-password-input-part'>
-            <div className='reset-password-input-head'>
-              <img className='reset-password-icon' src={resetIcon} alt='Reset Icon' />
-              <div className='reset-password-input-header'>
-                <h1>RESET PASSWORD</h1>
-                <p>Please enter your new password</p>
-              </div>
-            </div>
-            <form
-              className='reset-password-form-container'
-              onSubmit={handleSubmit(onSubmit)}
-              noValidate
-            >
-              <input
-                type='password'
-                placeholder='New Password'
-                className={errors.newPassword ? 'reset-password-input-with-error' : ''}
-                {...register('newPassword', {
-                  required: 'New Password is required',
-                  minLength: {
-                    value: 6,
-                    message: 'Password must be at least 6 characters',
-                  },
-                })}
-              />
-              <p className='reset-password-error-message'>{errors.newPassword?.message}</p>
-              <input
-                type='password'
-                placeholder='Confirm Password'
-                className={errors.confirmPassword ? 'reset-password-input-with-error' : ''}
-                {...register('confirmPassword', {
-                  required: 'Confirm Password is required',
-                })}
-              />
-              <p className='reset-password-error-message'>{errors.confirmPassword?.message}</p>
-              <button type='submit'>Reset Password</button>
-            </form>
-            <DevTool control={control} />
-            <p>
-              Already have an account? <a href="">Log in</a>
-            </p>
+  {isLoading ? (
+    <Spinner />
+  ) : (
+    <div
+      className={`min-h-screen w-full flex justify-center items-center bg-gray-100 relative ${
+        isMobile ? "bg-cover bg-center" : "bg-gray-100"
+      }`}
+      style={isMobile ? { backgroundImage: `url(${bgImage})` } : {}}
+    >
+      {/* Desktop background */}
+      {!isMobile && (
+        <>
+          <div className="fixed top-0 left-0 h-screen w-[70vw] bg-[#1ecae1] z-10"></div>
+          <div className="fixed top-0 right-0 h-[120vh] w-[56vw] bg-white z-10">
+            <img
+              className="h-full w-[67vw] object-cover absolute top-0 right-0"
+              src={bgImage}
+              alt="Background"
+            />
           </div>
-          <div className='reset-password-left-background'></div>
-          <div className='reset-password-right-background'>
-          <img className='tutorotp-image-background' src={bgImage} alt="Background" />
+        </>
+      )}
+
+      {/* Form container */}
+      <div
+        className={`absolute ${
+          isMobile
+            ? "inset-0 flex items-center justify-center bg-transparent"
+            : "top-[8vh] left-[10vw] w-[41vw] bg-white"
+        } z-20 flex flex-col items-center justify-start pt-8`}
+      >
+        <div className="flex flex-col items-center mb-8">
+          <img className="w-16 h-16 mb-4" src={resetIcon} alt="Reset Icon" />
+          <div className="text-center">
+            <h1 className="text-xl font-bold">RESET PASSWORD</h1>
+            <p className="text-base">Please enter your new password</p>
           </div>
         </div>
-      )}
-    </>
+
+        <form
+          className="w-4/5 flex flex-col items-center"
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+        >
+          <input
+            type="password"
+            placeholder="New Password"
+            className={`w-full py-3 mb-4 rounded border ${
+              errors.newPassword ? 'border-red-500' : 'border-gray-300'
+            } text-base ${
+              isMobile ? 'bg-white bg-opacity-50' : 'bg-white opacity-100'
+            }`}
+            {...register('newPassword', {
+              required: 'New Password is required',
+              minLength: {
+                value: 6,
+                message: 'Password must be at least 6 characters',
+              },
+            })}
+          />
+          <p className="text-red-500 text-sm mb-2">{errors.newPassword?.message}</p>
+
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            className={`w-full py-3 mb-4 rounded border ${
+              errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+            } text-base ${
+              isMobile ? 'bg-white bg-opacity-50' : 'bg-white opacity-100'
+            }`}
+            {...register('confirmPassword', {
+              required: 'Confirm Password is required',
+            })}
+          />
+          <p className="text-red-500 text-sm mb-2">{errors.confirmPassword?.message}</p>
+
+          <button
+            type="submit"
+            className="w-full py-3 rounded bg-[#1ecae1] text-white font-medium hover:bg-[#17b2cc] mb-4"
+          >
+            Reset Password
+          </button>
+        </form>
+
+        <DevTool control={control} />
+
+        <p className="mt-4 text-center">
+          Already have an account?{' '}
+          <a href="#" className="text-blue-600">
+            Log in
+          </a>
+        </p>
+      </div>
+
+      {/* Right background image */}
+      <div className="absolute top-0 right-0 h-[120vh] w-[56vw] z-10">
+        <img className="h-full w-full object-cover" src={bgImage} alt="Background" />
+      </div>
+    </div>
+  )}
+</>
+
+  
   );
 }
 

@@ -17,13 +17,12 @@ interface CourseData {
   title: string;
   tutorId: string;
   tutorName: string;
-  tutorShare: number;  // Ensure this is 'number'
+  tutorShare: number; // Ensure this is 'number'
   userId: string;
   courseId: string;
   userName: string;
   courseName: string;
 }
-
 
 const AdminPayoutPage: React.FC = () => {
   const [coursesData, setCoursesData] = useState<CourseData[]>([]); // Courses data
@@ -35,7 +34,7 @@ const AdminPayoutPage: React.FC = () => {
 
   useEffect(() => {
     fetchOrders(); // Fetch courses on component mount or page change
-  });
+  }, [currentPage]);
 
   const fetchOrders = async () => {
     try {
@@ -73,7 +72,7 @@ const AdminPayoutPage: React.FC = () => {
       <div className="flex-grow flex flex-col">
         <AdminNavbar />
         <div className="flex-1 p-6 bg-black text-white">
-          <h3 className="text-center font-bold text-4xl mb-4 pl-4">
+          <h3 className="text-center font-bold text-5xl mb-4 pl-16">
             Courses Payouts
           </h3>
 
@@ -88,7 +87,7 @@ const AdminPayoutPage: React.FC = () => {
                 <div className="overflow-x-auto w-full mb-8 lg:pl-40 lg:pr-6">
                   <AdminPayouts
                     data={{
-                      initialCoursesData:coursesData ,
+                      initialCoursesData: coursesData,
                       currentPage,
                       itemsPerPage,
                     }}

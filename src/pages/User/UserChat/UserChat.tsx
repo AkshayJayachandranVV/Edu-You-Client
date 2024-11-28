@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import ChatList from '../../../components/User/UserChat/UserList';
 import ChatInterface from '../../../components/User/UserChat/ChatInterface';
-import Navbar from '../../../components/User/Home/UserHome/Navbar/Navbar';
-import iconimage from '../../../assets/images/User/UserHome/Account.png';
 import axiosInstance from '../../../components/constraints/axios/userAxios';
 import { userEndpoints } from "../../../components/constraints/endpoints/userEndpoints";
 
+
 interface Chat {
-  _id: string;
+  courseId: string;
   courseName: string;
   thumbnail: string;
+  lastMessage: string;
+  lastMessageTime: string;
+  isRead?: boolean;
 }
+
+
 
 interface CourseResponse {
   _doc: {
@@ -18,8 +22,8 @@ interface CourseResponse {
     courseName: string;
   };
   thumbnail: string;
-  lastMessage : string;
-  lastMessageTime:string;
+  lastMessage: string;
+  lastMessageTime: string;
 }
 
 
@@ -64,15 +68,18 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-900 text-white">
-      {/* Chat List on the left */}
-      <ChatList chats={chats} onSelectChat={handleChatSelect} />
+<div className="flex flex-col lg:flex-row h-screen bg-gray-900 text-white">
+  {/* Chat List on the left */}
+  <div className="lg:w-1/4 w-full h-full">
+    <ChatList chats={chats} onSelectChat={handleChatSelect} />
+  </div>
 
-      {/* Chat Interface on the right */}
-      <div className="flex-1" >
-        <ChatInterface selectedChat={selectedChat} />
-      </div>
-    </div>
+  {/* Chat Interface on the right */}
+  <div className="flex-1 w-full h-full">
+    <ChatInterface selectedChat={selectedChat} groupMembers={[]} />
+  </div>
+</div>
+
   );
 };
 

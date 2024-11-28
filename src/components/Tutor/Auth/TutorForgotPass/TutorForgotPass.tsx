@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import './TutorForgotPass.css';
 import bgImage from '../../../../assets/images/TutorReminiLogin.jpg';
@@ -17,12 +17,7 @@ function TutorForgotPass() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false); // State to manage loading
 
-  useEffect(() => {
-    const token = localStorage.getItem('tutorAccessToken');
-    if (token) {
-      navigate("/tutor/dashboard");
-    }
-  }, [navigate]);
+
 
   const onSubmit = async (data: FormValues) => {
     setIsLoading(true); // Start loading
@@ -56,7 +51,7 @@ function TutorForgotPass() {
         message: 'An error occurred. Please try again.',
       });
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false); 
     }
   };
 

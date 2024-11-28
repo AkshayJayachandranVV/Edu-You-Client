@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useForm, Controller, FieldError } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { saveAddCourse } from "../../../../src/redux/courseSlice";
 import axios from "axios";
@@ -15,7 +15,7 @@ interface CourseFormData {
   courseLevel: string;
   demoURL: string;
   thumbnail: string;
-  thumbnailUrl: string;
+  thumbnailUrl: string ;
 }
 
 interface AddCourseProps {
@@ -37,7 +37,6 @@ const AddCourse: React.FC<AddCourseProps> = ({ onNext }) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [uploadStatus, setUploadStatus] = useState("");
 
   useEffect(() => {
     // Populate the form fields with data from Redux if it exists
@@ -54,7 +53,7 @@ const AddCourse: React.FC<AddCourseProps> = ({ onNext }) => {
       const existingThumbnailKey = courseData.thumbnail || ""; // Keep existing thumbnail key
       const existingThumbnailUrl = courseData.thumbnailUrl || null; // Ensure it defaults to null if not present
       setValue("thumbnail", existingThumbnailKey); // Set thumbnail field
-      setValue("thumbnailUrl", existingThumbnailUrl); // Set thumbnailUrl in the form state
+      setValue("thumbnailUrl", existingThumbnailUrl || ""); // Set thumbnailUrl in the form state
       setPreviewImage(existingThumbnailUrl); // Set preview image to existing URL if available
     }
   }, [courseData, setValue]);
@@ -127,16 +126,13 @@ const AddCourse: React.FC<AddCourseProps> = ({ onNext }) => {
       });
 
       if (result.status === 200) {
-        setUploadStatus(`Upload successful! File stored at key: ${key}`);
 
         return { url: viewUrl, key };
       } else {
-        setUploadStatus("Upload failed.");
         return null;
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      setUploadStatus("Error uploading file.");
       return null;
     }
   };

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import Navbar from "../../../components/Tutor/TutorNavbar";
 import CourseSections from "../../../components/Tutor/TutorCourseView/TutorCourseSection";
 import CourseDetails from "../../../components/Tutor/TutorCourseView/TutorCourseDetails";
 import { IconButton, Tooltip } from "@mui/material";
@@ -27,7 +26,7 @@ const CourseView: React.FC = () => {
 
   useEffect(() => {
     fetchCourse();
-  }, []);
+  });
 
   const fetchCourse = async () => {
     try {
@@ -49,9 +48,9 @@ const CourseView: React.FC = () => {
             thumbnailUrl: courseData.thumbnailUrl || null,
             prerequisites: courseData.prerequisites || [],
             benefits: courseData.benefits || [],
-            sections: courseData.sections.map((section) => ({
+            sections: courseData.sections.map((section:any) => ({
               title: section.title,
-              lessons: section.lessons.map((lesson) => ({
+              lessons: section.lessons.map((lesson:any) => ({
                 title: lesson.title || "",
                 description: lesson.description || "",
                 video: lesson.video || "",
@@ -88,8 +87,8 @@ const CourseView: React.FC = () => {
             <IconButton
               color="primary"
               sx={{
-                fontSize: "3rem", // Set the icon size 3x larger
-                padding: "24px", // Add more padding to increase button size
+                fontSize: "3rem",
+                padding: "24px", 
               }}
             >
               <ChatIcon fontSize="inherit" />
@@ -99,8 +98,8 @@ const CourseView: React.FC = () => {
             <IconButton
               color="secondary"
               sx={{
-                fontSize: "3rem", // Set the icon size 3x larger
-                padding: "24px", // Add more padding to increase button size
+                fontSize: "3rem", 
+                padding: "24px", 
               }}
             >
               <LiveTvIcon fontSize="inherit" />

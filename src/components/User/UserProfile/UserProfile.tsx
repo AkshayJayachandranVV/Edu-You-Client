@@ -8,6 +8,7 @@ import axiosInstance from "../../../components/constraints/axios/userAxios";
 import { tutorEndpoints } from "../../../components/constraints/endpoints/TutorEndpoints";
 import { setUser } from "../../../../src/redux/userSlice";
 import Navbar from "../Home/UserHome/Navbar/Navbar";
+import MotionLoader from '../../../components/Spinner/Spinner2/Spinner2'
 import { useCallback } from "react";
 import axios from "axios";
 import { toast } from "sonner";
@@ -22,6 +23,7 @@ interface ProfileFormInputs {
 export default function ProfilePage() {
   const [profileImage, setProfileImage] = useState<string>(iconimage);
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
   const {
@@ -152,6 +154,7 @@ export default function ProfilePage() {
     }
 
     try {
+      setLoading(true); 
       const result = await axiosInstance.put(userEndpoints.profile, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -181,6 +184,8 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("Error submitting form", error);
       toast.error("Error submitting profile update");
+    }finally {
+      setLoading(false); // Stop loader
     }
   };
 
@@ -201,11 +206,9 @@ export default function ProfilePage() {
   };
 
 
-
-
-
-
   return (
+    <>
+      {loading && <MotionLoader />}
     <div className="profile-page bg-black flex flex-col items-center min-h-screen">
       {/* Navbar */}
       <Navbar />
@@ -382,5 +385,6 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

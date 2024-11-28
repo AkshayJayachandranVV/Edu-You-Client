@@ -1,9 +1,17 @@
-
+import { useNavigate } from "react-router-dom";
 interface MyCourseBannerProps {
   MyCourseImg: string;
 }
 
+
+
+
 const MyCourseBanner: React.FC<MyCourseBannerProps> = ({ MyCourseImg }) => {
+  const navigate = useNavigate()
+
+  const onCourse = ()=>{
+    navigate("/allCourses")
+  }
   return (
     <div className="relative bg-black py-8 px-4 sm:px-6 lg:px-12">
       <div className="flex flex-col lg:flex-row items-center justify-between">
@@ -15,7 +23,7 @@ const MyCourseBanner: React.FC<MyCourseBannerProps> = ({ MyCourseImg }) => {
           <p className="text-gray-300 mt-6 text-base sm:text-lg lg:text-xl">
             Empowering minds from any place, at any time. Online education connects learners globally, offering knowledge and skills for a better future.
           </p>
-          <button className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-lg text-lg font-bold mt-8">
+          <button onClick={onCourse} className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-lg text-lg font-bold mt-8">
             Try it Now
           </button>
         </div>

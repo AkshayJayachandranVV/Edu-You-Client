@@ -36,6 +36,7 @@ const ChatApp: React.FC = () => {
 
   const fetchChatList = async () => {
     try {
+      console.log(selectedChat)
       const tutorId = localStorage.getItem("tutorId");
       if (tutorId) {
         const response = await axiosInstance.get(
@@ -72,7 +73,7 @@ const ChatApp: React.FC = () => {
 
       {/* Chat Interface on the right */}
       <div className="flex-1" >
-        <ChatInterface selectedChat={selectedChat} />
+        <ChatInterface />
       </div>
     </div>
   );

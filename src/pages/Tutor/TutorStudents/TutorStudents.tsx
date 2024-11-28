@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TutorNavbar from "../../../components/Tutor/TutorNavbar";
 import TutorSidebar from "../../../components/Tutor/TutorSidebar";
 import TutorStudents from "../../../components/Tutor/TutorStudents";
@@ -15,13 +15,24 @@ interface Student {
   enrolledAt: string;
 }
 
+interface Course {
+  _id: string;
+  courseName: string;
+  thumbnail: string;
+  courseCategory: string;
+  courseLevel: string;
+  courseDiscountPrice: number;
+  createdAt: string;
+}
+
 const Students = () => {
   const [studentsData, setStudentsData] = useState<Student[]>([]);
+  const [courseData, setCourseData] = useState<Course[]>([]);  // New state for courseData
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const itemsPerPage = 5; // Items per page
+  const itemsPerPage = 8; 
 
   useEffect(() => {
     const fetchStudentDetails = async () => {
@@ -30,21 +41,34 @@ const Students = () => {
         console.error("Tutor ID not found in localStorage.");
         return;
       }
+      console.log(studentsData)
 
       try {
         setLoading(true);
 
-        // Calculate skip and fetch paginated data
         const skip = (currentPage - 1) * itemsPerPage;
         const response = await axiosInstance.get(tutorEndpoints.myCourses, {
           params: { skip, limit: itemsPerPage, tutorId },
         });
 
-        console.log(response)
-
         if (response.data.success) {
-          setStudentsData(response.data.courses); // Update student data
+          setStudentsData(response.data.courses); // Store the student data
           setTotalItems(response.data.totalCount); // Update total items count for pagination
+
+          // Map studentsData to courseData (if needed)
+          const mappedCourseData = response.data.courses.map((course: any) => ({
+            _id: course._id,
+            courseName: course.name,
+            thumbnail: course.thumbnail,
+            courseCategory: course.courseCategory,
+            courseLevel: course.courseLevel,
+            courseDiscountPrice: course.courseDiscountPrice
+
+            ,
+            createdAt: course.createdAt,
+          }));
+          
+          setCourseData(mappedCourseData); // Update the courseData
         } else {
           setError("Failed to fetch students.");
         }
@@ -98,8 +122,7 @@ const Students = () => {
               ) : (
                 <>
                   <TutorStudents 
-                    courseData={studentsData} 
-                    startingIndex={(currentPage - 1) * itemsPerPage + 1} 
+                    courseData={courseData}  // Passing courseData as props
                   />
                   <BasicPagination
                     totalItems={totalItems}

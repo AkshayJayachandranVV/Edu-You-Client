@@ -94,7 +94,21 @@ const AdminStudents: React.FC<AdminStudentsProps> = ({ studentsData: initialStud
                 }}
               >
                 <TableCell>{user.sino}</TableCell>
-                <TableCell>{user.image}</TableCell>
+                <TableCell>
+                  {user.image ? (
+                        <img
+                          src={user.image}
+                          alt="Course Thumbnail"
+                          style={{
+                            width: 80,
+                            height: 80,
+                            objectFit: "cover",
+                            borderRadius: 4,
+                          }}
+                        />
+                      ) : (
+                        "No Image"
+                      )}</TableCell>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.phone}</TableCell>

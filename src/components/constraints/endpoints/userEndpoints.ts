@@ -1,5 +1,5 @@
 
-export const API_GATEWAY_BASE_URL ='http://localhost:4000';
+export const API_GATEWAY_BASE_URL =import.meta.env.VITE_API_GATEWAY_USER_URL;
 
 
 export const userEndpoints = {
@@ -29,6 +29,7 @@ export const userEndpoints = {
     fetchGroupMembers: `${API_GATEWAY_BASE_URL}/fetchGroupMembers`,
     reviewPost: `${API_GATEWAY_BASE_URL}/reviewPost`,
     fetchReview: `${API_GATEWAY_BASE_URL}/fetchReview/courseId`,
+    fetchTutor: `${API_GATEWAY_BASE_URL}/fetchTutor/courseId`
 }
 
 

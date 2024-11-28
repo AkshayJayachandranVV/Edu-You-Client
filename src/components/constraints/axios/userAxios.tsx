@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Function to get a cookie by name
-function getCookie(name) {
+function getCookie(name:string) {
   const nameEQ = name + "=";
   const ca = document.cookie.split(';');
   for (let i = 0; i < ca.length; i++) {
@@ -13,13 +13,13 @@ function getCookie(name) {
 }
 
 // Function to remove a cookie
-function deleteCookie(name) {
+function deleteCookie(name:string) {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 }
 
 // Create an axios instance
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:4000',
+  baseURL:  import.meta.env.VITE_BACKEND_URL ,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -56,7 +56,7 @@ axiosInstance.interceptors.response.use(
 
         try {
           // Call backend to refresh the token
-          const response = await axios.post('http://localhost:4000/refresh-token', { token: refreshToken });
+          const response = await axios.post(import.meta.env.VITE_USER_REFRESH_TOKEN, { token: refreshToken });
           const { accessToken } = response.data;
 
           if (accessToken) {

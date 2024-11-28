@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -16,15 +15,16 @@ interface Order {
   title: string;
   thumbnail: string;
   category: string;
-  courseLevel: string;
   coursePrice: number;
-  tutorShare:number;
+  tutorShare: number;
   discountPrice: number;
   createdAt: string;
   isListed?: boolean;
+  courseLvele:string
 }
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
+
+const StyledTableCell = styled(TableCell)(() => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: "#333",
     color: "#FFB74D",
@@ -39,7 +39,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
+const StyledTableRow = styled(TableRow)(() => ({
   "&:nth-of-type(odd)": {
     backgroundColor: "#2A2833",
   },
@@ -55,12 +55,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 interface DarkThemeTableProps {
-  orderData: Order[];
+  payoutsData: Order[];
 }
-
-export default function DarkThemeTable({ payoutsData,startIndex }: DarkThemeTableProps) {
-  const [tableData, setTableData] = React.useState<Order[]>(payoutsData );
-  const navigate = useNavigate();
+const DarkThemeTable: React.FC<DarkThemeTableProps> = ({ payoutsData }) => {
+  const [tableData, setTableData] = React.useState<Order[]>(payoutsData);
 
   React.useEffect(() => {
     if (Array.isArray(payoutsData)) {
@@ -71,19 +69,16 @@ export default function DarkThemeTable({ payoutsData,startIndex }: DarkThemeTabl
     }
   }, [payoutsData]);
 
-
-
-
   return (
     <div className="bg-gray-900 min-h-screen p-8 text-white">
-<Typography
-  variant="h3"
-  align="center"
-  gutterBottom
-  sx={{ color: "#FFC107", fontWeight: "bold" }} // Increase font width
->
-  Tutor Payouts
-</Typography>
+      <Typography
+        variant="h3"
+        align="center"
+        gutterBottom
+        sx={{ color: "#FFC107", fontWeight: "bold" }} // Increase font width
+      >
+        Tutor Payouts
+      </Typography>
       <TableContainer
         component={Paper}
         sx={{
@@ -128,9 +123,15 @@ export default function DarkThemeTable({ payoutsData,startIndex }: DarkThemeTabl
                       }}
                     />
                   </StyledTableCell>
-                  <StyledTableCell align="center">{course.category}</StyledTableCell>
-                  <StyledTableCell align="center">${course.discountPrice}</StyledTableCell>
-                  <StyledTableCell align="center">${course.tutorShare}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    {course.category}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    ${course.discountPrice}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    ${course.tutorShare}
+                  </StyledTableCell>
                   <StyledTableCell align="center">
                     {new Date(course.createdAt).toLocaleString()}
                   </StyledTableCell>
@@ -148,4 +149,6 @@ export default function DarkThemeTable({ payoutsData,startIndex }: DarkThemeTabl
       </TableContainer>
     </div>
   );
-}
+};
+
+export default DarkThemeTable;

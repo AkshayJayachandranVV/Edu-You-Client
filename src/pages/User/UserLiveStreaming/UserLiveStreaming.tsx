@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import  { useEffect, useRef } from 'react';
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import { useParams } from 'react-router-dom';
 import { RootState } from "../../../redux/store";
@@ -19,7 +19,7 @@ function UserLiveStream() {
             if (initialized.current) return;
             initialized.current = true;
 
-            const appID = import.meta.env.VITE_LIVE_APP_ID;
+            const appID = parseInt(import.meta.env.VITE_LIVE_APP_ID);
             const serverSecret = import.meta.env.VITE_LIVE_SERVER_SECRET;
 
             if (!appID || !serverSecret || !courseId) {

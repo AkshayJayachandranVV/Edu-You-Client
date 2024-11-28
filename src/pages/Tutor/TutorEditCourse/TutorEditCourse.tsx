@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import { useState,useEffect } from 'react';
 import TutorNavbar from '../../../components/Tutor/TutorNavbar';
 import TutorSidebar from '../../../components/Tutor/TutorSidebar';
 import AddCourse from '../../../components/Tutor/TutorEditCourse/TutorEditCourse';
@@ -50,7 +50,7 @@ const EditCourse = () => {
   }, [courseId]);
   
   // Function to dispatch course data to Redux
-  const dispatchCourseDataToRedux = (courseData) => {
+  const dispatchCourseDataToRedux = (courseData:any) => {
     // Dispatch the addCourse section
     dispatch(editAddCourse({
       courseName: courseData.courseName,
@@ -71,8 +71,8 @@ const EditCourse = () => {
     }));
   
     // Dispatch lessons and sections
-    courseData.sections.forEach((section, sectionIndex) => {
-      section.lessons.forEach((lesson, lessonIndex) => {
+    courseData.sections.forEach((section:any, sectionIndex:any) => {
+      section.lessons.forEach((lesson:any, lessonIndex:any) => {
         console.log(lesson, "eachhhhhhhhhhhhhhhhhhhhhhhhh lessson--------------");
     
         // Extract the necessary data from the lesson.$__parent.lessons array

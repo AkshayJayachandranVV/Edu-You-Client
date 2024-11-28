@@ -1,16 +1,11 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 // import profileImage from '../../../../assets/images/User/UserHome/Account.png'
-import iconimage from "../../../../assets/images/User/UserHome/Account.png";
+import iconimage from "../../../../assets/images/Tutor/profileicon.png";
+import addInfo1 from "../../../../assets/images/Tutor/add-info-1.jpg";
 import axios from "axios";
 import { tutorEndpoints } from "../../../constraints/endpoints/TutorEndpoints";
 import { useNavigate } from "react-router-dom";
-import {
-  FaPlus,
-  FaUserGraduate,
-  FaFileAlt,
-  FaCheckCircle,
-  FaFilePdf,
-} from "react-icons/fa";
+import { FaPlus, FaFileAlt, FaCheckCircle, FaFilePdf } from "react-icons/fa";
 import { toast } from "sonner";
 
 interface Qualification {
@@ -18,42 +13,42 @@ interface Qualification {
   qualification: string;
   certificate: File | null;
   certificatePreviewUrl: string | null;
-  certificateKey:string | null;
+  certificateKey: string | null;
 }
 
 interface FormData {
   profilePicture: File | null;
   bio: string;
   cv: File | null;
-  cvKey:string | null;
+  cvKey: string | null;
   profilePreviewUrl: string | null;
   profileKey: string | null;
   cvPreviewUrl: string | null;
 }
 
 const TutorAdditionalInfo = () => {
-    const [qualifications, setQualifications] = useState<Qualification[]>([
-        {
-          id: 1,
-          qualification: "",
-          certificate: null,
-          certificatePreviewUrl: null,
-          certificateKey:null
-        },
-      ]);
-      const [expertise, setExpertise] = useState<string[]>([""]);
-      const [formData, setFormData] = useState<FormData>({
-        profilePicture: null,
-        bio: "",
-        cv: null,
-        profilePreviewUrl: null,
-        cvPreviewUrl: null,
-        cvKey:null,
-        profileKey:null
-      });
-      const [profileImage, setProfileImage] = useState<string>(iconimage);
-      const navigate = useNavigate()
-      const tutorId  = localStorage.getItem("tutorId")
+  const [qualifications, setQualifications] = useState<Qualification[]>([
+    {
+      id: 1,
+      qualification: "",
+      certificate: null,
+      certificatePreviewUrl: null,
+      certificateKey: null,
+    },
+  ]);
+  const [expertise, setExpertise] = useState<string[]>([""]);
+  const [formData, setFormData] = useState<FormData>({
+    profilePicture: null,
+    bio: "",
+    cv: null,
+    profilePreviewUrl: null,
+    cvPreviewUrl: null,
+    cvKey: null,
+    profileKey: null,
+  });
+  const [profileImage, setProfileImage] = useState<string>(iconimage);
+  const navigate = useNavigate();
+  const tutorId = localStorage.getItem("tutorId");
 
   const handleAddQualification = () => {
     const lastQualification = qualifications[qualifications.length - 1];
@@ -67,7 +62,7 @@ const TutorAdditionalInfo = () => {
           qualification: "",
           certificate: null,
           certificatePreviewUrl: null,
-          certificateKey:null,
+          certificateKey: null,
         },
       ]);
     }
@@ -123,16 +118,15 @@ const TutorAdditionalInfo = () => {
     }
   };
 
-
   const generateFileName = (originalName: string): string => {
     const extension = originalName.split(".").pop();
     return `${Math.random().toString(36).substring(2, 15)}.${extension}`;
   };
 
-  const handleQualificationChange = (
+  const handleQualificationChange = <K extends keyof Qualification>(
     index: number,
-    field: string,
-    value: string
+    field: K,
+    value: Qualification[K]
   ) => {
     const updatedQualifications = [...qualifications];
     updatedQualifications[index][field] = value;
@@ -143,6 +137,10 @@ const TutorAdditionalInfo = () => {
     const updatedExpertise = [...expertise];
     updatedExpertise[index] = value;
     setExpertise(updatedExpertise);
+  };
+
+  const goLOGIN = () => {
+    navigate("/login");
   };
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -167,16 +165,12 @@ const TutorAdditionalInfo = () => {
     }
   };
 
-
-
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
-
 
   // Bio validation on blur
   const handleBioBlur = () => {
@@ -219,65 +213,113 @@ const TutorAdditionalInfo = () => {
     }
   };
 
-
-
-const handleSubmit =async (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
+    if (!formData.bio || formData.bio.length < 5) {
+      toast.error("Bio must be at least 5 characters long.");
+      return;
+    }
+
     // Check required fields
-    if (!formData.cv) {
+    if (!formData.cvKey) {
       alert("Please upload your CV.");
       return;
     }
 
+    if (expertise.every((exp) => exp.length <= 2)) {
+      toast.error("At least one valid expertise must be provided.");
+      return;
+    }
+
+    if (
+      qualifications.some(
+        (qual) => !qual.qualification || qual.qualification.length < 3
+      )
+    ) {
+      toast.error(
+        "All qualifications must be valid and longer than two characters."
+      );
+      return;
+    }
+
     const payload = {
-      id:tutorId,
+      id: tutorId,
       profilePicture: formData.profileKey,
       bio: formData.bio,
       cv: formData.cvKey,
       expertise: expertise.filter((exp) => exp.length > 2), // Filter out empty or short values
       qualifications: qualifications.map((qual) => ({
         qualification: qual.qualification,
-        certificate: qual.certificateKey
+        certificate: qual.certificateKey,
       })),
     };
 
     console.log("Form submitted successfully", payload);
 
-    const response = await axios.post(tutorEndpoints.addInformation,payload)
+    const response = await axios.post(tutorEndpoints.addInformation, payload);
 
-    console.log(response)
+    console.log(response);
 
-    if(response){
-       navigate("/tutor/login")
-    }else{
-      toast.error("Something went wrong")
+    if (response) {
+      navigate("/tutor/login");
+    } else {
+      toast.error("Something went wrong");
     }
 
     // Submit `payload` to the API here...
   };
 
-
-
+  console.log(iconimage);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-8 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-300">
       <div className="flex max-w-5xl w-full bg-white rounded-lg shadow-2xl overflow-hidden">
         {/* Left Side with Decorative Images */}
-        <div className="hidden md:flex flex-col items-center justify-center bg-gradient-to-t from-blue-600 to-blue-400 p-6 w-1/3 relative">
-          <img
-            src="/images/education1.png"
-            alt="Education"
-            className="w-32 h-32 object-cover rounded-full shadow-lg mb-4"
-          />
-          <img
-            src="/images/education2.png"
-            alt="Learning"
-            className="w-32 h-32 object-cover rounded-full shadow-lg mb-4"
-          />
-          <p className="text-white font-semibold text-center px-4">
-            Enhance your profile to attract more students!
+        <div className="hidden md:flex flex-col items-center justify-center bg-gradient-to-t from-blue-600 to-blue-400 p-6 w-1/3 relative rounded-lg shadow-lg">
+          {/* Decorative Title */}
+          <h2 className="text-white font-bold text-xl mb-6">
+            Boost Your Profile
+          </h2>
+          {/* Overlapping Images */}
+          <div className="relative">
+            <img
+              src={addInfo1}
+              alt="Education"
+              className="w-36 h-36 object-cover rounded-full shadow-lg border-4 border-white transform hover:scale-110 transition duration-300 ease-in-out z-10"
+              style={{height:'20vh',width:'30vw'}}
+            />
+          </div>
+
+          {/* Background Blob */}
+          <div
+            className="absolute inset-0 bg-gradient-to-br from-blue-700 via-purple-500 to-blue-400 opacity-30 rounded-lg blur-lg"
+            style={{
+              zIndex: -1,
+              transform: "scale(1.2)",
+            }}
+          ></div>
+
+          {/* Call to Action Text */}
+          <p className="text-white font-semibold text-center px-4 mt-14 leading-relaxed">
+            "Add engaging content to attract more students and grow your
+            profile's credibility!"
           </p>
+
+          {/* Subtle Icon Decoration */}
+          <div className="flex gap-4 mt-4">
+            <div className="p-3 bg-white rounded-full shadow-lg hover:bg-blue-300 transition duration-300">
+              <FaPlus className="text-blue-600" size={20} />
+            </div>
+            <div className="p-3 bg-white rounded-full shadow-lg hover:bg-blue-300 transition duration-300">
+              <FaFileAlt className="text-blue-600" size={20} />
+            </div>
+            <div className="p-3 bg-white rounded-full shadow-lg hover:bg-blue-300 transition duration-300">
+              <FaCheckCircle className="text-blue-600" size={20} />
+            </div>
+          </div>
+
+          {/* Background Image */}
           <img
             src="/images/books_background.png"
             alt="Background"
@@ -302,9 +344,9 @@ const handleSubmit =async (e: FormEvent) => {
               <div className="profile-image-container">
                 <label htmlFor="imageUpload" className="profile-image-label">
                   <img
-                    src={profileImage}
+                    src={profileImage || iconimage} // Use default image if no profile image
                     alt="Profile"
-                    className="profile-image"
+                    className="w-32 h-32 object-cover rounded-full" // Set size to half and make it round
                   />
                 </label>
                 <input
@@ -371,23 +413,27 @@ const handleSubmit =async (e: FormEvent) => {
                   <input
                     type="file"
                     accept="application/pdf"
-                    onChange={(e) =>
-                      handleCertificateUpload(index, e.target.files[0])
-                    }
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        handleCertificateUpload(index, e.target.files[0]);
+                      }
+                    }}
                     className="mt-2 p-2 border border-blue-300 rounded-md w-full"
                   />
 
                   {/* Certificate Preview */}
-                  {qualification.certificatePreviewUrl && (
-                    <div className="mt-4">
-                      <div className="flex items-center space-x-2">
-                        <FaFilePdf className="text-red-500 text-3xl" />
-                        <p className="text-gray-700">
-                          {qualification.certificate.name}
-                        </p>
+                  {/* Certificate Preview */}
+                  {qualification.certificatePreviewUrl &&
+                    qualification.certificate && (
+                      <div className="mt-4">
+                        <div className="flex items-center space-x-2">
+                          <FaFilePdf className="text-red-500 text-3xl" />
+                          <p className="text-gray-700">
+                            {qualification.certificate.name}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               ))}
               <button
@@ -445,6 +491,7 @@ const handleSubmit =async (e: FormEvent) => {
               <button
                 type="button"
                 className="text-gray-500 hover:text-gray-700 font-semibold"
+                onClick={goLOGIN}
               >
                 Skip for Now
               </button>
