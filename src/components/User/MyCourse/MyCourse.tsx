@@ -9,6 +9,8 @@ import { userEndpoints } from "../../../components/constraints/endpoints/userEnd
 import { RootState } from '../../../redux/store';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
+import Skeleton from "@mui/joy/Skeleton";
+
 
 interface Course {
   _id: string;
@@ -22,12 +24,14 @@ export default function MyCourses() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [reportReason, setReportReason] = useState('');
-  const [reportDescription, setReportDescription] = useState(''); // New state for report description
+  const [reportDescription, setReportDescription] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { id, username, email } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
+      setLoading(true);
       const userId = localStorage.getItem("userId");
       if (userId) {
         try {
@@ -36,14 +40,17 @@ export default function MyCourses() {
           
           if (allCourses.data.success) {
             const normalizedCourses = allCourses.data.courses.map((course:any) => ({
-              ...course._doc,
+              ...course,
               thumbnail: course.thumbnail,
             }));
             setCourses(normalizedCourses);
+            setLoading(false);
           } else {
+            setLoading(false);
             setCourses([]);
           }
         } catch (error) {
+          setLoading(false);
           console.error("Error fetching courses:", error);
         }
       }
@@ -101,6 +108,77 @@ export default function MyCourses() {
     <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mt-12 mb-8 text-center">
       My Courses
     </h2>
+
+    {loading ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                {[1, 2, 3].map((_, index) => (
+                  <div
+                    key={index}
+                    className="bg-[#1E293B] rounded-lg overflow-hidden shadow-lg border border-[#2D3748]"
+                  >
+                    {/* Skeleton for Thumbnail */}
+                    <div className="relative h-48 md:h-64">
+                      <Skeleton
+                        variant="rectangular"
+                        sx={{
+                          width: "100%",
+                          height: "100%",
+                          borderRadius: "8px 8px 0 0",
+                        }}
+                      />
+                    </div>
+
+                    {/* Skeleton for Course Details */}
+                    <div className="p-6">
+                      <Skeleton
+                        variant="text"
+                        sx={{
+                          width: "70%",
+                          height: "24px",
+                          marginBottom: "8px",
+                        }}
+                      />
+                      <Skeleton
+                        variant="text"
+                        sx={{
+                          width: "100%",
+                          height: "16px",
+                          marginBottom: "4px",
+                        }}
+                      />
+                      <Skeleton
+                        variant="text"
+                        sx={{
+                          width: "100%",
+                          height: "16px",
+                          marginBottom: "16px",
+                        }}
+                      />
+                      <div className="flex items-center justify-between">
+                        <Skeleton
+                          variant="text"
+                          sx={{ width: "40%", height: "24px" }}
+                        />
+                        <div className="flex gap-1">
+                          {Array(5)
+                            .fill(0)
+                            .map((_, starIndex) => (
+                              <Skeleton
+                                key={starIndex}
+                                variant="circular"
+                                sx={{ width: "16px", height: "16px" }}
+                              />
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {courses.length === 0 ? (
         <p className="text-center text-gray-400 text-lg sm:text-xl">
@@ -138,7 +216,9 @@ export default function MyCourses() {
         ))
       )}
     </div>
+    </>)}
   </div>
+
 
   {/* Modal for Reporting */}
   {modalOpen && (

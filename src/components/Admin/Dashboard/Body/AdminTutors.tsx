@@ -59,21 +59,22 @@ const AdminTutors: React.FC<AdminTutorsProps> = ({
       component={Paper}
       sx={{
         borderRadius: "sm",
-        bgcolor: "#1b2532", // Background color for the container
+        bgcolor: "#1b2532", 
       }}
     >
       <Table
         sx={{
           "& tbody": {
-            color: "#fff", // Text color for rows
+            color: "#fff", 
           },
           "& thead": {
             bgcolor: "#1b2532", // Header background color
-            color: "#fff", // Header text color
+            color: "#fff", 
           },
           "& th, & td": {
             borderColor: "#1b2532", // Border color
             color: "#fff", // Cell text color
+            padding: "16px", // Increase padding for cell height
           },
         }}
       >
@@ -97,6 +98,7 @@ const AdminTutors: React.FC<AdminTutorsProps> = ({
                 key={tutor.sino}
                 sx={{
                   bgcolor: index % 2 === 0 ? "#1b2532" : "#1e1f22", // Even rows get #1b2532, odd rows get #1e1f22
+                  height: 80, // Set a custom row height
                 }}
               >
                 <TableCell>{tutor.sino}</TableCell>
@@ -127,7 +129,7 @@ const AdminTutors: React.FC<AdminTutorsProps> = ({
                         toggleBlockStatus(tutor.email, tutor.isBlocked)
                       }
                       variant="contained"
-                      sx={{ bgcolor: "green" }} // Unblock button color
+                      sx={{ bgcolor: "green" }} 
                     >
                       Unblock
                     </Button>
@@ -137,7 +139,7 @@ const AdminTutors: React.FC<AdminTutorsProps> = ({
                         toggleBlockStatus(tutor.email, tutor.isBlocked)
                       }
                       variant="contained"
-                      sx={{ bgcolor: "red" }} // Block button color
+                      sx={{ bgcolor: "red" }} 
                     >
                       Block
                     </Button>

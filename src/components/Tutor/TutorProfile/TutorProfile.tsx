@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaEnvelope, FaPhone, FaUserGraduate } from "react-icons/fa";
+import { FaEnvelope, FaPhone, FaUserGraduate,FaHome, FaUser, FaSignOutAlt } from "react-icons/fa";
 import { toast } from "sonner";
 import axiosInstance from "../../constraints/axios/tutorAxios";
 import { tutorEndpoints } from "../../constraints/endpoints/TutorEndpoints";
-import Navbar from "../../Tutor/Dashboard/TutorDashboard/Navbar/Navbar";
+import Cookies from 'js-cookie';
+import profile from '../../../assets/images/User/UserHome/Account.png'
 
 export default function TutorProfile() {
   const [tutorData, setTutorData] = useState<any | null>(null);
@@ -16,6 +17,13 @@ export default function TutorProfile() {
   useEffect(() => {
     fetchTutorData();
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("tutorAccessToken");
+    Cookies.remove('tutorAccessToken');
+    Cookies.remove('tutorRefreshToken');
+    navigate("/tutor/login");
+  };
 
   const fetchTutorData = async () => {
     try {
@@ -52,7 +60,44 @@ export default function TutorProfile() {
 
   return (
     <>
-      <Navbar />
+    <nav className="bg-gray-900 text-white p-6 shadow-lg">
+      <div className="max-w-screen-lg mx-auto flex items-center justify-between">
+        {/* Logo and Name */}
+        <div className="flex items-center gap-3">
+          <img
+            src={profile} // Replace with your logo
+            alt="Logo"
+            className="w-10 h-10 rounded-full"
+          />
+          <h1 className="text-2xl font-bold text-indigo-500">Tutor Profile</h1>
+        </div>
+
+        {/* Navbar Links */}
+        <div className="flex items-center gap-6">
+          <button
+            onClick={() => navigate("/tutor/dashboard")}
+            className="flex items-center gap-2 text-lg text-indigo-400 hover:text-indigo-500"
+          >
+            <FaHome />
+            Dashboard
+          </button>
+          <button
+            onClick={() => navigate("/tutor/editProfile")}
+            className="flex items-center gap-2 text-lg text-indigo-400 hover:text-indigo-500"
+          >
+            <FaUser />
+            Edit Profile
+          </button>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 text-lg text-indigo-400 hover:text-indigo-500"
+          >
+            <FaSignOutAlt />
+            Logout
+          </button>
+        </div>
+      </div>
+    </nav>
       <div className="bg-gray-900 text-white min-h-screen p-10">
         {/* Profile Details */}
         <div className="bg-gray-800 p-10 rounded-xl shadow-lg max-w-screen-lg mx-auto">

@@ -5,6 +5,7 @@ import AdminStudents from "../../../components/Admin/Dashboard/Body/AdminStudent
 import { adminEndpoints } from "../../../../src/components/constraints/endpoints/adminEndpoints";
 import axiosInstance from "../../../components/constraints/axios/adminAxios";
 import BasicPagination from "../../../components/Admin/Pagination/Pagination";
+import Loader from "../../../components/Spinner/Spinner2/Spinner2";
 
 const AdminStudentPage = () => {
   const [studentsData, setStudentsData] = useState<FormattedStudent[]>([]);
@@ -34,7 +35,7 @@ const AdminStudentPage = () => {
 
   useEffect(() => {
     fetchStudentsData();
-  }, [currentPage]); 
+  }, []); 
   
 
   const fetchStudentsData = async () => {
@@ -47,11 +48,13 @@ const AdminStudentPage = () => {
         params: { skip, limit: itemsPerPage },
       });
 
+      console.log(result)
+
       // Format data and calculate SINO based on skip value
       const formattedData: FormattedStudent[] = result.data.users.map(
         (student: Student, index: number) => ({
           sino: skip + index + 1, // Adjust SINO based on current page
-          image: student.profile_picture, // Assuming a default image for students
+          image: student.profile_picture, 
           name: student.username,
           email: student.email,
           phone: student.phone || "Not Available",
@@ -83,9 +86,9 @@ const AdminStudentPage = () => {
           <h3 className="text-center font-bold text-5xl mb-4 pl-24">Students List</h3>
 
           {loading ? (
-            <p className="text-center">Loading...</p>
+            <Loader />
           ) : error ? (
-            <p className="text-center">{error}</p>
+            <Loader />
           ) : (
             <>
               <div className="w-full flex justify-center">

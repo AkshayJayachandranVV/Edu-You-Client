@@ -5,6 +5,7 @@ import TutorPayouts from "../../../components/Tutor/TutorPayouts";
 import axiosInstance from "../../../components/constraints/axios/tutorAxios";
 import { tutorEndpoints } from "../../../components/constraints/endpoints/TutorEndpoints";
 import BasicPagination from "../../../components/Admin/Pagination/Pagination";
+import Loader from "../../../components/Spinner/Spinner2/Spinner2";
 
 interface Order {
   _id: string;
@@ -95,9 +96,9 @@ const Course = () => {
               style={{ marginTop: "10px" }}
             >
               {loading ? (
-                <p style={{ color: "#FFFFFF" }}>Loading...</p>
+                <Loader />
               ) : error ? (
-                <p style={{ color: "#FFFFFF" }}>{error}</p>
+                <Loader />
               ) : (
                 <>
                   <TutorPayouts

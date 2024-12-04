@@ -5,6 +5,7 @@ import AdminCoursesTable from "../../../components/Admin/Dashboard/Body/AdminCou
 import { adminEndpoints } from "../../../components/constraints/endpoints/adminEndpoints";
 import axiosInstance from "../../../components/constraints/axios/adminAxios";
 import BasicPagination from "../../../components/Admin/Pagination/Pagination";
+import Loader from "../../../components/Spinner/Spinner2/Spinner2";
 
 // Define the Course interface
 interface Course {
@@ -65,9 +66,9 @@ const AdminCourses = () => {
         <h3 className="text-center font-bold text-5xl mb-2 ml-16">Courses List</h3>
   
         {loading ? (
-          <p className="text-center">Loading...</p>
+          <Loader />
         ) : error ? (
-          <p className="text-center">{error}</p>
+          <Loader />
         ) : (
           <>
             <div className="w-full flex justify-center">

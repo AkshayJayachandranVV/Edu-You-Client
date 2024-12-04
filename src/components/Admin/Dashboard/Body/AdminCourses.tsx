@@ -68,7 +68,7 @@ const DarkThemeTable: React.FC<DarkThemeTableProps> = ({ data }) => {
         overflowX: "auto", // Allow horizontal scroll on small screens
       }}
     >
-      <Table sx={{ "& tbody": { color: "#fff" }, "& th, & td": { color: "#fff", borderColor: "#1b2532" } }}>
+      <Table sx={{ "& tbody": { color: "#fff" }, "& th, & td": { color: "#fff", borderColor: "#1b2532" ,padding: "16px",  } }}>
         <TableHead>
           <TableRow>
             <TableCell className="text-sm sm:text-base">SI No</TableCell>

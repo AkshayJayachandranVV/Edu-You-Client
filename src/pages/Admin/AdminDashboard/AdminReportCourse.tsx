@@ -5,6 +5,7 @@ import AdminReports from '../../../components/Admin/Dashboard/Body/AdminReportCo
 import { adminEndpoints } from '../../../../src/components/constraints/endpoints/adminEndpoints';
 import axiosInstance from '../../../components/constraints/axios/adminAxios';
 import BasicPagination from "../../../components/Admin/Pagination/Pagination";
+import Loader from "../../../components/Spinner/Spinner2/Spinner2";
 
 
 interface CourseData {
@@ -79,9 +80,9 @@ const AdminTutorsPage = () => {
         <h3 className="text-center font-bold text-5xl mb-2 ml-36">Report Courses</h3>
           <div className="flex-grow flex flex-col justify-start" style={{  marginBottom:'250vh', marginLeft: '14vw', alignSelf: 'flex-end' }}>
             {loading ? (
-              <p style={{ color: '#FFFFFF' }}>Loading...</p>
+              <Loader />
             ) : error ? (
-              <p style={{ color: '#FFFFFF' }}>{error}</p>
+              <Loader />
             ) : (
               <>
               <AdminReports initialCoursesData={coursesData} /> 

@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../../../components/Admin/Dashboard/Navbar/Navbar";
 import AdminSidebar from "../../../components/Admin/Dashboard/Sidebar/Sidebar";
 import AdminUsers from "../../../components/Admin/Dashboard/Body/AdminTutors";
 import { adminEndpoints } from "../../../../src/components/constraints/endpoints/adminEndpoints";
 import axiosInstance from "../../../components/constraints/axios/adminAxios";
 import BasicPagination from "../../../components/Admin/Pagination/Pagination";
+import Loader from "../../../components/Spinner/Spinner2/Spinner2";
 
 const AdminUsersPage = () => {
-  const navigate = useNavigate();
   const [usersData, setUsersData] = useState<FormattedUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +20,7 @@ const AdminUsersPage = () => {
     email: string;
     phone?: string;
     isBlocked: boolean;
-    profile_picture:string;
+    profile_picture: string;
   }
 
   interface FormattedUser {
@@ -31,33 +30,29 @@ const AdminUsersPage = () => {
     email: string;
     phone: string;
     isBlocked: boolean;
-    profile_picture:string;
+    profile_picture: string;
   }
 
   useEffect(() => {
-    const token = localStorage.getItem("adminAccessToken");
-    if (!token) {
-      navigate("/admin/login");
-    } else {
-      fetchUsersData();
-    }
-  }, []);
+    fetchUsersData();
+  }, [currentPage]); // Depend on currentPage to re-fetch when page changes
 
   const fetchUsersData = async () => {
     try {
       setLoading(true);
       const skip = (currentPage - 1) * itemsPerPage;
 
-      // Fetch paginated data
+      // Fetch paginated data from the server
       const result = await axiosInstance.get(adminEndpoints.tutors, {
         params: { skip, limit: itemsPerPage },
       });
 
-      console.log(result)
+      console.log(result);
 
+      // Ensure result.data.tutors and result.data.totalCount are correctly returned
       const formattedData: FormattedUser[] = result.data.tutors.map(
         (user: User, index: number) => ({
-          sino: skip + index + 1,
+          sino: skip + index + 1, // Adjust SINO based on current page
           image: user.profile_picture,
           name: user.tutorname,
           email: user.email,
@@ -67,7 +62,7 @@ const AdminUsersPage = () => {
       );
 
       setUsersData(formattedData);
-      setTotalItems(result.data.totalCount); // Total users count for pagination
+      setTotalItems(result.data.totalCount); // Total items for pagination
       setLoading(false);
     } catch (err) {
       console.error(err);
@@ -77,7 +72,7 @@ const AdminUsersPage = () => {
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    setCurrentPage(page); // Update the current page to trigger useEffect
   };
 
   return (
@@ -89,9 +84,9 @@ const AdminUsersPage = () => {
           <h3 className="text-center font-bold text-5xl mb-4 pl-24">Tutors List</h3>
 
           {loading ? (
-            <p className="text-center">Loading...</p>
+            <Loader />
           ) : error ? (
-            <p className="text-center">{error}</p>
+            <div>{error}</div>
           ) : (
             <>
               <div className="w-full flex justify-center">

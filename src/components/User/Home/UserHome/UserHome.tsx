@@ -7,7 +7,7 @@ import { courseEndpoints } from "../../../constraints/endpoints/courseEndpoints"
 import banner from "../../../../assets/images/User/UserHome/userHome.png";
 import aboutUs from "../../../../assets/images/User/UserHome/aboutUs.webp";
 import { tutorEndpoints } from "../../../constraints/endpoints/TutorEndpoints";
-
+import Skeleton from "@mui/joy/Skeleton";
 interface Course {
   _id: string;
   thumbnail: string;
@@ -15,11 +15,13 @@ interface Course {
   courseName: string;
   courseDescription: string;
   coursePrice: string;
+  averageRating: number;
 }
 
 export default function UserHome() {
   const navigate = useNavigate();
-  const [courses, setCourses] = useState<Course[]>([]); // Explicitly typing the courses state=
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const handleCardClick = (courseId: string) => {
     // Call your function here
@@ -39,6 +41,7 @@ export default function UserHome() {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const result = await axios.get(courseEndpoints.userCourse);
       setCourses(result.data.courses); // Store fetched courses in state
 
@@ -53,6 +56,7 @@ export default function UserHome() {
           };
 
           console.log(data);
+          setLoading(false);
           const response = await axios.post(tutorEndpoints.getSignedUrl, data); // Await the axios post
           console.log(response.data, "--------------------url");
 
@@ -66,6 +70,7 @@ export default function UserHome() {
       setCourses(initialUrls); // Set updated courses with thumbnailUrl
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   };
 
@@ -119,64 +124,137 @@ export default function UserHome() {
             Featured Courses
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {courses.length > 0 ? (
-              courses.map((course, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleCardClick(course._id)}
-                  className="bg-[#1E293B] rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 cursor-pointer border border-[#2D3748]"
-                >
-                  {/* Thumbnail */}
-                  <div className="relative h-48 md:h-64">
-                    <img
-                      src={course.thumbnailUrl}
-                      alt={course.courseName}
-                      className="w-full h-full object-cover rounded-t-lg"
-                    />
-                  </div>
+          {loading ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                {[1, 2, 3].map((_, index) => (
+                  <div
+                    key={index}
+                    className="bg-[#1E293B] rounded-lg overflow-hidden shadow-lg border border-[#2D3748]"
+                  >
+                    {/* Skeleton for Thumbnail */}
+                    <div className="relative h-48 md:h-64">
+                      <Skeleton
+                        variant="rectangular"
+                        sx={{
+                          width: "100%",
+                          height: "100%",
+                          borderRadius: "8px 8px 0 0",
+                        }}
+                      />
+                    </div>
 
-                  {/* Course Details */}
-                  <div className="p-6">
-                    <h3 className="text-[#E2E8F0] text-xl font-semibold mb-2">
-                      {course.courseName}
-                    </h3>
-                    <p className="text-[#A0AEC0] mb-4 text-sm">
-                      {course.courseDescription.length > 80
-                        ? course.courseDescription.slice(0, 80) + "..."
-                        : course.courseDescription}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <p className="text-[#38B2AC] text-2xl font-bold">
-                        Rs. {course.coursePrice}
-                      </p>
-                      {/* Star Rating Placeholder */}
-                      <div className="flex items-center gap-1">
-                        {Array(5)
-                          .fill(0)
-                          .map((_, starIndex) => (
-                            <span
-                              key={starIndex}
-                              className={`${
-                                starIndex < Math.round(course.rating || 0)
-                                  ? "text-yellow-400"
-                                  : "text-gray-500"
-                              }`}
-                            >
-                              ★
-                            </span>
-                          ))}
+                    {/* Skeleton for Course Details */}
+                    <div className="p-6">
+                      <Skeleton
+                        variant="text"
+                        sx={{
+                          width: "70%",
+                          height: "24px",
+                          marginBottom: "8px",
+                        }}
+                      />
+                      <Skeleton
+                        variant="text"
+                        sx={{
+                          width: "100%",
+                          height: "16px",
+                          marginBottom: "4px",
+                        }}
+                      />
+                      <Skeleton
+                        variant="text"
+                        sx={{
+                          width: "100%",
+                          height: "16px",
+                          marginBottom: "16px",
+                        }}
+                      />
+                      <div className="flex items-center justify-between">
+                        <Skeleton
+                          variant="text"
+                          sx={{ width: "40%", height: "24px" }}
+                        />
+                        <div className="flex gap-1">
+                          {Array(5)
+                            .fill(0)
+                            .map((_, starIndex) => (
+                              <Skeleton
+                                key={starIndex}
+                                variant="circular"
+                                sx={{ width: "16px", height: "16px" }}
+                              />
+                            ))}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))
-            ) : (
-              <p className="col-span-full text-center text-xl text-[#E2E8F0]">
-                No courses available at the moment.
-              </p>
-            )}
-          </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Your course rendering logic */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                {courses.length > 0 &&
+                  courses.map((course, index) => (
+                    <div
+                      key={index}
+                      onClick={() => handleCardClick(course._id)}
+                      className="bg-[#1E293B] rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 cursor-pointer border border-[#2D3748]"
+                    >
+                      {/* Thumbnail */}
+                      <div className="relative h-48 md:h-64">
+                        <img
+                          src={course.thumbnailUrl}
+                          alt={course.courseName}
+                          className="w-full h-full object-cover rounded-t-lg"
+                        />
+                      </div>
+
+                      {/* Course Details */}
+                      <div className="p-6">
+                        <h3 className="text-[#E2E8F0] text-xl font-semibold mb-2">
+                          {course.courseName}
+                        </h3>
+                        <p className="text-[#A0AEC0] mb-4 text-sm">
+                          {course.courseDescription.length > 80
+                            ? course.courseDescription.slice(0, 80) + "..."
+                            : course.courseDescription}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <p className="text-[#38B2AC] text-2xl font-bold">
+                            Rs. {course.coursePrice}
+                          </p>
+                          {/* Star Rating */}
+                          <div className="flex items-center gap-1">
+                            {Array(5)
+                              .fill(0)
+                              .map((_, starIndex) => {
+                                const starValue = starIndex + 0.5;
+                                return (
+                                  <span
+                                    key={starIndex}
+                                    className={`${
+                                      course.averageRating >= starIndex + 1
+                                        ? "text-yellow-400"
+                                        : course.averageRating >= starValue
+                                        ? "text-yellow-300"
+                                        : "text-gray-500"
+                                    }`}
+                                  >
+                                    ★
+                                  </span>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
 

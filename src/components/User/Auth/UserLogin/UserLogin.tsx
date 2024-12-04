@@ -80,7 +80,7 @@ function UserLogin() {
             expires: 7,
           });
 
-          navigate("/");
+          navigate("/home");
           socketService.connect();
         } else if (result.data.message === "User is Blocked") {
           alert("You are blocked. Please contact support.");
@@ -117,7 +117,7 @@ function UserLogin() {
         });
 
         setLoading(false);
-        navigate("/");
+        navigate("/home");
         socketService.connect();
       } else {
         setLoading(false);

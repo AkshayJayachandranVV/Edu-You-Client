@@ -5,6 +5,7 @@ import TutorCourses from "../../../components/Tutor/TutorCourses";
 import axiosInstance from "../../../components/constraints/axios/tutorAxios";
 import { tutorEndpoints } from "../../../components/constraints/endpoints/TutorEndpoints";
 import BasicPagination from "../../../components/Admin/Pagination/Pagination";
+import Loader from "../../../components/Spinner/Spinner2/Spinner2";
 
 interface Course {
   _id: string;
@@ -97,9 +98,9 @@ const Course = () => {
             >
               {/* Content */}
               {loading ? (
-                <p style={{ color: "#FFFFFF" }}>Loading...</p>
+                <Loader />
               ) : error ? (
-                <p style={{ color: "#FFFFFF" }}>{error}</p>
+                <Loader />
               ) : (
                 <>
                   <TutorCourses 

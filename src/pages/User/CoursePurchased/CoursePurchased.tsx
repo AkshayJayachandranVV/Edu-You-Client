@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../../components/User/Home/UserHome/Navbar/Navbar";
 import CourseSections from "../../../components/User/CoursePurchased/CourseSection";
+import Compiler from "../../../components/User/CoursePurchased/Compiler/Compiler";
 import CourseDetails from "../../../components/User/CoursePurchased/CourseView";
 import axiosInstance from '../../../components/constraints/axios/userAxios';
 import { userEndpoints } from "../../../components/constraints/endpoints/userEndpoints";
-import { useParams } from 'react-router-dom';
+import {useParams} from 'react-router-dom'
+import Draggable from "react-draggable"; 
 
 interface Lesson {
   title: string;
@@ -33,12 +35,17 @@ interface Course {
   sections: Section[];
 }
 
-const PurchasedSingleCourse: React.FC = () => {
+interface PurchasedSingleCourseProps {
+  courseId: string;
+}
+
+const PurchasedSingleCourse: React.FC<PurchasedSingleCourseProps> = ({ courseId: propCourseId }) => {
+  const { courseId: paramCourseId } = useParams<{ courseId: string }>(); 
+  const courseId = propCourseId || paramCourseId; 
   const [openSection, setOpenSection] = useState<number | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const [course, setCourse] = useState<Course | null>(null);
-
-  const { courseId } = useParams<{ courseId: string }>();
+  const [openCompiler, setOpenCompiler] = useState(false);
 
   useEffect(() => {
     fetchCourse();
@@ -113,6 +120,9 @@ const PurchasedSingleCourse: React.FC = () => {
     setSelectedVideo(videoUrl);
   };
 
+
+
+
   return (
     <div className="flex flex-col min-h-screen bg-[#0d1117]">
       <Navbar />
@@ -129,6 +139,20 @@ const PurchasedSingleCourse: React.FC = () => {
           </>
         )}
       </div>
+      <button
+      onClick={() => setOpenCompiler(true)}
+      className="fixed top-20 right-5 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white text-lg font-semibold py-3 px-6 rounded-full shadow-lg hover:scale-105 transform transition duration-300 ease-in-out"
+    >
+      Open Compiler
+    </button>
+    {openCompiler && (
+      <Draggable>
+        <div className="fixed bg-[#1f2937] shadow-lg rounded-lg w-[90vw] md:w-[700px] z-50">
+          {/* Compiler Component */}
+          <Compiler onClose={() => setOpenCompiler(false)} />
+        </div>
+      </Draggable>
+    )}
     </div>
   );
 };

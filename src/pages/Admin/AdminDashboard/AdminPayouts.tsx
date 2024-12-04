@@ -5,6 +5,7 @@ import AdminPayouts from "../../../components/Admin/Dashboard/Body/AdminPayouts"
 import BasicPagination from "../../../components/Admin/Pagination/Pagination";
 import { adminEndpoints } from "../../../../src/components/constraints/endpoints/adminEndpoints";
 import axiosInstance from "../../../components/constraints/axios/adminAxios";
+import Loader from "../../../components/Spinner/Spinner2/Spinner2";
 
 // Define the CourseData interface
 interface CourseData {
@@ -78,9 +79,9 @@ const AdminPayoutPage: React.FC = () => {
 
           <div className="flex-grow flex flex-col justify-start pl-6 pr-6">
             {loading ? (
-              <p className="text-center text-white">Loading...</p>
+              <Loader />
             ) : error ? (
-              <p className="text-center text-white">{error}</p>
+              <Loader />
             ) : (
               <>
                 {/* Make the table responsive by adding scroll, aligned to the left */}

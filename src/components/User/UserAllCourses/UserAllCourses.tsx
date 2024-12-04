@@ -30,6 +30,7 @@ interface Course {
   thumbnail: string;
   createdAt: string;
   updatedAt: string;
+  averageRating: number;
 }
 
 export default function AllCourses() {
@@ -40,7 +41,7 @@ export default function AllCourses() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const itemsPerPage = 8; 
+  const itemsPerPage = 8;
 
   const fetchCourseDetails = async (page: number) => {
     try {
@@ -49,6 +50,8 @@ export default function AllCourses() {
       const response = await axiosInstance.get(userEndpoints.allCourses, {
         params: { skip, limit: itemsPerPage },
       });
+
+      console.log(response.data);
 
       if (response.data) {
         setCourseData(response.data.courses);
@@ -63,13 +66,11 @@ export default function AllCourses() {
   };
 
   useEffect(() => {
+    // Fetch courses when the page first loads or currentPage changes
     fetchCourseDetails(currentPage);
-  }, [currentPage]);
+  }, [currentPage]); 
 
-
-
-
-
+  
   // Effect to filter courses based on search query
   useEffect(() => {
     const filtered = courseData.filter((course) =>
@@ -93,7 +94,7 @@ export default function AllCourses() {
 
   return (
     <div className="bg-gray-900 min-h-screen text-white">
-      <Navbar  onSearch={handleSearch} showSearchBar={true} />
+      <Navbar onSearch={handleSearch} showSearchBar={true} />
 
       {/* Banner Section */}
       <div className="bg-gray-800 py-12 text-center mt-14">
@@ -109,20 +110,20 @@ export default function AllCourses() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {loading ? (
               <>
-                {" "}
-                {[1, 2, 3, 4, 5, 6, 7, 8].map(() => (
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((_, index) => (
                   <Card
+                    key={index}
                     variant="outlined"
                     sx={{
                       width: 343,
                       display: "flex",
                       gap: 2,
-                      backgroundColor: "#1f2937", // Dark background for the card
-                      color: "#f3f4f6", // Light text color for contrast
-                      borderColor: "#374151", // Border color to match the dark theme
-                      borderRadius: "8px", // Optional: adds rounded corners
-                      padding: 2, // Optional: add padding for better spacing
-                      position: "relative", // Allows for absolute positioning of the overlay
+                      backgroundColor: "#1f2937",
+                      color: "#f3f4f6",
+                      borderColor: "#374151",
+                      borderRadius: "8px",
+                      padding: 2,
+                      position: "relative",
                     }}
                   >
                     <AspectRatio ratio="21/9">
@@ -131,8 +132,8 @@ export default function AllCourses() {
                           alt=""
                           src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
                           style={{
-                            objectFit: "cover", // Ensures the image covers the container
-                            filter: "brightness(0.7)", // Darkens the image slightly
+                            objectFit: "cover",
+                            filter: "brightness(0.7)",
                           }}
                         />
                         <Box
@@ -142,8 +143,8 @@ export default function AllCourses() {
                             left: 0,
                             width: "100%",
                             height: "100%",
-                            backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent dark overlay
-                            borderRadius: "8px", // Match border radius of the card
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            borderRadius: "8px",
                           }}
                         />
                       </Skeleton>
@@ -151,10 +152,10 @@ export default function AllCourses() {
 
                     <Typography
                       sx={{
-                        color: "#f3f4f6", // Light text color for better visibility
-                        backgroundColor: "#1f2937", // Dark background behind the text
-                        padding: "8px 0", // Padding to add some spacing around the text
-                        flexGrow: 1, // Allows Typography to take up available space
+                        color: "#f3f4f6",
+                        backgroundColor: "#1f2937",
+                        padding: "8px 0",
+                        flexGrow: 1,
                       }}
                     >
                       <Skeleton>
@@ -182,14 +183,38 @@ export default function AllCourses() {
                         className="w-full h-48 object-cover rounded-t-lg"
                       />
                       <div className="p-4">
-                        <h2 className="text-xl font-semibold text-yellow-400">
-                          {course.courseName}
-                        </h2>
+                        {/* Course Name and Rating Stars */}
+                        <div className="flex justify-between items-center">
+                          <h2 className="text-xl font-semibold text-yellow-400">
+                            {course.courseName}
+                          </h2>
+                          <div className="flex items-center space-x-1">
+                            {Array.from({ length: 5 }, (_, index) => {
+                              const fullStar =
+                                index + 1 <= Math.floor(course.averageRating);
+                              const halfStar =
+                                index + 1 > Math.floor(course.averageRating) &&
+                                index + 1 <= Math.ceil(course.averageRating);
+                              return (
+                                <span
+                                  key={index}
+                                  className="text-yellow-400 text-lg"
+                                >
+                                  {fullStar ? "★" : halfStar ? "⯨" : "☆"}
+                                </span>
+                              );
+                            })}
+                            <span className="text-yellow-400 text-lg ml-2">
+                              {course.averageRating
+                                ? course.averageRating.toFixed(1)
+                                : "No Rating"}
+                            </span>
+                          </div>
+                        </div>
                         <p className="text-gray-400 mt-2">
                           {course.courseDescription}
                         </p>
                         <div className="flex justify-between items-center mt-4">
-                          {/* Display Discount Price if available, otherwise show regular price */}
                           {course.courseDiscountPrice ? (
                             <>
                               <span className="text-lg font-bold text-yellow-400 line-through">{`Rs.${course.coursePrice}`}</span>

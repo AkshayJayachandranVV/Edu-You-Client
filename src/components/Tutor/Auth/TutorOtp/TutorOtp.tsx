@@ -241,7 +241,7 @@ function TutorOtp() {
   
           <p>
             Already have an account?{' '}
-            <a href="#" className="text-blue-600">
+            <a href="/tutor/login" className="text-blue-600">
               Log in
             </a>
           </p>

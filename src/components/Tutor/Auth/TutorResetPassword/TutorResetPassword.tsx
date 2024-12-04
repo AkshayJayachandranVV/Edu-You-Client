@@ -163,7 +163,7 @@ function ResetPassword() {
 
         <p className="mt-4 text-center">
           Already have an account?{' '}
-          <a href="#" className="text-blue-600">
+          <a href="/tutor/login" className="text-blue-600">
             Log in
           </a>
         </p>

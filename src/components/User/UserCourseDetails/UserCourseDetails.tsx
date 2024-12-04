@@ -4,7 +4,6 @@ import Footer from "../../User/Home/UserHome/Footer/Footer";
 import axiosInstance from "../../../components/constraints/axios/userAxios";
 import { userEndpoints } from "../../../components/constraints/endpoints/userEndpoints";
 import { useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
 import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
 import Loader from "../../Spinner/Spinner2/Spinner2";
@@ -29,6 +28,7 @@ interface Course {
   thumbnail: string;
   createdAt: string;
   updatedAt: string;
+  averageRating: number;
 }
 
 interface Review {
@@ -47,8 +47,12 @@ declare global {
   }
 }
 
-export default function UserCourseDetails() {
-  const { courseId } = useParams();
+interface UserCourseDetailsProps {
+  courseId: string;
+}
+
+export default function UserCourseDetails(props: UserCourseDetailsProps) {
+  const { courseId } = props;
   const [courseData, setCourseData] = useState<Course | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userRating, setUserRating] = useState(0);
@@ -171,6 +175,8 @@ export default function UserCourseDetails() {
           `${userEndpoints.courseDetails.replace("courseId", courseId)}`
         );
 
+        console.log(response);
+
         if (response?.data?.courses) {
           setCourseData(response.data.courses);
         } else {
@@ -258,8 +264,29 @@ export default function UserCourseDetails() {
 
             {/* Course Stats */}
             <div className="flex items-center space-x-6 text-gray-400">
-              <span className="text-yellow-400">No Rating</span>
-              {/* <span>9 Enrolled</span> */}
+              {/* Star Rating */}
+              <div className="flex items-center space-x-1">
+                {Array.from({ length: 5 }, (_, index) => {
+                  const fullStar =
+                    index + 1 <= Math.floor(courseData.averageRating);
+                  const halfStar =
+                    index + 1 > Math.floor(courseData.averageRating) &&
+                    index + 1 <= Math.ceil(courseData.averageRating);
+                  return (
+                    <span key={index} className="text-yellow-400 text-lg">
+                      {fullStar ? "★" : halfStar ? "⯨" : "☆"}
+                    </span>
+                  );
+                })}
+                <span className="text-yellow-400 text-lg ml-2">
+                  {courseData.averageRating
+                    ? courseData.averageRating.toFixed(1)
+                    : "No Rating"}
+                </span>
+              </div>
+              <span className="text-yellow-400">
+                {courseData.averageRating || "No Rating"}
+              </span>
               <span>English</span>
             </div>
           </div>

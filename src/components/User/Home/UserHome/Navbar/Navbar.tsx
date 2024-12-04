@@ -65,7 +65,7 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, showSearchBar }) => {
   };
 
   const handleHome = () => {
-    navigate('/');
+    navigate('/home');
   };
 
   const handleProfileClick = () => {

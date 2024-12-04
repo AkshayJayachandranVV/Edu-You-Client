@@ -205,7 +205,7 @@ function TutorSignup() {
   
           <p className="mt-4">
             Already have an account?{' '}
-            <a href="/login" className="text-blue-600">
+            <a href="/tutor/login" className="text-blue-600">
               Log in
             </a>
           </p>

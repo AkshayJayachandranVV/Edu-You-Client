@@ -67,7 +67,8 @@ const AdminStudents: React.FC<AdminStudentsProps> = ({ studentsData: initialStud
           },
           '& th, & td': {
             borderColor: '#1b2532', // Border color
-            color: '#fff', // Cell text color
+            color: '#fff', 
+            padding: "16px",
           },
         }}
       >

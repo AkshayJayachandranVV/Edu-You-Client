@@ -85,7 +85,7 @@ function TutorForgotPass() {
               <p className='tutor-error-message'>{errors.email?.message}</p>
               <button type='submit'>Submit</button>
             </form>
-            <p>Already have an account? <a href="#">Log in</a></p>
+            <p>Already have an account? <a href="/tutor/login">Log in</a></p>
           </div>
           <div className='tutor-left-background'></div>
           <div className='tutor-right-background'>

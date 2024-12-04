@@ -288,7 +288,7 @@ function OtpVerification() {
           >
             Already have an account?{" "}
             <a
-              href="#"
+              href="/login"
               className={`underline ${
                 isMobile
                   ? "text-indigo-300"
