@@ -42,13 +42,14 @@ const LandingPage = () => {
                 achieve your goals today!
               </p>
               <div className="flex justify-end">
-                <button
-                  onClick={handleGetStartedClick}
-                  className="bg-[#e59943] text-white font-semibold px-12 py-4 rounded-lg shadow-lg hover:bg-orange-500 mr-28"
-                >
-                  Start avvella
-                </button>
-              </div>
+  <button
+    onClick={handleGetStartedClick}
+    className="bg-[#e59943] text-white font-semibold px-12 py-4 rounded-lg shadow-lg hover:bg-orange-500 mr-28"
+  >
+    Get Started
+  </button>
+</div>
+
 
               {/* Add Content Cards */}
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
