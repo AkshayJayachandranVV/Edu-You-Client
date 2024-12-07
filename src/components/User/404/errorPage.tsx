@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './ErrorPage.css'; // Import the CSS file
+import './errorPage.css'; // Import the CSS file
 import errorImage from '../../../../src/assets/images/User/404Page/Designer.jpeg'; // Replace with your image path
 
 const ErrorPage: React.FC = () => {
