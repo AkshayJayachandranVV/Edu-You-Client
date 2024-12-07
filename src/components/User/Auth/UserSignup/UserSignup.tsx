@@ -4,7 +4,7 @@ import { DevTool } from "@hookform/devtools";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import bgImage from "../../../../assets/images/UserLogin-Background.jpg";
-import signupIcon from "../../../../assets/icons/User/UserSignup.png";
+import signupIcon from "../../../../assets/Icons/User/UserSignup.png";
 import Spinner from '../../../Spinner/Spinner'
 import {userEndpoints} from '../../../constraints/endpoints/userEndpoints'
 
