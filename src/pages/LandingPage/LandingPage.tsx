@@ -42,12 +42,14 @@ const LandingPage = () => {
                 achieve your goals today!
               </p>
               <div className="flex justify-end">
-  <button
-    onClick={handleGetStartedClick}
-    className="bg-[#e59943] text-white font-semibold px-12 py-4 rounded-lg shadow-lg hover:bg-orange-500 mr-28"
-  >
-    kettulllaa
-  </button>
+              <button
+  onClick={handleGetStartedClick}
+  className="bg-[#e59943] text-white font-semibold px-12 py-4 rounded-lg shadow-lg hover:bg-orange-500 mr-28"
+>
+  start akkella kettulllaa
+</button>
+
+
 </div>
 
 
