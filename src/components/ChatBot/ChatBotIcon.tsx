@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaRobot } from "react-icons/fa";
 import ChatBotModal from "./ChatBotModal"; // Create this component for the modal
 

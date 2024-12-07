@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import { IoClose } from "react-icons/io5";
 
 const ChatBotModal = ({ onClose }: { onClose: () => void }) => {

@@ -1,4 +1,3 @@
-import React from "react";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'; // Import the DotLottieReact component
 import { useNavigate } from "react-router-dom";
 

@@ -7,14 +7,7 @@ import { tutorEndpoints } from "../../../components/constraints/endpoints/TutorE
 import BasicPagination from "../../../components/Admin/Pagination/Pagination";
 import Loader from "../../../components/Spinner/Spinner2/Spinner2";
 
-interface Student {
-  _id: string;
-  name: string;
-  email: string;
-  profilePicture: string;
-  enrolledCourseId: string;
-  enrolledAt: string;
-}
+
 
 interface Course {
   _id: string;
@@ -27,7 +20,6 @@ interface Course {
 }
 
 const Students = () => {
-  const [studentsData, setStudentsData] = useState<Student[]>([]);
   const [courseData, setCourseData] = useState<Course[]>([]);  // New state for courseData
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,36 +34,35 @@ const Students = () => {
         console.error("Tutor ID not found in localStorage.");
         return;
       }
-      console.log(studentsData)
-
+  
       try {
         setLoading(true);
-
+  
         const skip = (currentPage - 1) * itemsPerPage;
         const response = await axiosInstance.get(tutorEndpoints.myCourses, {
           params: { skip, limit: itemsPerPage, tutorId },
         });
-
-        if (response.data.success) {
-          setStudentsData(response.data.courses); // Store the student data
-          setTotalItems(response.data.totalCount); // Update total items count for pagination
-
-          // Map studentsData to courseData (if needed)
+  
+        if (response.data.success && response.data.courses.length > 0) {
+          // Store the student data
+          setTotalItems(response.data.totalCount);
+  
+          // Map studentsData to courseData
           const mappedCourseData = response.data.courses.map((course: any) => ({
             _id: course._id,
             courseName: course.name,
             thumbnail: course.thumbnail,
             courseCategory: course.courseCategory,
             courseLevel: course.courseLevel,
-            courseDiscountPrice: course.courseDiscountPrice
-
-            ,
+            courseDiscountPrice: course.courseDiscountPrice,
             createdAt: course.createdAt,
           }));
-          
-          setCourseData(mappedCourseData); // Update the courseData
+  
+          setCourseData(mappedCourseData);
         } else {
-          setError("Failed to fetch students.");
+          // Handle empty data
+          setCourseData([]); // Ensure the table shows "No courses available"
+          setTotalItems(0);  // Reset pagination to zero items
         }
       } catch (err) {
         console.error("Error fetching students:", err);
@@ -80,9 +71,10 @@ const Students = () => {
         setLoading(false);
       }
     };
-
+  
     fetchStudentDetails();
   }, [currentPage]);
+  
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -123,7 +115,7 @@ const Students = () => {
               ) : (
                 <>
                   <TutorStudents 
-                    courseData={courseData}  // Passing courseData as props
+                    courseData={courseData}  
                   />
                   <BasicPagination
                     totalItems={totalItems}

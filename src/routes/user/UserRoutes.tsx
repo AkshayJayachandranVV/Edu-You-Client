@@ -16,41 +16,41 @@ import ErrorPage from '../../components/User/404/errorPage';
 import Chat from "../../pages/User/UserChat/UserChat";
 import LiveStream from "../../pages/User/UserLiveStreaming/UserLiveStreaming";
 import LandingPage from "../../pages/LandingPage/LandingPage";
-import  SelectRole from "../../pages/LandingPage/SelectRole";
+import SelectRole from "../../pages/LandingPage/SelectRole";
 import PrivateRoute from "./privateRoute";
 import PrivateRouteUser from "./privateRouteUser";
 import ChatBotIcon from "../../components/ChatBot/ChatBotIcon";
-// import { useEffect, useState } from 'react';
-// import socketService from '../../socket/socketService';
+import Cookies from "js-cookie";
 
 const UserRoutes = () => {
- 
+    const userId = Cookies.get('userId')
 
-    return (
-        <>
-            <Routes>
-                <Route path='/' element={<PrivateRoute><LandingPage /></PrivateRoute>} />
-                <Route path='/selectRole' element={<PrivateRoute><SelectRole /></PrivateRoute>} />
-                <Route path='/home' element={<PrivateRouteUser><UserHome /></PrivateRouteUser>} />
-                <Route path='/login' element={<PrivateRoute><UserLogin /></PrivateRoute>} />
-                <Route path='/otp' element={<PrivateRoute><UserOtp /></PrivateRoute>} />
-                <Route path='/signup' element={<PrivateRoute><UserSignup /></PrivateRoute>} />
-                <Route path='/forgotPassword' element={<PrivateRoute><UserForgotPassword /></PrivateRoute>} />
-                <Route path='/resetPassword' element={<PrivateRoute><ResetPassword /></PrivateRoute>} />
-                <Route path='/profile' element={<PrivateRouteUser><UserProfile /></PrivateRouteUser>} />
-                <Route path='/courseDetails/:courseId' element={<PrivateRouteUser><UserCourseDetails /></PrivateRouteUser>} />
-                <Route path='/allCourses' element={<PrivateRouteUser><UserAllCourses /></PrivateRouteUser>} />
-                <Route path='/checkout/:courseId' element={<PrivateRouteUser><UserCheckout /></PrivateRouteUser>} />
-                <Route path='/success' element={<PrivateRouteUser><PaymentSuccess /></PrivateRouteUser>} />
-                <Route path='/myCourses' element={<PrivateRouteUser><MyCourse /></PrivateRouteUser>} />
-                <Route path='/courseView/:courseId' element={<PrivateRouteUser><CourseView  /></PrivateRouteUser>} />
-                <Route path='/chat' element={<PrivateRouteUser><Chat /></PrivateRouteUser>} />
-                <Route path='/goLive/:courseId' element={<PrivateRouteUser><LiveStream /></PrivateRouteUser>} />
-                <Route path="*" element={<ErrorPage />} />
-            </Routes>
-            <ChatBotIcon />
-        </>
-    );
+  return (
+    <>
+      <Routes>
+        <Route path='/' element={<PrivateRoute><LandingPage /></PrivateRoute>} />
+        <Route path='/selectRole' element={<PrivateRoute><SelectRole /></PrivateRoute>} />
+        <Route path='/home' element={<PrivateRouteUser><UserHome /></PrivateRouteUser>} />
+        <Route path='/login' element={<PrivateRoute><UserLogin /></PrivateRoute>} />
+        <Route path='/otp' element={<PrivateRoute><UserOtp /></PrivateRoute>} />
+        <Route path='/signup' element={<PrivateRoute><UserSignup /></PrivateRoute>} />
+        <Route path='/forgotPassword' element={<PrivateRoute><UserForgotPassword /></PrivateRoute>} />
+        <Route path='/resetPassword' element={<PrivateRoute><ResetPassword /></PrivateRoute>} />
+        <Route path='/profile' element={<PrivateRouteUser><UserProfile /></PrivateRouteUser>} />
+        <Route path='/courseDetails/:courseId' element={<PrivateRouteUser><UserCourseDetails /></PrivateRouteUser>} />
+        <Route path='/allCourses' element={<PrivateRouteUser><UserAllCourses /></PrivateRouteUser>} />
+        <Route path='/checkout/:courseId' element={<PrivateRouteUser><UserCheckout /></PrivateRouteUser>} />
+        <Route path='/success' element={<PrivateRouteUser><PaymentSuccess /></PrivateRouteUser>} />
+        <Route path='/myCourses' element={<PrivateRouteUser><MyCourse /></PrivateRouteUser>} />
+        <Route path='/courseView/:courseId' element={<PrivateRouteUser><CourseView /></PrivateRouteUser>} />
+        <Route path='/chat' element={<PrivateRouteUser><Chat /></PrivateRouteUser>} />
+        <Route path='/goLive/:courseId' element={<PrivateRouteUser><LiveStream /></PrivateRouteUser>} />
+        <Route path="*" element={<ErrorPage />} />
+      </Routes>
+      {/* Render ChatBotIcon only if userId exists */}
+      {userId && <ChatBotIcon />}
+    </>
+  );
 };
 
 export default UserRoutes;

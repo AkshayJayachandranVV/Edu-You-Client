@@ -103,7 +103,7 @@ export default function AllCourses() {
           Explore our wide range of courses and choose the best fit for you.
         </p>
       </div>
-
+     
       {/* Courses Grid */}
       <div className="container mx-auto px-4 py-16">
         <div className="bg-gray-700 p-8 rounded-lg">
@@ -207,7 +207,7 @@ export default function AllCourses() {
                             <span className="text-yellow-400 text-lg ml-2">
                               {course.averageRating
                                 ? course.averageRating.toFixed(1)
-                                : "No Rating"}
+                                : ""}
                             </span>
                           </div>
                         </div>
@@ -247,7 +247,6 @@ export default function AllCourses() {
         currentPage={currentPage}
         onPageChange={setCurrentPage}
       />
-
       <Footer />
     </div>
   );

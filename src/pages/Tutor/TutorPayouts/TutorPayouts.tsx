@@ -28,7 +28,6 @@ const Course = () => {
   const [totalItems, setTotalItems] = useState(0);
   const itemsPerPage = 5; // Define items per page
 
-  // Fetch payouts data
   useEffect(() => {
     const fetchPayouts = async () => {
       const tutorId = localStorage.getItem("tutorId");
@@ -36,22 +35,22 @@ const Course = () => {
         console.error("Tutor ID not found in localStorage.");
         return;
       }
-
+  
       try {
         setLoading(true);
         const skip = (currentPage - 1) * itemsPerPage;
         const response = await axiosInstance.get(tutorEndpoints.payouts, {
           params: { skip, limit: itemsPerPage, tutorId },
         });
-
-
-        console.log(response)
-
-        if (response.data.success) {
-          setOrderData(response.data.orders); // Update order data
-          setTotalItems(response.data.totalCount); // Update total items count for pagination
+  
+        console.log(response);
+  
+        if (response.data.success && response.data.orders.length > 0) {
+          setOrderData(response.data.orders); 
+          setTotalItems(response.data.totalCount); 
         } else {
-          setError("Failed to fetch payouts.");
+          setOrderData([]); 
+          setTotalItems(0);
         }
       } catch (err) {
         console.error("Error fetching payouts:", err);
@@ -60,9 +59,10 @@ const Course = () => {
         setLoading(false);
       }
     };
-
+  
     fetchPayouts();
   }, [currentPage]);
+  
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -98,7 +98,7 @@ const Course = () => {
               {loading ? (
                 <Loader />
               ) : error ? (
-                <Loader />
+                <p>Error is fetching data</p>
               ) : (
                 <>
                   <TutorPayouts

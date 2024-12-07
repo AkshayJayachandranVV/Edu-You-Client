@@ -13,10 +13,10 @@ import LandingBanner from "../../assets/images/User/LandingPage/BannerImages.jpg
 
 const LandingPage = () => {
   const [isFAQOpen, setFAQOpen] = useState(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleGetStartedClick = () => {
-    navigate("/selectRole")
-    };
+    navigate("/selectRole");
+  };
 
   const toggleFAQ = (index: any) => {
     setFAQOpen((prevIndex: any) => (prevIndex === index ? null : index));
@@ -25,104 +25,120 @@ const LandingPage = () => {
     <div className="bg-[#1a1a1a] text-gray-300">
       {/* Main Banner */}
       <section className="bg-gradient-to-r from-[#121212] to-[#1f1f1f] text-white">
-  <div className="container mx-auto px-6 py-16">
-    {/* Banner Section */}
-    <div className="flex flex-col md:flex-row items-center justify-between">
-      {/* Left Content */}
-      <div className="md:w-1/2">
-        <h1 className="text-4xl md:text-6xl font-bold mb-4">
-          Investing in
-          <br /> Knowledge and
-          <br />
-          <span className="text-[#9380fe]">Your Future</span>
-        </h1>
-        <p className="text-lg mb-6 text-gray-400">
-          Join millions of learners worldwide and access high-quality
-          courses taught by top instructors. Learn at your own pace and
-          achieve your goals today!
-        </p>
-        <button onClick={handleGetStartedClick} className="bg-[#e59943] text-white font-semibold px-12 py-4 rounded-lg shadow-lg hover:bg-orange-500 ml-[280px]">
-          Get Started
-        </button>
+        <div className="container mx-auto px-6 py-16">
+          {/* Banner Section */}
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            {/* Left Content */}
+            <div className="md:w-1/2">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                Investing in
+                <br /> Knowledge and
+                <br />
+                <span className="text-[#9380fe]">Your Future</span>
+              </h1>
+              <p className="text-lg mb-6 text-gray-400">
+                Join millions of learners worldwide and access high-quality
+                courses taught by top instructors. Learn at your own pace and
+                achieve your goals today!
+              </p>
+              <div className="flex justify-end">
+                <button
+                  onClick={handleGetStartedClick}
+                  className="bg-[#e59943] text-white font-semibold px-12 py-4 rounded-lg shadow-lg hover:bg-orange-500 mr-28"
+                >
+                  Start avvella
+                </button>
+              </div>
 
-        {/* Add Content Cards */}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-[#1e1e2e] p-4 rounded-lg shadow-lg">
-            <h3 className="text-xl font-bold text-[#e59943] mb-2">
-              Personalized Learning
-            </h3>
-            <p className="text-gray-400">
-              Tailored courses to suit your interests and career goals.
-            </p>
+              {/* Add Content Cards */}
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-[#1e1e2e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-xl font-bold text-[#e59943] mb-2">
+                    Personalized Learning
+                  </h3>
+                  <p className="text-gray-400">
+                    Tailored courses to suit your interests and career goals.
+                  </p>
+                </div>
+                <div className="bg-[#1e1e2e] p-4 rounded-lg shadow-lg">
+                  <h3 className="text-xl font-bold text-[#9380fe] mb-2">
+                    Expert Instructors
+                  </h3>
+                  <p className="text-gray-400">
+                    Learn from the best in the industry with real-world
+                    experience.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Image */}
+            <div className="md:w-1/2 mt-8 md:mt-0 flex justify-center">
+              <img
+                src={LandingBanner}
+                alt="Online Learning"
+                className="rounded-lg shadow-lg max-w-[75%] h-auto"
+              />
+            </div>
           </div>
-          <div className="bg-[#1e1e2e] p-4 rounded-lg shadow-lg">
-            <h3 className="text-xl font-bold text-[#9380fe] mb-2">
-              Expert Instructors
-            </h3>
-            <p className="text-gray-400">
-              Learn from the best in the industry with real-world
-              experience.
-            </p>
+
+          {/* Career Courses Section */}
+          <div className="mt-16">
+            <h2 className="text-3xl font-bold text-center mb-8 text-[#9380fe]">
+              Top Career Courses
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Card 1 */}
+              <div className="bg-[#f66795] p-6 rounded-lg shadow-lg text-center hover:bg-[#e45885] transition-all duration-300">
+                <FaPaintBrush className="text-white text-5xl mb-4 mx-auto" />
+                <h3 className="text-white text-xl font-bold mb-2">
+                  UI/UX Design
+                </h3>
+                <p className="text-white text-gray-200">
+                  Learn the fundamentals of user-centered design and create
+                  visually stunning interfaces.
+                </p>
+              </div>
+
+              {/* Card 2 */}
+              <div className="bg-[#e79e4b] p-6 rounded-lg shadow-lg text-center hover:bg-[#d57c3e] transition-all duration-300">
+                <FaLaptopCode className="text-white text-5xl mb-4 mx-auto" />
+                <h3 className="text-white text-xl font-bold mb-2">
+                  Web Development
+                </h3>
+                <p className="text-white text-gray-200">
+                  Master front-end and back-end development to build modern,
+                  responsive websites.
+                </p>
+              </div>
+
+              {/* Card 3 */}
+              <div className="bg-[#64d3f2] p-6 rounded-lg shadow-lg text-center hover:bg-[#56b8d6] transition-all duration-300">
+                <FaBullhorn className="text-white text-5xl mb-4 mx-auto" />
+                <h3 className="text-white text-xl font-bold mb-2">
+                  Digital Marketing
+                </h3>
+                <p className="text-white text-gray-200">
+                  Discover strategies for SEO, social media, and content
+                  marketing to grow online presence.
+                </p>
+              </div>
+
+              {/* Card 4 */}
+              <div className="bg-[#9e8cfc] p-6 rounded-lg shadow-lg text-center hover:bg-[#8e79d9] transition-all duration-300">
+                <FaChalkboardTeacher className="text-white text-5xl mb-4 mx-auto" />
+                <h3 className="text-white text-xl font-bold mb-2">
+                  Practical Learning
+                </h3>
+                <p className="text-white text-gray-200">
+                  Engage in hands-on projects and real-world scenarios to
+                  reinforce your skills.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Right Image */}
-      <div className="md:w-1/2 mt-8 md:mt-0 flex justify-center">
-        <img
-          src={LandingBanner}
-          alt="Online Learning"
-          className="rounded-lg shadow-lg max-w-[75%] h-auto"
-        />
-      </div>
-    </div>
-
-    {/* Career Courses Section */}
-    <div className="mt-16">
-      <h2 className="text-3xl font-bold text-center mb-8 text-[#9380fe]">
-        Top Career Courses
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Card 1 */}
-        <div className="bg-[#f66795] p-6 rounded-lg shadow-lg text-center hover:bg-[#e45885] transition-all duration-300">
-          <FaPaintBrush className="text-white text-5xl mb-4 mx-auto" />
-          <h3 className="text-white text-xl font-bold mb-2">UI/UX Design</h3>
-          <p className="text-white text-gray-200">
-            Learn the fundamentals of user-centered design and create visually stunning interfaces.
-          </p>
-        </div>
-
-        {/* Card 2 */}
-        <div className="bg-[#e79e4b] p-6 rounded-lg shadow-lg text-center hover:bg-[#d57c3e] transition-all duration-300">
-          <FaLaptopCode className="text-white text-5xl mb-4 mx-auto" />
-          <h3 className="text-white text-xl font-bold mb-2">Web Development</h3>
-          <p className="text-white text-gray-200">
-            Master front-end and back-end development to build modern, responsive websites.
-          </p>
-        </div>
-
-        {/* Card 3 */}
-        <div className="bg-[#64d3f2] p-6 rounded-lg shadow-lg text-center hover:bg-[#56b8d6] transition-all duration-300">
-          <FaBullhorn className="text-white text-5xl mb-4 mx-auto" />
-          <h3 className="text-white text-xl font-bold mb-2">Digital Marketing</h3>
-          <p className="text-white text-gray-200">
-            Discover strategies for SEO, social media, and content marketing to grow online presence.
-          </p>
-        </div>
-
-        {/* Card 4 */}
-        <div className="bg-[#9e8cfc] p-6 rounded-lg shadow-lg text-center hover:bg-[#8e79d9] transition-all duration-300">
-          <FaChalkboardTeacher className="text-white text-5xl mb-4 mx-auto" />
-          <h3 className="text-white text-xl font-bold mb-2">Practical Learning</h3>
-          <p className="text-white text-gray-200">
-            Engage in hands-on projects and real-world scenarios to reinforce your skills.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
+      </section>
 
       {/* Why EduYou Section */}
       <section className="container mx-auto px-6 py-16">
@@ -143,10 +159,14 @@ const LandingPage = () => {
               <li>Flexible and affordable learning plans</li>
               <li>Certificates of completion to showcase your skills</li>
             </ul>
-
-            <button onClick={handleGetStartedClick} className="bg-[#e59943] text-white font-semibold px-12 py-4 rounded-lg shadow-lg hover:bg-orange-500 ml-[280px] mt-10">
-              Get Started
-            </button>
+            <div className="flex justify-end">
+              <button
+                onClick={handleGetStartedClick}
+                className="bg-[#e59943] text-white font-semibold px-12 py-4 rounded-lg shadow-lg hover:bg-orange-500 mr-28 mt-10"
+              >
+                Get Started
+              </button>
+            </div>
           </div>
 
           {/* Right Lottie Animation */}

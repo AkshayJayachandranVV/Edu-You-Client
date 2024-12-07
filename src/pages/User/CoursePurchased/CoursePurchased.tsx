@@ -36,7 +36,7 @@ interface Course {
 }
 
 interface PurchasedSingleCourseProps {
-  courseId: string;
+  courseId?: string;
 }
 
 const PurchasedSingleCourse: React.FC<PurchasedSingleCourseProps> = ({ courseId: propCourseId }) => {

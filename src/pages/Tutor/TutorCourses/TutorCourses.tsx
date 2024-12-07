@@ -48,11 +48,12 @@ const Course = () => {
           }
         );
 
-        if (response.data.success) {
-          setCourseData(response.data.courses); // Update course data
-          setTotalItems(response.data.totalCount); // Update total items count for pagination
+        if (response.data.success && response.data.courses.length > 0) {
+          setCourseData(response.data.courses);
+          setTotalItems(response.data.totalCount);
         } else {
-          setError("Failed to fetch courses.");
+          setCourseData([]); // Ensure table shows "No courses available"
+          setTotalItems(0);
         }
       } catch (err) {
         console.error("Error fetching courses:", err);

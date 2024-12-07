@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axiosInstance from "../../components/constraints/axios/tutorAxios";
 import { tutorEndpoints } from "../../components/constraints/endpoints/TutorEndpoints";
 import { AxiosError } from "axios";
@@ -88,34 +88,38 @@ const CourseComponent: React.FC<CourseComponentProps> = ({ courseData }) => {
 
   return (
     <div className="bg-gray-900 min-h-screen p-8 text-white">
-      <h2 className="text-3xl text-center mb-6 text-yellow-400">Tutor Courses</h2>
+      <h2 className="text-3xl text-center mb-6 text-yellow-400">Students</h2>
 
       <div className="flex justify-center">
         <div className="grid grid-cols-1 gap-6">
-          {courseData.map((course) => (
-            <div
-              key={course._id}
-              className="bg-gradient-to-br from-[#1e1f22] to-[#374151] p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer flex items-center"
-              onClick={() => handleCourseClick(course._id)}
-              style={{ width: "800px", height: "300px" }}
-            >
-              <img
-                src={course.thumbnail}
-                alt={course.courseName}
-                style={{ width: "300px", height: "260px" }}
-                className="w-48 h-full object-cover rounded-lg mr-4"
-              />
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold mb-2">{course.courseName}</h3>
-                <p className="text-yellow-300">Category: {course.courseCategory}</p>
-                <p className="text-yellow-300">Level: {course.courseLevel}</p>
-                <p className="text-gray-200 mt-2">Discount Price: ${course.courseDiscountPrice}</p>
-                <p className="text-gray-400 text-sm">
-                  Created on: {new Date(course.createdAt).toLocaleDateString()}
-                </p>
+          {courseData.length > 0 ? (
+            courseData.map((course) => (
+              <div
+                key={course._id}
+                className="bg-gradient-to-br from-[#1e1f22] to-[#374151] p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer flex items-center"
+                onClick={() => handleCourseClick(course._id)}
+                style={{ width: "800px", height: "300px" }}
+              >
+                <img
+                  src={course.thumbnail}
+                  alt={course.courseName}
+                  style={{ width: "300px", height: "260px" }}
+                  className="w-48 h-full object-cover rounded-lg mr-4"
+                />
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold mb-2">{course.courseName}</h3>
+                  <p className="text-yellow-300">Category: {course.courseCategory}</p>
+                  <p className="text-yellow-300">Level: {course.courseLevel}</p>
+                  <p className="text-gray-200 mt-2">Discount Price: ${course.courseDiscountPrice}</p>
+                  <p className="text-gray-400 text-sm">
+                    Created on: {new Date(course.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="text-center text-gray-400 mt-8">No courses available.</p>
+          )}
         </div>
       </div>
 
@@ -127,11 +131,9 @@ const CourseComponent: React.FC<CourseComponentProps> = ({ courseData }) => {
             </h2>
             <h3 className="text-xl mb-4 text-[#d1b055] font-medium">Enrolled Students</h3>
 
-            {noStudentsMessage && (
+            {noStudentsMessage ? (
               <p className="text-red-500 text-center">{noStudentsMessage}</p>
-            )}
-
-            {studentsData.length > 0 && (
+            ) : (
               <div className="overflow-y-auto max-h-64">
                 <table className="min-w-full bg-[#202838] rounded-lg shadow-lg">
                   <thead>
