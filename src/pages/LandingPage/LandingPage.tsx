@@ -46,7 +46,7 @@ const LandingPage = () => {
   onClick={handleGetStartedClick}
   className="bg-[#e59943] text-white font-semibold px-12 py-4 rounded-lg shadow-lg hover:bg-orange-500 mr-28"
 >
-  Get Started
+  ;lalalalal
 </button>
 
 
