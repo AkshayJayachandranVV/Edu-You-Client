@@ -1,6 +1,6 @@
 import React from "react";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import tutorImage from "@/assets/images/User/UserHome/Account.png";
+import tutorImage from "../../../assets/images/User/UserHome/Account.png";
 import CloseIcon from "@mui/icons-material/Close";
 import VideoIcon from "@mui/icons-material/OndemandVideo";
 import StarIcon from "@mui/icons-material/Star";

@@ -100,7 +100,7 @@
 }
 
 .user-home .user-home-1 {
-    background: url('@/assets/images//User//UserHome/userHome.png') 50% / cover no-repeat;
+    background: url('../../../../assets/images//User//UserHome/userHome.png') 50% / cover no-repeat;
     position: absolute;
     top: 60px;
     right: 25px;
@@ -217,7 +217,7 @@
     flex: 1;
     max-width: 40%;
     height: 50vh; 
-    background-image: url('@/assets/images/User/UserHome/aboutUs.webp');
+    background-image: url('../../../../assets/images/User/UserHome/aboutUs.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

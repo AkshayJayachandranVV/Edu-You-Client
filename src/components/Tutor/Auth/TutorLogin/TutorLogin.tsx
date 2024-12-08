@@ -4,8 +4,8 @@ import { DevTool } from '@hookform/devtools';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axios from 'axios';
-import bgImage from '@/assets/images/TutorReminiLogin.jpg';
-import loginIcon from '@/assets/icons/loginLock.png';
+import bgImage from '../../../../assets/images/TutorReminiLogin.jpg';
+import loginIcon from '../../../../assets/icons/loginLock.png';
 import Spinner from '../../../Spinner/Spinner';
 import { tutorEndpoints } from '../../../constraints/endpoints/TutorEndpoints'; // Update with actual endpoint
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';

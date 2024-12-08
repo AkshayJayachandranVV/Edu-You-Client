@@ -4,8 +4,8 @@ import axios from "axios";
 import Navbar from "../../Home/UserHome/Navbar/Navbar";
 import Footer from "../../Home/UserHome/Footer/Footer";
 import { courseEndpoints } from "../../../constraints/endpoints/courseEndpoints";
-import banner from "@/assets/images/User/UserHome/userHome.png";
-import aboutUs from "@/assets/images/User/UserHome/aboutUs.webp";
+import banner from "../../../../assets/images/User/UserHome/userHome.png";
+import aboutUs from "../../../../assets/images/User/UserHome/aboutUs.webp";
 import { tutorEndpoints } from "../../../constraints/endpoints/TutorEndpoints";
 import Skeleton from "@mui/joy/Skeleton";
 interface Course {

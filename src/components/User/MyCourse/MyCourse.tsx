@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../User/Home/UserHome/Navbar/Navbar'; 
 import Footer from '../../User/Home/UserHome/Footer/Footer'; 
 import MyCourseBanner from './MyCourseBanner';
-import MycourseImage from '@/assets/images/User/myCourses background.png';
+import MycourseImage from '../../../assets/images/User/myCourses background.png';
 import axiosInstance from '../../../components/constraints/axios/userAxios';
 import { userEndpoints } from "../../../components/constraints/endpoints/userEndpoints";
 import { RootState } from '../../../redux/store';

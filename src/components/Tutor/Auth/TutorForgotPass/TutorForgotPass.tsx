@@ -1,8 +1,8 @@
 import  { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import './TutorForgotPass.css';
-import bgImage from '@/assets/images/TutorReminiLogin.jpg';
-import forgotIcon from '@/assets/icons/forgot-password.png';
+import bgImage from '../../../../assets/images/TutorReminiLogin.jpg';
+import forgotIcon from '../../../../assets/icons/forgot-password.png';
 import { tutorEndpoints } from '../../../constraints/endpoints/TutorEndpoints'; // Update with the correct path
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';

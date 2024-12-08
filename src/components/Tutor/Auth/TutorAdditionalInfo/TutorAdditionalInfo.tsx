@@ -1,7 +1,7 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 // import profileImage from '../../../../assets/images/User/UserHome/Account.png'
-import iconimage from "@/assets/images/Tutor/profileicon.png";
-import addInfo1 from "@/assets/images/Tutor/add-info-1.jpg";
+import iconimage from "../../../../assets/images/Tutor/profileicon.png";
+import addInfo1 from "../../../../assets/images/Tutor/add-info-1.jpg";
 import axios from "axios";
 import { tutorEndpoints } from "../../../constraints/endpoints/TutorEndpoints";
 import { useNavigate } from "react-router-dom";

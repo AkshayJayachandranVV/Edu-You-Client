@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { useNavigate } from "react-router-dom";
 import bgImage from "../../../../assets/images/UserLogin-Background.jpg";
-import resetIcon from "@/assets/icons/User/UserLoginLock.png";
+import resetIcon from "../../../../assets/icons/User/UserLoginLock.png";
 import Spinner from '../../../Spinner/Spinner';
 import { userEndpoints } from '../../../constraints/endpoints/userEndpoints';
 import axios from "axios";

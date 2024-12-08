@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { DevTool } from '@hookform/devtools';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import resetIcon from '@/assets/icons/User/OtpIcon.png'; // Update with your icon path
-import bgImage from '@/assets/images/TutorReminiLogin.jpg';
+import resetIcon from '../../../../assets/icons/User/OtpIcon.png'; // Update with your icon path
+import bgImage from '../../../../assets/images/TutorReminiLogin.jpg';
 import Spinner from '../../../Spinner/Spinner';
 import { tutorEndpoints } from '../../../constraints/endpoints/TutorEndpoints'; // Update with actual endpoint
 

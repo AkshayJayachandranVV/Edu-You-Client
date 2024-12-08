@@ -6,9 +6,9 @@ import { logout } from '../../../../../redux/userSlice';
 import { logoutStore } from '../../../../../redux/store';
 import Cookies from 'js-cookie';
 import socketService from '../../../../../socket/socketService';
-import iconImage from '@/assets/images/User/UserHome/Account.png';
-import BellIcon from '@/assets/Icons/User/notification.png';
-import Discussion from '@/assets/images/User/UserHome/people.png';
+import iconImage from '../../../../../assets/images/User/UserHome/Account.png';
+import BellIcon from '../../../../../assets/Icons/User/notification.png';
+import Discussion from '../../../../../assets/images/User/UserHome/people.png';
 import axiosInstance from '../../../../constraints/axios/userAxios';
 import { userEndpoints } from '../../../../constraints/endpoints/userEndpoints';
 
