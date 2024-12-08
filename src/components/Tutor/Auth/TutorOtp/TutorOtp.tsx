@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import bgImage from '../../../../assets/images/TutorReminiLogin.jpg';
-import otpIcon from '../../../../assets/icons/otp.png';
+import bgImage from '@/assets/images/TutorReminiLogin.jpg';
+import otpIcon from '@/assets/icons/otp.png';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import Spinner from '../../../Spinner/Spinner';

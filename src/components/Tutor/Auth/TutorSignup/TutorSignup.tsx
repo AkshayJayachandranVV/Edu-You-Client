@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { DevTool } from '@hookform/devtools';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import bgImage from '../../../../assets/images/TutorReminiLogin.jpg';
-import signupIcon from '../../../../assets/icons/signup.png';
+import bgImage from '@/assets/images/TutorReminiLogin.jpg';
+import signupIcon from '@/assets/icons/signup.png';
 import Spinner from '../../../Spinner/Spinner';
 import { tutorEndpoints } from '../../../constraints/endpoints/TutorEndpoints';
 

@@ -9,7 +9,7 @@ import axiosInstance from "../../../components/constraints/axios/tutorAxios";
 import { tutorEndpoints } from "../../../components/constraints/endpoints/TutorEndpoints";
 import { FaHome, FaUser, FaSignOutAlt } from "react-icons/fa";
 import Cookies from 'js-cookie';
-import profile from '../../../assets/images/User/UserHome/Account.png'
+import profile from '@/assets/images/User/UserHome/Account.png'
 interface ProfileFormInputs {
   name: string;
   email: string;

@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { useNavigate } from "react-router-dom";
 import adminIcon from "@/assets/icons/User/administrator.png";
-import AdminImage from "../../../../assets/images/Admin/—Pngtree—information technology vector_12148048.png";
+import AdminImage from "@/assets/images/Admin/—Pngtree—information technology vector_12148048.png";
 import Spinner from "../../../Spinner/Spinner";
 import Cookies from "js-cookie";
 import { adminEndpoints } from "../../../constraints/endpoints/adminEndpoints";

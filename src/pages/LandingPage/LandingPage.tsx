@@ -9,7 +9,7 @@ import {
   FaBullhorn,
   FaChalkboardTeacher,
 } from "react-icons/fa";
-import LandingBanner from "../../assets/images/User/LandingPage/BannerImages.jpg";
+import LandingBanner from "@/assets/images/User/LandingPage/BannerImages.jpg";
 
 const LandingPage = () => {
   const [isFAQOpen, setFAQOpen] = useState(null);

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import axiosInstance from "../../constraints/axios/tutorAxios";
 import { tutorEndpoints } from "../../constraints/endpoints/TutorEndpoints";
 import Cookies from 'js-cookie';
-import profile from '../../../assets/images/User/UserHome/Account.png'
+import profile from '@/assets/images/User/UserHome/Account.png'
 
 export default function TutorProfile() {
   const [tutorData, setTutorData] = useState<any | null>(null);
