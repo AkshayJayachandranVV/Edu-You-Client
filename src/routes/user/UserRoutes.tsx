@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import UserLogin from "../../components/User/Auth/UserLogin/UserLogin";
 import UserSignup from "../../components/User/Auth/UserSignup/UserSignup";
 import UserOtp from "../../components/User/Auth/UserOtp/UserOtp";
@@ -23,18 +23,7 @@ import ChatBotIcon from "../../components/ChatBot/ChatBotIcon";
 import Cookies from "js-cookie";
 
 const UserRoutes = () => {
-  const userId = Cookies.get('userId');
-  const location = useLocation();
-
-  // Specify paths where the ChatBotIcon should not appear
-  const excludeChatBotPaths = [
-    '/chat',
-  ];
-
-  // Check if current path is in the exclude list
-  const shouldShowChatBot = userId && !excludeChatBotPaths.some((path) =>
-    location.pathname.startsWith(path.split(':')[0]) // Handle dynamic params
-  );
+    const userId = Cookies.get('userId')
 
   return (
     <>
@@ -58,7 +47,8 @@ const UserRoutes = () => {
         <Route path='/goLive/:courseId' element={<PrivateRouteUser><LiveStream /></PrivateRouteUser>} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
-      {shouldShowChatBot && <ChatBotIcon />}
+      {/* Render ChatBotIcon only if userId exists */}
+      {userId && <ChatBotIcon />}
     </>
   );
 };
