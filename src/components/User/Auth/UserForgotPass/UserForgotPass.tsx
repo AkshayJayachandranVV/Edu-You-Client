@@ -1,7 +1,7 @@
 import  { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import bgImage from '../../../../assets/images/UserLogin-Background.jpg';
-import forgotIcon from '../../../../assets/icons/User/forgot-password.png';
+import forgotIcon from '@/assets/icons/User/forgot-password.png';
 import { userEndpoints } from '../../../constraints/endpoints/userEndpoints';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
