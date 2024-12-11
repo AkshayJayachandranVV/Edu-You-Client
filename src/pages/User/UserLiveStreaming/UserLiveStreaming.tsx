@@ -16,42 +16,38 @@ function UserLiveStream() {
 
     useEffect(() => {
         const initMeeting = async () => {
-            if (initialized.current) return;
+            if (initialized.current) return; // Ensure initMeeting is only called once
             initialized.current = true;
-
+    
             const appID = parseInt(import.meta.env.VITE_LIVE_APP_ID);
             const serverSecret = import.meta.env.VITE_LIVE_SERVER_SECRET;
-
+    
             if (!appID || !serverSecret || !courseId) {
                 console.error("App ID, Server Secret, or courseId is missing");
                 return;
             }
-
-
-            
-            if(!userId){
-                console.error("tutorIdd is missing");
-               return;
-           }
-
+    
+            if (!userId) {
+                console.error("User ID is missing");
+                return;
+            }
+    
             const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
                 appID,
                 serverSecret,
                 courseId, // Use courseId as roomId
-                userId , // Generate a unique user ID for the session
+                userId,   // Unique user ID
                 username
             );
-
+    
             const zp = ZegoUIKitPrebuilt.create(kitToken);
-
+    
             zp.joinRoom({
                 container: containerRef.current,
                 scenario: {
                     mode: ZegoUIKitPrebuilt.LiveStreaming,
                     config: { role },
                 },
-
-
                 showPreJoinView: false,
                 showLeavingView: false,
                 showAudioVideoSettingsButton: false,
@@ -59,15 +55,14 @@ function UserLiveStream() {
                 useFrontFacingCamera: false,
                 turnOnMicrophoneWhenJoining: false,
                 turnOnCameraWhenJoining: false,
-                showMyMicrophoneToggleButton: false,  // Corrected property name
-                showMyCameraToggleButton: false,      // Corrected property name
-
-
+                showMyMicrophoneToggleButton: false,
+                showMyCameraToggleButton: false,
             });
         };
-
+    
         initMeeting();
     }, [courseId, role]);
+    
 
     return (
         <div style={{ width: '100vw', height: '100vh' }}>

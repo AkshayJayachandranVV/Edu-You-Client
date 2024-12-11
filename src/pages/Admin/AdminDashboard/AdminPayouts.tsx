@@ -7,7 +7,7 @@ import { adminEndpoints } from "../../../../src/components/constraints/endpoints
 import axiosInstance from "../../../components/constraints/axios/adminAxios";
 import Loader from "../../../components/Spinner/Spinner2/Spinner2";
 
-// Define the CourseData interface
+
 interface CourseData {
   _id: string;
   adminShare: number;

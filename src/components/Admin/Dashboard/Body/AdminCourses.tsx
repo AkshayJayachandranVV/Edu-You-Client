@@ -41,9 +41,8 @@ const DarkThemeTable: React.FC<DarkThemeTableProps> = ({ data }) => {
   const toggleListStatus = async (courseId: string, currentStatus: boolean) => {
     try {
       console.log(courseId, "=---------courseid");
-      const response = await axiosInstance.post(adminEndpoints.listCourse, {
-        courseId,
-      });
+      const response = await axiosInstance.get(`${adminEndpoints.listUnlist.replace("courseId", courseId)}`);
+
 
       console.log("Toggling list/unlist status:", response);
 

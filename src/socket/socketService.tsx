@@ -137,6 +137,24 @@ offTypingStatus(callback: (data: { isTyping: boolean; username: string }) => voi
     }
   }
 
+
+  sendTutorMessage({ roomId, senderId, content}: { roomId: string, senderId: string, content: string }) {
+    console.log(`Attempting to send message to room: ${roomId}, message: ${content}, senderId: ${senderId}`);
+    if (this.socket.connected) {
+      this.socket.emit('sendMessageToTutor', { roomId, senderId, content });
+    } else {
+      console.error('Socket is not connected');
+    }
+  }  
+
+
+  onTutorReceiveMessage(callback: (message: string) => void) {
+    this.socket.on('receiveMessageTutor', (message: string) => {
+      console.log('Received message: fron tutor', message);
+      callback(message);
+    });   
+  }   
+
   
   // New function to send media (image/video)
   sendMedia({ roomId, senderId, mediaUrl, s3Key, mediaType }: { roomId: string, senderId: string, mediaUrl: string, s3Key: string, mediaType: string }) {
@@ -149,6 +167,27 @@ offTypingStatus(callback: (data: { isTyping: boolean; username: string }) => voi
       console.error('Socket is not connected');
     }
   }
+
+
+  sendTutorMedia({ roomId, senderId, mediaUrl, s3Key, mediaType }: { roomId: string, senderId: string, mediaUrl: string, s3Key: string, mediaType: string }) {
+    console.log(`Attempting to send media to room: ${roomId}, mediaUrl: ${mediaUrl}, senderId: ${senderId}, s3Key: ${s3Key}, mediaType: ${mediaType}`);
+  
+    if (this.socket.connected) {
+      this.socket.emit('sendTutorMedia', { roomId, senderId, mediaUrl, s3Key, mediaType });
+      console.log('Media sent successfully');
+    } else {
+      console.error('Socket is not connected');
+    }
+  }    
+
+
+  onTutorReceiveMedia(callback: (data: { mediaUrl: string; s3Key: string; mediaType: string }) => void) {
+    this.socket.on('receiveTutorMedia', (data: { mediaUrl: string; s3Key: string; mediaType: string }) => {
+      console.log('Received media:', data);
+      callback(data);
+    });
+  }
+ 
 
 
   offReceiveMedia(callback: (data: { mediaUrl: string; s3Key: string; mediaType: string }) => void) {

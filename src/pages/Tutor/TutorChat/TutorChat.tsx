@@ -40,7 +40,7 @@ const ChatApp: React.FC = () => {
       const tutorId = localStorage.getItem("tutorId");
       if (tutorId) {
         const response = await axiosInstance.get(
-            tutorEndpoints.getUserCourses.replace("userId", tutorId)
+            tutorEndpoints.getTutorCourses.replace("userId", tutorId)
         );
 
         console.log(response.data[0].thumbnail, "Fetched chat list");
@@ -73,7 +73,7 @@ const ChatApp: React.FC = () => {
 
       {/* Chat Interface on the right */}
       <div className="flex-1" >
-        <ChatInterface />
+        <ChatInterface selectedChat={selectedChat} groupMembers={[]} />
       </div>
     </div>
   );

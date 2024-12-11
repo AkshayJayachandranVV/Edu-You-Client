@@ -386,9 +386,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ selectedChat }) => {
 
       // Listen for incoming messages and typing status
       SocketService.onReceiveMessage(messageHandler);
+      SocketService.onTutorReceiveMessage(messageHandler);
       SocketService.onTypingStatus(typingHandler);
 
-      return () => {
+      return () => {   
         // Clean up the event listeners on component unmount or when selectedChat changes
         SocketService.getSocket().off("receiveMessage", messageHandler);
         SocketService.getSocket().off("typingStatus", typingHandler);

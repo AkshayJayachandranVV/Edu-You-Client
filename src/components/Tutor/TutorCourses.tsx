@@ -73,8 +73,9 @@ export default function DarkThemeTable({ courseData, startingIndex }: DarkThemeT
 
   const listCourse = async (courseId: string) => {
     try {
+      console.log(courseId)
       const list = await axiosInstance.get(
-        `${tutorEndpoints.listCourse.replace("courseId", courseId)}`
+        `${tutorEndpoints.listUnlist.replace("courseId", courseId)}`
       );
       console.log(list, "got the response");
 

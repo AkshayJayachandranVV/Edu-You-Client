@@ -94,7 +94,7 @@ export default function EditTutorProfile() {
         setValue("name", profile.data.tutorname);
         setValue("email", profile.data.email);
         setValue("phone", profile.data.phone || "");
-        setValue("about", profile.data.about || "");
+        setValue("about", profile.data.bio || "");
 
         console.log(
           "Formatted qualifications:",

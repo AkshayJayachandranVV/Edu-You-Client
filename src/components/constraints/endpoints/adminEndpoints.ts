@@ -12,6 +12,7 @@ export const adminEndpoints = {
     reportCourses: `${API_GATEWAY_BASE_URL}/reportCourses`,
     payouts: `${API_GATEWAY_BASE_URL}/payouts`,
     graphData: `${API_GATEWAY_BASE_URL}/graphData`,
-    cardsData: `${API_GATEWAY_BASE_URL}/cardsData`
+    cardsData: `${API_GATEWAY_BASE_URL}/cardsData`,
+    listUnlist: `${API_GATEWAY_BASE_URL}/listUnlist/courseId`
 }
 

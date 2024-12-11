@@ -20,6 +20,7 @@ interface CourseData {
   adminShare: number;
   discountPrice: number;
   courseId: string;
+  title:string;
 }
 
 
@@ -117,7 +118,7 @@ const ReportCourses: React.FC<CoursesProps> = ({ data }) => {
                     <TableCell>{serialNumber}</TableCell>
                     <TableCell>{course.userName || "N/A"}</TableCell>
                     <TableCell>{course.tutorName || "N/A"}</TableCell>
-                    <TableCell>{course.courseName || "N/A"}</TableCell>
+                    <TableCell>{course.title || "N/A"}</TableCell>
                     <TableCell>
                       {course.thumbnail ? (
                         <img

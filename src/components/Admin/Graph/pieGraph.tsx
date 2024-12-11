@@ -43,6 +43,7 @@ export default function TutorPieGraph({ data }: TutorPieGraphProps) {
         },
       ]}
       height={200}
+      
     />
   );
 }

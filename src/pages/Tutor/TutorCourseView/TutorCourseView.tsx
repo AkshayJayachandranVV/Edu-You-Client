@@ -69,6 +69,11 @@ const CourseView: React.FC = () => {
     setOpenSection(openSection === sectionIndex ? null : sectionIndex);
   };
 
+
+  const GoChat = async () =>{
+    navigate("/tutor/chat")
+  }
+
   const handleVideoClick = (videoUrl: string) => {
     setSelectedVideo(videoUrl);
   };
@@ -83,7 +88,7 @@ const CourseView: React.FC = () => {
           {course?.courseName}
         </h1>
         <div className="flex space">
-          <Tooltip title="Chat">
+          <Tooltip onClick={GoChat} title="Chat">
             <IconButton
               color="primary"
               sx={{

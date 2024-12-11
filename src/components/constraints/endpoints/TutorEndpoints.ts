@@ -24,10 +24,10 @@ export const tutorEndpoints = {
     cardsData: `${API_GATEWAY_BASE_URL}/cardsData/tutorId`,
     graphData: `${API_GATEWAY_BASE_URL}/graphData/tutorId`,
     courseView: `${API_GATEWAY_BASE_URL}/courseView/courseId`,
-    getUserCourses :  `${API_GATEWAY_BASE_URL}/getCourses/userId`,    
+    getTutorCourses :  `${API_GATEWAY_BASE_URL}/getTutorCourses/userId`,    
     addInformation :  `${API_GATEWAY_BASE_URL}/addInformation`,
     profileDetails : `${API_GATEWAY_BASE_URL}/profileDetails/tutorId`,
-
+    listUnlist: `${API_GATEWAY_BASE_URL}/listUnlist/courseId`,
 }
     
 
